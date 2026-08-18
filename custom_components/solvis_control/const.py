@@ -1485,5 +1485,10 @@ STORAGE_TYPE_CONFIG: dict[str, dict] = {
         # two zones only: S1-S4 (top) and S4-S9 (bottom)
         "volumes": [80, 100],
         "source_keys": ["warm_water_buffer_temp_s1", "heating_buffer_upper_temp_s4", "heating_buffer_lower_temp_s9"],
+        # Addresses missing from this model's Modbus map. Reading them answers with
+        # ILLEGAL DATA ADDRESS, and a single failing register aborts the whole
+        # coordinator poll, so every entity would go unavailable once per cycle.
+        # The Leo has no burner (no digital-input error word) and only provides O1-O5.
+        "unsupported_registers": (33045, 33299),  # digin_error, analog_out_o6
     },
 }

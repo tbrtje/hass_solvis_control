@@ -45,6 +45,7 @@ from custom_components.solvis_control.const import (
     POLL_RATE_DEFAULT,
     POLL_RATE_HIGH,
     REGISTERS,
+    STORAGE_TYPE_CONFIG,
     CONF_HKR1_NAME,
     CONF_HKR2_NAME,
     CONF_HKR3_NAME,
@@ -291,9 +292,17 @@ def process_coordinator_data(coordinator_data: dict, response_key: str):
 
 def should_skip_register(entry_data: dict, register) -> bool:
     """
-    Determine whether a register should be skipped based on the config-options and the supported version.
+    Determine whether a register should be skipped based on the storage type,
+    the config-options and the supported version.
     Returns True, if the register should be skipped, else False.
     """
+    # check registers the selected storage type does not implement at all
+    storage_type = entry_data.get(CONF_OPTION_13)
+    unsupported_registers = STORAGE_TYPE_CONFIG.get(storage_type, {}).get("unsupported_registers", ())
+    if register.address in unsupported_registers:
+        _LOGGER.debug(f"[{register.name} | {register.address}] Skipping register: not available on storage type {storage_type}.")
+        return True
+
     # check config-options
     if isinstance(register.conf_option, tuple):  # tuple
         if not all(entry_data.get(conf_options_map[option]) for option in register.conf_option):
