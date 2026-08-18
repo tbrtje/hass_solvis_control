@@ -217,6 +217,63 @@ def test_compute_stored_energy_12_valid(monkeypatch, mock_coordinator):
     assert pytest.approx(result, rel=1e-6) == expected_kwh
 
 
+def test_compute_stored_energy_12_two_zones(monkeypatch, mock_coordinator):
+    """SolvisLeo 180 is a two-zone tank: three sensors, two volumes."""
+    cfg_entry = DummyConfigEntry({CONF_OPTION_13: "SolvisLeo 180"})
+
+    t1, t2, t3 = 50.0, 40.0, 30.0
+
+    v1, v2 = STORAGE_TYPE_CONFIG["SolvisLeo 180"]["volumes"]
+    rho = 1.0
+    c = 4.186
+    e1 = v1 * rho * c * ((t1 + t2) / 2 - 12)
+    e2 = v2 * rho * c * ((t2 + t3) / 2 - 12)
+    expected_kwh = (e1 + e2) / 3600
+
+    dummy_device_info = DeviceInfo(identifiers={("solvis", "dummy")})
+    sensor = SolvisDerivativeSensor(
+        coordinator=mock_coordinator,
+        device_info=dummy_device_info,
+        host="dummy_host",
+        name="test_energy",
+        source_keys=STORAGE_TYPE_CONFIG["SolvisLeo 180"]["source_keys"],
+        unit="kWh",
+        device_class=None,
+        state_class=None,
+        entity_category=None,
+        suggested_display_precision=2,
+        compute_mode="stored_energy_12",
+        config_entry=cfg_entry,
+    )
+
+    result = sensor._compute_stored_energy_12([t1, t2, t3])
+
+    assert pytest.approx(result, rel=1e-6) == expected_kwh
+
+
+def test_compute_stored_energy_12_sensor_count_mismatch(monkeypatch, mock_coordinator):
+    """A three-zone tank fed with only three temperatures must not compute a value."""
+    cfg_entry = DummyConfigEntry({CONF_OPTION_13: "SolvisBen Solo"})
+
+    dummy_device_info = DeviceInfo(identifiers={("solvis", "dummy")})
+    sensor = SolvisDerivativeSensor(
+        coordinator=mock_coordinator,
+        device_info=dummy_device_info,
+        host="dummy_host",
+        name="test_energy",
+        source_keys=["a", "b", "c"],
+        unit="kWh",
+        device_class=None,
+        state_class=None,
+        entity_category=None,
+        suggested_display_precision=2,
+        compute_mode="stored_energy_12",
+        config_entry=cfg_entry,
+    )
+
+    assert sensor._compute_stored_energy_12([20.0, 22.0, 24.0]) == 0.0
+
+
 def test_compute_stored_energy_12_invalid_type(monkeypatch, mock_coordinator):
     cfg_entry = DummyConfigEntry({})
 

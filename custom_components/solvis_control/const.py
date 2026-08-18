@@ -1481,4 +1481,9 @@ STORAGE_TYPE_CONFIG: dict[str, dict] = {
     "SolvisMax 957 Hybrid (301/34/574)": {
         "volumes": [301, 34, 540],
     },
+    "SolvisLeo 180": {
+        # two zones only: S1-S4 (top) and S4-S9 (bottom)
+        "volumes": [80, 100],
+        "source_keys": ["warm_water_buffer_temp_s1", "heating_buffer_upper_temp_s4", "heating_buffer_lower_temp_s9"],
+    },
 }

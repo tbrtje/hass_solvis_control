@@ -96,23 +96,18 @@ class SolvisDerivativeSensor(SolvisEntity, SensorEntity):
         volumes = STORAGE_TYPE_CONFIG.get(storage_type, {}).get("volumes")
         _LOGGER.debug(f"volumes from config: {volumes}")
 
-        if not volumes or len(volumes) != 3:
+        # each zone is delimited by two sensors, so n zones need n+1 temperatures
+        if not volumes or len(values) != len(volumes) + 1:
             _LOGGER.debug(f"invalid volumes: return 0")
             return 0.0
 
-        v1, v2, v3 = volumes
-
         rho = 1.0
         c = 4.186
-        t1, t2, t3, t4 = values
-        t_zone1 = (t1 + t2) / 2
-        t_zone2 = (t2 + t3) / 2
-        t_zone3 = (t3 + t4) / 2
 
-        e1 = v1 * rho * c * (t_zone1 - 12)  # Referenz-Temp 12 °C
-        e2 = v2 * rho * c * (t_zone2 - 12)
-        e3 = v3 * rho * c * (t_zone3 - 12)
-        total_energy = e1 + e2 + e3
+        total_energy = 0.0
+        for zone, volume in enumerate(volumes):
+            t_zone = (values[zone] + values[zone + 1]) / 2
+            total_energy += volume * rho * c * (t_zone - 12)  # Referenz-Temp 12 °C
 
         return total_energy / 3600
 
@@ -173,7 +168,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
                 device_info=device_info,
                 host=host,
                 name=key,
-                source_keys=cfg["source_keys"],
+                source_keys=STORAGE_TYPE_CONFIG.get(storage_type, {}).get("source_keys", cfg["source_keys"]),
                 unit=cfg["unit"],
                 device_class=cfg["device_class"],
                 state_class=cfg["state_class"],
