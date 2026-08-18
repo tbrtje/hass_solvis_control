@@ -54,6 +54,28 @@ from custom_components.solvis_control.const import (
 _LOGGER = logging.getLogger(__name__)
 
 
+def parse_solvis_version(raw) -> str | None:
+    """
+    Convert a raw version register value (32770 / 32771) into a "X.YY.ZZ" string.
+
+    Returns None if the device does not report a usable version. Some models, e.g. the
+    SolvisLeo, answer the version registers with 0 instead of a version number.
+    """
+    if raw is None:
+        return None
+
+    # The registers are read as signed INT16, but a version is unsigned: everything
+    # from 3.28.00 on exceeds 32767 and wraps negative. Undo that wrap before parsing.
+    if isinstance(raw, (int, float)) and not isinstance(raw, bool) and raw < 0:
+        raw = int(raw) + 65536
+
+    raw_str = str(raw)
+    if len(raw_str) != 5 or not raw_str.isdigit():
+        return None
+
+    return f"{raw_str[0]}.{raw_str[1:3]}.{raw_str[3:5]}"
+
+
 def generate_device_info(entry: ConfigEntry, host: str, name: str) -> DeviceInfo:
     """Generate device info."""
     _LOGGER.debug(f"Generating device info for {host}")

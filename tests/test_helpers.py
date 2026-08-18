@@ -369,6 +369,23 @@ def test_process_coordinator_data_valid():
 # # # Tests for should_skip_register # # #
 
 
+@pytest.mark.parametrize(
+    "raw, expected",
+    [
+        (32016, "3.20.16"),  # documented current firmware
+        (10203, "1.02.03"),
+        (32767, "3.27.67"),  # largest value an INT16 read returns unharmed
+        (33001 - 65536, "3.30.01"),  # wrapped by the signed read
+        (0, None),  # SolvisLeo: register present but not populated
+        (None, None),
+        (1234, None),  # too short
+        ("ab.cd", None),  # right length, not a number
+    ],
+)
+def test_parse_solvis_version(raw, expected):
+    assert helpers.parse_solvis_version(raw) == expected
+
+
 def test_should_skip_register_unsupported_on_storage_type():
     """digin_error (33045) does not exist on a SolvisLeo 180 and must never be polled."""
     entry_data = {DEVICE_VERSION: "1", CONF_OPTION_13: "SolvisLeo 180"}

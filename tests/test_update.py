@@ -4,6 +4,7 @@ Tests for Solvis Update Entity
 Version: v2.0.0
 """
 
+import logging
 import pytest
 from unittest.mock import MagicMock, patch
 
@@ -116,6 +117,68 @@ async def test_invalid_version_data(mock_solvis_update_entity_firmware):
 
     # Test with short value
     with patch("custom_components.solvis_control.entity.process_coordinator_data", return_value=(True, 1234, {})):
+        entity._handle_coordinator_update()
+        assert entity.installed_version is None
+        assert entity.latest_version is None
+
+
+@pytest.mark.asyncio
+async def test_version_zero_is_not_a_warning(mock_solvis_update_entity_firmware, caplog):
+    """A SolvisLeo answers the version registers with 0; that is expected, not a warning."""
+    entity = mock_solvis_update_entity_firmware
+
+    with patch("custom_components.solvis_control.entity.process_coordinator_data", return_value=(True, 0, {})):
+        with caplog.at_level(logging.WARNING, logger="custom_components.solvis_control.update"):
+            entity._handle_coordinator_update()
+
+    assert entity.installed_version is None
+    assert entity.latest_version is None
+    assert caplog.records == []
+
+
+@pytest.mark.asyncio
+async def test_version_int16_overflow(mock_solvis_update_entity_firmware):
+    """Firmware >= 3.28.00 exceeds INT16 and arrives negative; it must still parse."""
+    entity = mock_solvis_update_entity_firmware
+    test_value = 33001 - 65536  # -32535, i.e. "3.30.01" wrapped by the signed read
+
+    with (
+        patch("custom_components.solvis_control.entity.process_coordinator_data", return_value=(True, test_value, {})),
+        patch("custom_components.solvis_control.update.dr.async_get") as mock_async_get,
+    ):
+        mock_device_registry = MagicMock()
+        mock_device = MagicMock()
+        mock_device.id = "test_device_id"
+        mock_async_get.return_value = mock_device_registry
+        mock_device_registry.async_get_device.return_value = mock_device
+
+        entity._handle_coordinator_update()
+
+        assert entity.installed_version == "3.30.01"
+        mock_device_registry.async_update_device.assert_called_once_with(mock_device.id, sw_version="3.30.01")
+
+
+@pytest.mark.asyncio
+async def test_version_boundary_still_parses(mock_solvis_update_entity_firmware):
+    """32767 is the largest value a signed read returns unharmed: version 3.27.67."""
+    entity = mock_solvis_update_entity_firmware
+
+    with (
+        patch("custom_components.solvis_control.entity.process_coordinator_data", return_value=(True, 32767, {})),
+        patch("custom_components.solvis_control.update.dr.async_get") as mock_async_get,
+    ):
+        mock_async_get.return_value = MagicMock()
+        entity._handle_coordinator_update()
+
+        assert entity.installed_version == "3.27.67"
+
+
+@pytest.mark.asyncio
+async def test_version_non_numeric_rejected(mock_solvis_update_entity_firmware):
+    """A 5-character non-numeric value must not be sliced into a bogus version."""
+    entity = mock_solvis_update_entity_firmware
+
+    with patch("custom_components.solvis_control.entity.process_coordinator_data", return_value=(True, "ab.cd", {})):
         entity._handle_coordinator_update()
         assert entity.installed_version is None
         assert entity.latest_version is None

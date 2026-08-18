@@ -15,7 +15,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN, LATEST_SW_VERSION
 from .coordinator import SolvisModbusCoordinator
-from .utils.helpers import async_setup_solvis_entities
+from .utils.helpers import async_setup_solvis_entities, parse_solvis_version
 from .entity import SolvisEntity
 
 _LOGGER = logging.getLogger(__name__)
@@ -72,14 +72,18 @@ class SolvisUpdateEntity(SolvisEntity, UpdateEntity):
 
     def _update_value(self, value, extra_attrs) -> None:
         """Update state from coordinator data."""
-        if value is None or len(str(value)) != 5:
-            _LOGGER.warning("Couldn't process version string to Version.")
+        installed_version = parse_solvis_version(value)
+
+        if installed_version is None:
+            if value == 0:
+                # Known and expected on models that leave the version registers empty
+                _LOGGER.debug(f"[{self._response_key}] Device does not report a version: register returns 0.")
+            else:
+                _LOGGER.warning(f"[{self._response_key}] Couldn't process version string to Version. Expected 5 digits (X.YY.ZZ), got: {value!r}")
             self._attr_installed_version = None
             self._attr_latest_version = None
             return
 
-        value_str = str(value)
-        installed_version = f"{value_str[0]}.{value_str[1:3]}.{value_str[3:5]}"
         self._attr_installed_version = installed_version
 
         device_registry = dr.async_get(self.hass)

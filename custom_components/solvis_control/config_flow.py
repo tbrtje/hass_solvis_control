@@ -21,7 +21,7 @@ from homeassistant.helpers import selector
 from homeassistant.helpers.typing import ConfigType
 from homeassistant.helpers.device_registry import format_mac
 
-from .utils.helpers import fetch_modbus_value, get_mac
+from .utils.helpers import fetch_modbus_value, get_mac, parse_solvis_version
 from .const import (
     CONF_HOST,
     CONF_NAME,
@@ -286,11 +286,15 @@ class SolvisConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 )
 
             else:
-                versionsc = str(versionsc_raw)
-                versionnbg = str(versionnbg_raw)
+                versionsc = parse_solvis_version(versionsc_raw)
+                versionnbg = parse_solvis_version(versionnbg_raw)
                 _LOGGER.debug(f"Solvis hardware version: {versionnbg} / Solvis software version: {versionsc}")
-                user_input["VERSIONSC"] = f"{versionsc[0]}.{versionsc[1:3]}.{versionsc[3:5]}"
-                user_input["VERSIONNBG"] = f"{versionnbg[0]}.{versionnbg[1:3]}.{versionnbg[3:5]}"
+                # Devices that do not report a version (e.g. SolvisLeo answers 0) keep the
+                # keys unset, so no bogus version is written to the device registry.
+                if versionsc is not None:
+                    user_input["VERSIONSC"] = versionsc
+                if versionnbg is not None:
+                    user_input["VERSIONNBG"] = versionnbg
 
             return await self.async_step_device()  # next step: device
 
@@ -473,11 +477,15 @@ class SolvisOptionsFlow(config_entries.OptionsFlow):
                 )
 
             else:
-                versionsc = str(versionsc_raw)
-                versionnbg = str(versionnbg_raw)
+                versionsc = parse_solvis_version(versionsc_raw)
+                versionnbg = parse_solvis_version(versionnbg_raw)
                 _LOGGER.debug(f"Solvis hardware version: {versionnbg} / Solvis software version: {versionsc}")
-                user_input["VERSIONSC"] = f"{versionsc[0]}.{versionnbg[1:3]}.{versionsc[3:5]}"
-                user_input["VERSIONNBG"] = f"{versionnbg[0]}.{versionnbg[1:3]}.{versionnbg[3:5]}"
+                # Devices that do not report a version (e.g. SolvisLeo answers 0) keep the
+                # keys unset, so no bogus version is written to the device registry.
+                if versionsc is not None:
+                    user_input["VERSIONSC"] = versionsc
+                if versionnbg is not None:
+                    user_input["VERSIONNBG"] = versionnbg
 
             return await self.async_step_device()
 
