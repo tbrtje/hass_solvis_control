@@ -42,6 +42,11 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
+# Modbus exception code 2: the device does not implement this address at all.
+# Not every model implements every register of the SC3 GLT map, so this is a
+# property of the device rather than a fault, and must not fail the whole poll.
+MODBUS_ILLEGAL_DATA_ADDRESS = 2
+
 
 class SolvisModbusCoordinator(DataUpdateCoordinator):
     """Coordinates data updates from a Solvis device via Modbus."""
@@ -55,6 +60,7 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
             update_interval=timedelta(seconds=entry.data.get(POLL_RATE_HIGH)),
         )
         self.config_entry = entry  # !
+        self._unsupported_addresses: set[int] = set()
         self.host = entry.data.get(CONF_HOST)
         self.port = entry.data.get(CONF_PORT)
         self.option_hkr2 = entry.data.get(CONF_OPTION_1)
@@ -115,6 +121,11 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
                 _LOGGER.debug(f"[{register.name} | {register.address}] Skipping register based on configuration and device version.")
                 continue
 
+            # skip registers this device already answered with ILLEGAL DATA ADDRESS
+            if register.address in self._unsupported_addresses:
+                _LOGGER.debug(f"[{register.name} | {register.address}] Skipping register: device reported it as not implemented.")
+                continue
+
             # Calculation for passing entites, which are in SLOW_POLL_GROUP or STANDARD_POLL_GROUP
             if register.poll_rate == 1:  # SLOW_POLL_GROUP
                 if register.poll_time > 0:
@@ -150,13 +161,13 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
             try:
                 # read input registers
                 if register.register == 1:
-                    _LOGGER.debug(f"[{register.name} | {register.address}] Reading input register...")
-                    result = await self.modbus.read_input_registers(address=register.address, count=1)
+                    _LOGGER.debug(f"[{register.name} | {register.address}] Reading {register.count} input register(s)...")
+                    result = await self.modbus.read_input_registers(address=register.address, count=register.count)
 
                 # read holding registers
                 else:
-                    _LOGGER.debug(f"[{register.name} | {register.address}] Reading holding register...")
-                    result = await self.modbus.read_holding_registers(address=register.address, count=1)
+                    _LOGGER.debug(f"[{register.name} | {register.address}] Reading {register.count} holding register(s)...")
+                    result = await self.modbus.read_holding_registers(address=register.address, count=register.count)
 
                 # slow down on SC2-devices
                 if int(self.supported_version) == 2:
@@ -169,6 +180,12 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
 
             # check for error response
             if not result or hasattr(result, "isError") and result.isError():
+                if getattr(result, "exception_code", None) == MODBUS_ILLEGAL_DATA_ADDRESS:
+                    # Remember it and carry on: one register the model does not have
+                    # must not take every other entity down with it.
+                    self._unsupported_addresses.add(register.address)
+                    _LOGGER.warning(f"[{register.name} | {register.address}] Register not implemented by this device, skipping it from now on.")
+                    continue
                 _LOGGER.error(f"[{register.name} | {register.address}] Modbus error while reading register: {result}")
                 raise UpdateFailed(f"[{register.name} | {register.address}] Modbus error while reading register")
 
@@ -177,8 +194,27 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
                 _LOGGER.error(f"[{register.name} | {register.address}] Invalid Modbus response: {result}")
                 raise UpdateFailed(f"[{register.name} | {register.address}] Invalid Modbus response")
 
+            if len(result.registers) < register.count:
+                _LOGGER.error(f"[{register.name} | {register.address}] Short block read: expected {register.count} registers, got {len(result.registers)}")
+                raise UpdateFailed(f"[{register.name} | {register.address}] Short block read")
+
             # conversion
             try:
+                if register.count > 1:
+                    # pymodbus hands back raw unsigned words
+                    words = [word & 0xFFFF for word in result.registers[: register.count]]
+
+                    if register.datatype == "UINT32":
+                        # low word first, as documented in the SC3 GLT CSV
+                        raw_value = words[0] | (words[1] << 16)
+                        _LOGGER.debug(f"[{register.name} | {register.address}] UINT32 from words {words}: {raw_value}")
+                        parsed_data[register.name] = round(raw_value * register.multiplier, 2)
+                    else:
+                        _LOGGER.debug(f"[{register.name} | {register.address}] Block of {len(words)} words: {words}")
+                        parsed_data[register.name] = tuple(words)
+
+                    continue
+
                 data_from_register = self.modbus.convert_from_registers(registers=result.registers, data_type=self.modbus.DATATYPE.INT16, word_order="big")
 
                 if register.byte_swap == 1:  # little endian

@@ -1,0 +1,160 @@
+# Backlog
+
+Known issues and follow-ups that are understood but deliberately not fixed yet.
+Each entry records what was verified, so the analysis does not have to be redone.
+
+---
+
+## 1. The "skip disabled entities" check never fires
+
+**Status:** confirmed, not fixed
+**Files:** `custom_components/solvis_control/coordinator.py:146-153`
+
+The coordinator builds the registry key as `f"{DOMAIN}.{register.name}"`, i.e.
+`solvis_control.warm_water_power`. Home Assistant assigns `<platform>.<object_id>`,
+so the real id is `sensor.warm_water_power`. The lookup therefore always returns
+`None` and the check is dead code — every register is polled regardless of whether
+its entity is disabled.
+
+This is structural, not incidental: `PLATFORMS` contains only `sensor`, `number`,
+`select`, `switch`, `binary_sensor` and `update`. No platform ever produces an
+entity id prefixed with the integration domain.
+
+Verified against a real (not mocked) entity registry:
+
+```
+actual entity_id       : sensor.warm_water_power
+disabled               : True
+key used by coordinator: solvis_control.warm_water_power
+lookup result          : None
+lookup by real id      : found, disabled=True
+```
+
+The existing tests cannot catch this because `tests/conftest.py` injects a
+`dummy_entity_registry` rather than the real one.
+
+**Impact:** on a SolvisLeo 180 with no extra options, 24 of 67 polled registers are
+`enabled_by_default=False` — roughly a third of the Modbus traffic per cycle is
+spent on entities nobody sees. Devices with more options enabled poll proportionally
+more.
+
+**Suggested fix:** resolve via `unique_id` instead of guessing the entity id, since
+the integration already generates it deterministically:
+
+```python
+platform = PLATFORM_BY_INPUT_TYPE[register.input_type]
+unique_id = generate_unique_id(register.address, register.supported_version, register.name)
+entity_id = entity_registry.async_get_entity_id(platform, DOMAIN, unique_id)
+```
+
+**Caveat that must be handled:** this changes poll behaviour for *all* users, not
+just the Leo. Registers whose entity is disabled would no longer appear in
+`coordinator.data`. Harmless for ordinary entities (`process_coordinator_data`
+reports "no update"), but `SolvisDerivativeSensor` computes from `coordinator.data`
+and would silently stop working if a source register dropped out. All four current
+sources (`warm_water_buffer_temp_s1`, `storage_reference_temp_s3`,
+`heating_buffer_upper_temp_s4`, `heating_buffer_lower_temp_s9`) are
+`enabled_by_default=True`, so this only bites if a user disables a storage sensor by
+hand — but the fix should exempt derivative source registers from the skip.
+
+---
+
+## 2. Multipliers disagree with the SC3 GLT documentation
+
+**Status:** discrepancy confirmed, intentionally not changed
+**Files:** `custom_components/solvis_control/const.py:679-806`
+
+The SC3 GLT register map gives factor `0.1` for the whole `Q_*` / `P*_*` block. The
+integration uses:
+
+| Register | Address | Code | Doc | Deviation |
+| --- | --- | --- | --- | --- |
+| `Q_solar` … `Q_hk` | 33536-33541 | `multiplier=10` | `0.1` | 100× |
+| `Pth_ww` (`warm_water_power`) | 33549 | `multiplier=1` | `0.1` | 10× |
+| all other `P*_*` | — | `0.1` (default) | `0.1` | none |
+
+Not changed on purpose: these definitions reference issues #115, #173 and #314,
+which suggests they were corrected empirically against real SolvisMax hardware, and
+`unit="kWh"` may already reconcile a different documented scale. Rescaling them would
+silently rewrite every existing user's energy history.
+
+**To resolve this, we need a device that returns non-zero values for the block** so
+the true scale can be measured. It may also turn out to be model-dependent, in which
+case it belongs in a per-model configuration rather than a global multiplier.
+
+---
+
+## 3. Four registers declared as holding inside an input-register block
+
+**Status:** cosmetic inconsistency, harmless on tested hardware
+**Files:** `custom_components/solvis_control/const.py`
+
+`solar_power` (33543), `heatpump_power_output_thermal` (33544),
+`heatpump_power_input_electric` (33545) and `pv2heat_power_electric` (33548) use
+`register=2` (holding, FC3), while every other register in the same GLT block uses
+`register=1` (input, FC4).
+
+Confirmed harmless on a SolvisLeo: the device answers both function codes with a
+valid response. Worth aligning anyway, but only alongside a device test — some
+controllers may only serve one of the two.
+
+---
+
+## 4. Weekly schedules (`Wochenplan_*`) not exposed yet
+
+**Status:** design agreed, foundation built, presentation layer outstanding
+
+Six schedules at 34048, 34090, 34132, 34174, 34216, 34258 — each **42 holding
+registers** (7 days x 3 slots x start/stop), values 0-95 as a quarter-hour index
+(0 = 00:00, 95 = 23:45). Fully documented in `supported-entities.md`.
+
+**Done:** `ModbusFieldConfig.count` plus block reads in the coordinator, so one
+schedule costs a single Modbus request instead of 42. A block without a combining
+`datatype` is stored as a tuple of unsigned words — which is exactly the shape the
+schedules need.
+
+**Agreed design (not built yet):** two entities per schedule, both fed from the one
+block read, read-only for now:
+
+- `sensor.<plan>_schedule` — state = next switching time, attributes = full week
+- `binary_sensor.<plan>_active` — on while inside a window; this is what produces a
+  usable timeline in history, since HA core graphs states and ignores attributes
+
+The binary sensor must flip via `async_track_point_in_time` on the slot boundary,
+not on the poll tick, otherwise the edges are off by up to one poll interval.
+
+Gate HK2/HK3 schedules behind `conf_option` 1/2. Writing is explicitly out of scope
+for the first iteration: a bad write overwrites the user's heating programme, and it
+would need FC16 (`write_registers`), which the integration does not use today.
+
+**Unverified assumption:** that the controller answers a 42-register block read.
+Protocol-legal, but some controllers cap the block length. If it answers with
+exception code 2, the tolerant coordinator already handles it; code 3 (illegal data
+value) would still fail the poll and would need the tolerance extended.
+
+Also still unimplemented, lower value: the per-message sub-registers (`UnixZeit H/L`,
+`Par 1/2`) behind each `Meldung_N`. Only the message codes are read today.
+
+---
+
+## 5. SolvisLeo 180: energy/power block reports zero
+
+**Status:** device-side, cause not yet established
+
+On a SolvisLeo 180 the entire `0x83xx` block (`Q_*`, `P*_*`) returns a clean `0`
+while the Solvis portal shows live values. Verified from the PDUs that this is not
+an integration bug: the device answers `registers=[0]` with a valid, non-error
+response on **both** function codes (FC4 for 33537/33549/33550, FC3 for
+33544/33545). Temperatures and pump outputs on the same device read correctly, and
+the heat pump was demonstrably running (charging pump A2 at 100%).
+
+Two open leads:
+
+1. The controller may only populate the block once its heat-metering function is
+   enabled in the SC3 menu — a device setting, no code change needed.
+2. The values may live in the `0x86xx` block instead. `HK_Pact` (34320, 0.1 kW) is
+   the direct candidate; those registers were added but are gated behind
+   `conf_option=5` (heat meter) and are still unverified on hardware.
+
+A throwaway probe that reads every documented address on both function codes and
+prints the non-zero ones was used for this analysis and can be recreated as needed.

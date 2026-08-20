@@ -12,8 +12,8 @@
 | 3855      | Analog Out 4 Status                            | 1.1.0              | 0         | 0            |                           | 0   | 3      |                          |
 | 3860      | Analog Out 5 Status                            | 1.1.0              | 0         | 0            |                           | 0   | 3      |                          |
 | 3865      | Analog Out 6 Status                            | 1.1.0              | 0         | 0            |                           | 0   | 3      |                          |
-| 32768     | Unix Timestamp high                            |                    |           |              |                           |     |        |                          |
-| 32769     | Unix Timestamp low                             |                    |           |              |                           |     |        |                          |
+| 32768     | Unix Timestamp low                             | 2.2.0              | 0         | 0            | SC3 GLT, 32 Bit ab hier   |     |        | s                        |
+| 32769     | Unix Timestamp high                            |                    |           |              | Teil des Blocks ab 32768  |     |        |                          |
 | 32770     | Version SC3                                    | 0.9                | 0         | 0            |                           |     |        |                          |
 | 32771     | Version NBG                                    | 0.9                | 0         | 0            |                           |     |        |                          |
 | 33024     | Temp S1                                        | 0.1                | 0         | 0            |                           |     | 0,1 °C |                          |
@@ -34,9 +34,9 @@
 | 33039     | Temp S16                                       | 1.0                | 0         | 2            |                           |     | 0,1 °C |                          |
 | 33040     | Volumenstrom S17                               | 0.9                | 0         | 3            |                           |     | l/min  |                          |
 | 33041     | Volumenstrom S18                               | 0.1                | 0         | 0            |                           |     | l/min  |                          |
-| 33042     | Analog In 1                                    |                    |           |              |                           |     |        | 0,1 V                    |
-| 33043     | Analog In 2                                    |                    |           |              |                           |     |        | 0,1 V                    |
-| 33044     | Analog In 3                                    |                    |           |              |                           |     |        | 0,1 V                    |
+| 33042     | Analog In 1                                    | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        | 0,01 V                   |
+| 33043     | Analog In 2                                    | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        | 0,01 V                   |
+| 33044     | Analog In 3                                    | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        | 0,01 V                   |
 | 33045     | DigIn Störungen                                | 1.1.1              | 0         | 0            |                           |     |        |                          |
 | 33280     | Ausgang A1                                     | 0.1                | 4         | 0            |                           | 0   | 100    | 100                      |
 | 33281     | Ausgang A2                                     | 0.1                | 4         | 4            | #53                       | 0   | 200    | 200                      |
@@ -69,64 +69,86 @@
 | ~~33540~~ | ~~Ionisationsstrom~~                           | ~~0.9~~            | ~~0~~     | ~~0~~        | #173                      |     |        | ~~mA~~                   |
 | 33540     | Wärmemenge Warmwasser                          | 2.0.0              | 0         | 0            | #173                      |     |        | 10 kWh                   |
 | 33541     | Wärmemenge Heizkreise                          | 2.0.0              | 0         | 0            | #173, SC3 only (#264) |     |        | 10 kWh                   |
+| 33542     | Wärmemenge Kühlung                             | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        | kWh                      |
 | 33546     | aktuelle Leistung Wärmeerzeuger 2 (thermisch)  | 2.0.0              | 0         | 0            | #173, SC3 only (#264) |     |        | 0,1 kW                   |
 | 33547     | aktuelle Leistung Wärmeerzeuger 2 (elektrisch) | 2.0.0              | 0         | 0            | #173, SC3 only (#264) |     |        | 0,1 kW                   |
 | 33548     | PV2Heat Leistung elektrisch                    | 2.0.0              | 0         | 0            | #55, #173                 |     |        | 0,1 kW                   |
 | 33549     | aktuelle Leistung Warmwasser (thermisch)       | 2.0.0              | 0         | 0            | #173, SC3 only (#264) |     |        | 0,1 kW                   |
 | 33550     | Wärmemengenzähler Leistung                     | 2.0.0              | 0         | 5            | #121                      |     |        | 0,1 kW                   |
+| 33551     | Kühlleistung                                   | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        | kW                       |
 | 33552     | Laufzeit Solarpumpe 1                          | 2.0.0              | 0         | 3            | #173, SC3 only (#264) |     |        | h                        |
 | 33553     | Laufzeit Solarpumpe 2                          | 2.0.0              | 0         | 3            | #173, SC3 only (#264) |     |        | h                        |
+| 33554     | Laufzeit Wärmepumpe                            | 2.2.0              | 0         | 4            | SC3 GLT (SolvisLeo)       |     |        | h                        |
+| 33555     | Laufzeit Wärmeerzeuger 2                       | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        | h                        |
+| 33556     | Laufzeit PV2Heat                               | 2.2.0              | 0         | 8            | SC3 GLT (SolvisLeo)       |     |        | h                        |
 | 33792     | Meldungen Anzahl                               | 2.0.0              | 0         | 0            | #173                      |     |        |                          |
-| 33793     | Meldung 1 Code                                 |                    |           |              |                           |     |        |                          |
+| 33793     | Meldung 1 Code                                 | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        |                          |
 | 33796     | Meldung 1 Par 1                                |                    |           |              |                           |     |        |                          |
 | 33797     | Meldung 1 Par 2                                |                    |           |              |                           |     |        |                          |
 | 33794     | Meldung 1 UnixZeit H                           |                    |           |              |                           |     |        |                          |
 | 33795     | Meldung 1 UnixZeit L                           |                    |           |              |                           |     |        |                          |
-| 33838     | Meldung 10 Code                                |                    |           |              |                           |     |        |                          |
+| 33838     | Meldung 10 Code                                | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        |                          |
 | 33841     | Meldung 10 Par 1                               |                    |           |              |                           |     |        |                          |
 | 33842     | Meldung 10 Par 2                               |                    |           |              |                           |     |        |                          |
 | 33839     | Meldung 10 UnixZeit H                          |                    |           |              |                           |     |        |                          |
 | 33840     | Meldung 10 UnixZeit L                          |                    |           |              |                           |     |        |                          |
-| 33798     | Meldung 2 Code                                 |                    |           |              |                           |     |        |                          |
+| 33798     | Meldung 2 Code                                 | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        |                          |
 | 33801     | Meldung 2 Par 1                                |                    |           |              |                           |     |        |                          |
 | 33802     | Meldung 2 Par 2                                |                    |           |              |                           |     |        |                          |
 | 33799     | Meldung 2 UnixZeit H                           |                    |           |              |                           |     |        |                          |
 | 33800     | Meldung 2 UnixZeit L                           |                    |           |              |                           |     |        |                          |
-| 33803     | Meldung 3 Code                                 |                    |           |              |                           |     |        |                          |
+| 33803     | Meldung 3 Code                                 | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        |                          |
 | 33806     | Meldung 3 Par 1                                |                    |           |              |                           |     |        |                          |
 | 33807     | Meldung 3 Par 2                                |                    |           |              |                           |     |        |                          |
 | 33804     | Meldung 3 UnixZeit H                           |                    |           |              |                           |     |        |                          |
 | 33805     | Meldung 3 UnixZeit L                           |                    |           |              |                           |     |        |                          |
-| 33808     | Meldung 4 Code                                 |                    |           |              |                           |     |        |                          |
+| 33808     | Meldung 4 Code                                 | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        |                          |
 | 33811     | Meldung 4 Par 1                                |                    |           |              |                           |     |        |                          |
 | 33812     | Meldung 4 Par 2                                |                    |           |              |                           |     |        |                          |
 | 33809     | Meldung 4 UnixZeit H                           |                    |           |              |                           |     |        |                          |
 | 33810     | Meldung 4 UnixZeit L                           |                    |           |              |                           |     |        |                          |
-| 33813     | Meldung 5 Code                                 |                    |           |              |                           |     |        |                          |
+| 33813     | Meldung 5 Code                                 | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        |                          |
 | 33816     | Meldung 5 Par 1                                |                    |           |              |                           |     |        |                          |
 | 33817     | Meldung 5 Par 2                                |                    |           |              |                           |     |        |                          |
 | 33814     | Meldung 5 UnixZeit H                           |                    |           |              |                           |     |        |                          |
 | 33815     | Meldung 5 UnixZeit L                           |                    |           |              |                           |     |        |                          |
-| 33818     | Meldung 6 Code                                 |                    |           |              |                           |     |        |                          |
+| 33818     | Meldung 6 Code                                 | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        |                          |
 | 33821     | Meldung 6 Par 1                                |                    |           |              |                           |     |        |                          |
 | 33822     | Meldung 6 Par 2                                |                    |           |              |                           |     |        |                          |
 | 33819     | Meldung 6 UnixZeit H                           |                    |           |              |                           |     |        |                          |
 | 33820     | Meldung 6 UnixZeit L                           |                    |           |              |                           |     |        |                          |
-| 33823     | Meldung 7 Code                                 |                    |           |              |                           |     |        |                          |
+| 33823     | Meldung 7 Code                                 | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        |                          |
 | 33826     | Meldung 7 Par 1                                |                    |           |              |                           |     |        |                          |
 | 33827     | Meldung 7 Par 2                                |                    |           |              |                           |     |        |                          |
 | 33824     | Meldung 7 UnixZeit H                           |                    |           |              |                           |     |        |                          |
 | 33825     | Meldung 7 UnixZeit L                           |                    |           |              |                           |     |        |                          |
-| 33828     | Meldung 8 Code                                 |                    |           |              |                           |     |        |                          |
+| 33828     | Meldung 8 Code                                 | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        |                          |
 | 33831     | Meldung 8 Par 1                                |                    |           |              |                           |     |        |                          |
 | 33832     | Meldung 8 Par 2                                |                    |           |              |                           |     |        |                          |
 | 33829     | Meldung 8 UnixZeit H                           |                    |           |              |                           |     |        |                          |
 | 33830     | Meldung 8 UnixZeit L                           |                    |           |              |                           |     |        |                          |
-| 33833     | Meldung 9 Code                                 |                    |           |              |                           |     |        |                          |
+| 33833     | Meldung 9 Code                                 | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        |                          |
 | 33836     | Meldung 9 Par 1                                |                    |           |              |                           |     |        |                          |
 | 33837     | Meldung 9 Par 2                                |                    |           |              |                           |     |        |                          |
 | 33834     | Meldung 9 UnixZeit H                           |                    |           |              |                           |     |        |                          |
 | 33835     | Meldung 9 UnixZeit L                           |                    |           |              |                           |     |        |                          |
+| 34307     | Anforderungstemperatur HKR1                    | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        | °C                       |
+| 34308     | Anforderungstemperatur HKR2                    | 2.2.0              | 0         | 1            | SC3 GLT (SolvisLeo)       |     |        | °C                       |
+| 34309     | Anforderungstemperatur HKR3                    | 2.2.0              | 0         | 2            | SC3 GLT (SolvisLeo)       |     |        | °C                       |
+| 34310     | Regelzustand HKR1                              | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        |                          |
+| 34311     | Regelzustand HKR2                              | 2.2.0              | 0         | 1            | SC3 GLT (SolvisLeo)       |     |        |                          |
+| 34312     | Regelzustand HKR3                              | 2.2.0              | 0         | 2            | SC3 GLT (SolvisLeo)       |     |        |                          |
+| 34313     | Regelzustand Mischer HKR1                      | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        |                          |
+| 34314     | Regelzustand Mischer HKR2                      | 2.2.0              | 0         | 1            | SC3 GLT (SolvisLeo)       |     |        |                          |
+| 34315     | Regelzustand Mischer HKR3                      | 2.2.0              | 0         | 2            | SC3 GLT (SolvisLeo)       |     |        |                          |
+| 34316     | Heizkreis Vorlauftemperatur (WMZ)              | 2.2.0              | 0         | 5            | SC3 GLT (SolvisLeo)       |     |        | °C                       |
+| 34317     | Heizkreis Rücklauftemperatur (WMZ)             | 2.2.0              | 0         | 5            | SC3 GLT (SolvisLeo)       |     |        | °C                       |
+| 34318     | Heizkreis Spreizung (WMZ)                      | 2.2.0              | 0         | 5            | SC3 GLT (SolvisLeo)       |     |        | K                        |
+| 34319     | Heizkreis Volumenstrom (WMZ)                   | 2.2.0              | 0         | 5            | SC3 GLT (SolvisLeo)       |     |        | l/min                    |
+| 34320     | Heizkreis Leistung (WMZ)                       | 2.2.0              | 0         | 5            | SC3 GLT (SolvisLeo)       |     |        | kW                       |
+| 34560     | Smart Energy nutzbare Leistung                 | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        | W                        |
+| 34561     | Smart Energy Netzbezug                         | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        | W                        |
+| 34562     | Smart Energy Verbraucher 1 Status              | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        |                          |
 
 # Holding Register
 

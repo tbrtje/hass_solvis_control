@@ -5,6 +5,8 @@ Version: v2.1.0
 """
 
 import asyncio
+import json
+import pathlib
 import pytest
 from decimal import Decimal
 from homeassistant.helpers.entity import DeviceInfo
@@ -409,6 +411,18 @@ def test_should_skip_register_unknown_storage_type_skips_nothing():
         reg = DummyRegister(name="digin_error", address=33045, conf_option=0, supported_version=0)
 
         assert helpers.should_skip_register(entry_data, reg) is False
+
+
+@pytest.mark.parametrize("lang", ["en", "de", "it", "nl"])
+def test_every_register_has_a_translation(lang):
+    """Guard against drift: a new register without a name shows up as its raw key in the UI."""
+    platform_of = {0: "sensor", 1: "select", 2: "number", 3: "switch", 4: "binary_sensor", 5: "update"}
+    path = pathlib.Path("custom_components/solvis_control/translations") / f"{lang}.json"
+    entity = json.loads(path.read_text(encoding="utf-8"))["entity"]
+
+    missing = sorted({(platform_of[r.input_type], r.name) for r in REGISTERS if r.name not in entity.get(platform_of[r.input_type], {})})
+
+    assert not missing, f"{lang}.json is missing names for: {missing}"
 
 
 def test_unsupported_registers_exist_in_register_table():

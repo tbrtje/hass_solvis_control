@@ -549,6 +549,114 @@
 					"0":"Kurve",
 					"1":"Fix"
 				}
+			},
+			"analog_in_1":{
+				"name":"Analog In 1"
+			},
+			"analog_in_2":{
+				"name":"Analog In 2"
+			},
+			"analog_in_3":{
+				"name":"Analog In 3"
+			},
+			"cooling_energy":{
+				"name":"Kühlenergie"
+			},
+			"cooling_power":{
+				"name":"Kühlleistung"
+			},
+			"heatpump_runtime":{
+				"name":"Wärmepumpe Laufzeit"
+			},
+			"heat_generator_2_runtime":{
+				"name":"Wärmeerzeuger 2 Laufzeit"
+			},
+			"pv2heat_runtime":{
+				"name":"PV2Heat Laufzeit"
+			},
+			"hkr1_demand_temp":{
+				"name":"HKR1 Anforderungstemperatur"
+			},
+			"hkr2_demand_temp":{
+				"name":"HKR2 Anforderungstemperatur"
+			},
+			"hkr3_demand_temp":{
+				"name":"HKR3 Anforderungstemperatur"
+			},
+			"hkr1_control_state":{
+				"name":"HKR1 Regelzustand"
+			},
+			"hkr2_control_state":{
+				"name":"HKR2 Regelzustand"
+			},
+			"hkr3_control_state":{
+				"name":"HKR3 Regelzustand"
+			},
+			"hkr1_mixer_control_state":{
+				"name":"HKR1 Mischer Regelzustand"
+			},
+			"hkr2_mixer_control_state":{
+				"name":"HKR2 Mischer Regelzustand"
+			},
+			"hkr3_mixer_control_state":{
+				"name":"HKR3 Mischer Regelzustand"
+			},
+			"heating_circuit_flow_temp":{
+				"name":"Heizkreis Vorlauftemperatur"
+			},
+			"heating_circuit_return_temp":{
+				"name":"Heizkreis Rücklauftemperatur"
+			},
+			"heating_circuit_spread":{
+				"name":"Heizkreis Spreizung"
+			},
+			"heating_circuit_volume_flow":{
+				"name":"Heizkreis Volumenstrom"
+			},
+			"heating_circuit_power":{
+				"name":"Heizkreis Leistung"
+			},
+			"smart_energy_power_to_use":{
+				"name":"Smart Energy nutzbare Leistung"
+			},
+			"smart_energy_power_from_grid":{
+				"name":"Smart Energy Netzbezug"
+			},
+			"smart_energy_consumer_1_status":{
+				"name":"Smart Energy Verbraucher 1 Status"
+			},
+			"message_1_code":{
+				"name":"Meldung 1 Code"
+			},
+			"message_2_code":{
+				"name":"Meldung 2 Code"
+			},
+			"message_3_code":{
+				"name":"Meldung 3 Code"
+			},
+			"message_4_code":{
+				"name":"Meldung 4 Code"
+			},
+			"message_5_code":{
+				"name":"Meldung 5 Code"
+			},
+			"message_6_code":{
+				"name":"Meldung 6 Code"
+			},
+			"message_7_code":{
+				"name":"Meldung 7 Code"
+			},
+			"message_8_code":{
+				"name":"Meldung 8 Code"
+			},
+			"message_9_code":{
+				"name":"Meldung 9 Code"
+			},
+			"message_10_code":{
+				"name":"Meldung 10 Code"
+			},
+			"controller_unix_time":{
+				"name":"Regler Unixzeit"
 			}
 		},
 		"switch": {

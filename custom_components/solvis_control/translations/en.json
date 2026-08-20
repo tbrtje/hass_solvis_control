@@ -549,6 +549,114 @@
 					"0":"Heating curve",
 					"1":"Fixed"
 				}
+			},
+			"analog_in_1":{
+				"name":"Analog in 1"
+			},
+			"analog_in_2":{
+				"name":"Analog in 2"
+			},
+			"analog_in_3":{
+				"name":"Analog in 3"
+			},
+			"cooling_energy":{
+				"name":"Cooling energy"
+			},
+			"cooling_power":{
+				"name":"Cooling power"
+			},
+			"heatpump_runtime":{
+				"name":"Heat pump runtime"
+			},
+			"heat_generator_2_runtime":{
+				"name":"Heat generator 2 runtime"
+			},
+			"pv2heat_runtime":{
+				"name":"PV2Heat runtime"
+			},
+			"hkr1_demand_temp":{
+				"name":"HKR1 Demand temperature"
+			},
+			"hkr2_demand_temp":{
+				"name":"HKR2 Demand temperature"
+			},
+			"hkr3_demand_temp":{
+				"name":"HKR3 Demand temperature"
+			},
+			"hkr1_control_state":{
+				"name":"HKR1 Control state"
+			},
+			"hkr2_control_state":{
+				"name":"HKR2 Control state"
+			},
+			"hkr3_control_state":{
+				"name":"HKR3 Control state"
+			},
+			"hkr1_mixer_control_state":{
+				"name":"HKR1 Mixer control state"
+			},
+			"hkr2_mixer_control_state":{
+				"name":"HKR2 Mixer control state"
+			},
+			"hkr3_mixer_control_state":{
+				"name":"HKR3 Mixer control state"
+			},
+			"heating_circuit_flow_temp":{
+				"name":"Heating circuit supply temperature"
+			},
+			"heating_circuit_return_temp":{
+				"name":"Heating circuit return temperature"
+			},
+			"heating_circuit_spread":{
+				"name":"Heating circuit spread"
+			},
+			"heating_circuit_volume_flow":{
+				"name":"Heating circuit volume flow"
+			},
+			"heating_circuit_power":{
+				"name":"Heating circuit power"
+			},
+			"smart_energy_power_to_use":{
+				"name":"Smart energy usable power"
+			},
+			"smart_energy_power_from_grid":{
+				"name":"Smart energy grid power"
+			},
+			"smart_energy_consumer_1_status":{
+				"name":"Smart energy consumer 1 status"
+			},
+			"message_1_code":{
+				"name":"Message 1 code"
+			},
+			"message_2_code":{
+				"name":"Message 2 code"
+			},
+			"message_3_code":{
+				"name":"Message 3 code"
+			},
+			"message_4_code":{
+				"name":"Message 4 code"
+			},
+			"message_5_code":{
+				"name":"Message 5 code"
+			},
+			"message_6_code":{
+				"name":"Message 6 code"
+			},
+			"message_7_code":{
+				"name":"Message 7 code"
+			},
+			"message_8_code":{
+				"name":"Message 8 code"
+			},
+			"message_9_code":{
+				"name":"Message 9 code"
+			},
+			"message_10_code":{
+				"name":"Message 10 code"
+			},
+			"controller_unix_time":{
+				"name":"Controller unix time"
 			}
 		},
 		"switch": {

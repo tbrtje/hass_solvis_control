@@ -86,6 +86,162 @@ async def test_async_update_data_skip_poll_rate(dummy_coordinator, monkeypatch):
 
 
 @pytest.mark.asyncio
+async def test_block_read_uint32_uses_csv_word_order(dummy_coordinator, monkeypatch):
+    """32768 is the low word, 32769 the high word (order per the SC3 GLT CSV)."""
+    reg = DummyRegister(name="controller_unix_time", address=32768, conf_option=0, supported_version=1, poll_rate=0, poll_time=0, reg=1, multiplier=1)
+    reg.count = 2
+    reg.datatype = "UINT32"
+    monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [reg])
+
+    # 1755028224 = 0x689B9B00 -> low word 0x9B00, high word 0x689B
+    requested = {}
+
+    async def read(address, count=1, **kwargs):
+        requested["address"], requested["count"] = address, count
+        return DummyModbusResponse([0x9B00, 0x689B])
+
+    dummy_coordinator.modbus.read_input_registers = read
+
+    data = await dummy_coordinator._async_update_data()
+
+    assert requested == {"address": 32768, "count": 2}  # one request, not two
+    assert data["controller_unix_time"] == 1755028224  # low word first
+    # die vertauschte Reihenfolge waere ein voellig anderer Zeitpunkt
+    assert data["controller_unix_time"] != (0x9B00 << 16) | 0x689B
+
+
+@pytest.mark.asyncio
+async def test_block_read_without_datatype_keeps_raw_words(dummy_coordinator, monkeypatch):
+    """A block without a combining datatype is kept as unsigned words (weekly schedules)."""
+    reg = DummyRegister(name="schedule", address=34048, conf_option=0, supported_version=1, poll_rate=0, poll_time=0, reg=2, multiplier=1)
+    reg.count = 42
+    monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [reg])
+
+    words = list(range(42))
+
+    async def read(address, count=1, **kwargs):
+        assert count == 42
+        return DummyModbusResponse(words)
+
+    dummy_coordinator.modbus.read_holding_registers = read
+
+    data = await dummy_coordinator._async_update_data()
+
+    assert data["schedule"] == tuple(words)
+
+
+@pytest.mark.asyncio
+async def test_short_block_read_fails_loudly(dummy_coordinator, monkeypatch):
+    """A truncated block must not be silently interpreted as a valid value."""
+    reg = DummyRegister(name="controller_unix_time", address=32768, conf_option=0, supported_version=1, poll_rate=0, poll_time=0, reg=1, multiplier=1)
+    reg.count = 2
+    reg.datatype = "UINT32"
+    monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [reg])
+
+    async def read(address, count=1, **kwargs):
+        return DummyModbusResponse([0x9B00])  # only one word came back
+
+    dummy_coordinator.modbus.read_input_registers = read
+
+    with pytest.raises(UpdateFailed):
+        await dummy_coordinator._async_update_data()
+
+
+@pytest.mark.asyncio
+async def test_single_register_still_reads_count_one(dummy_coordinator, patch_registers):
+    """The default path must be untouched: count=1, signed INT16."""
+    requested = {}
+    real = dummy_coordinator.modbus.read_input_registers
+
+    async def read(address, count=1, **kwargs):
+        requested["count"] = count
+        return await real(address=address, count=count, **kwargs)
+
+    dummy_coordinator.modbus.read_input_registers = read
+
+    data = await dummy_coordinator._async_update_data()
+
+    assert requested["count"] == 1
+    assert data["dummy_sensor"] == 123
+
+
+class IllegalAddressResponse:
+    """Mimics pymodbus ExceptionResponse for code 2 (ILLEGAL DATA ADDRESS)."""
+
+    exception_code = 2
+    registers = []
+
+    def isError(self):
+        return True
+
+
+@pytest.mark.asyncio
+async def test_illegal_data_address_does_not_fail_update(dummy_coordinator, patch_registers, monkeypatch):
+    """A register the device does not implement must not take the whole poll down."""
+    good = DummyRegister(name="good_sensor", address=100, conf_option=0, supported_version=1, poll_rate=0, poll_time=0, reg=1, multiplier=1.0)
+    missing = DummyRegister(name="missing_sensor", address=33045, conf_option=0, supported_version=1, poll_rate=0, poll_time=0, reg=1, multiplier=1.0)
+    monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [missing, good])
+
+    real_read = dummy_coordinator.modbus.read_input_registers
+
+    async def read(address, count=1, **kwargs):
+        if address == 33045:
+            return IllegalAddressResponse()
+        return await real_read(address=address, count=count, **kwargs)
+
+    dummy_coordinator.modbus.read_input_registers = read
+
+    data = await dummy_coordinator._async_update_data()
+
+    assert "good_sensor" in data  # the healthy register still made it through
+    assert "missing_sensor" not in data
+    assert 33045 in dummy_coordinator._unsupported_addresses
+
+
+@pytest.mark.asyncio
+async def test_illegal_data_address_is_not_retried(dummy_coordinator, monkeypatch):
+    """Once rejected, the address must not be requested again."""
+    missing = DummyRegister(name="missing_sensor", address=33045, conf_option=0, supported_version=1, poll_rate=0, poll_time=0, reg=1, multiplier=1.0)
+    monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [missing])
+
+    attempts = []
+
+    async def read(address, count=1, **kwargs):
+        attempts.append(address)
+        return IllegalAddressResponse()
+
+    dummy_coordinator.modbus.read_input_registers = read
+
+    await dummy_coordinator._async_update_data()
+    await dummy_coordinator._async_update_data()
+
+    assert attempts == [33045]  # asked exactly once, never again
+
+
+@pytest.mark.asyncio
+async def test_other_modbus_errors_still_fail_update(dummy_coordinator, monkeypatch):
+    """Only ILLEGAL DATA ADDRESS is tolerated; other error responses must still raise."""
+
+    class OtherError:
+        exception_code = 4  # SLAVE DEVICE FAILURE
+        registers = []
+
+        def isError(self):
+            return True
+
+    reg = DummyRegister(name="broken", address=100, conf_option=0, supported_version=1, poll_rate=0, poll_time=0, reg=1, multiplier=1.0)
+    monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [reg])
+
+    async def read(address, count=1, **kwargs):
+        return OtherError()
+
+    dummy_coordinator.modbus.read_input_registers = read
+
+    with pytest.raises(UpdateFailed):
+        await dummy_coordinator._async_update_data()
+
+
+@pytest.mark.asyncio
 async def test_async_update_data_invalid_response(dummy_coordinator, monkeypatch):
     dummy_register = DummyRegister(
         name="invalid_sensor",

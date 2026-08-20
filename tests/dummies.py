@@ -176,6 +176,8 @@ class DummyRegister:
         multiplier=1.0,
         absolute_value=False,
         byte_swap=False,
+        count=1,
+        datatype="INT16",
     ):
         self.name = name
         self.address = address
@@ -184,6 +186,8 @@ class DummyRegister:
         self.poll_rate = poll_rate
         self.poll_time = poll_time
         self.register = reg
+        self.count = count
+        self.datatype = datatype
         self.multiplier = multiplier
         self.absolute_value = absolute_value
         self.byte_swap = byte_swap

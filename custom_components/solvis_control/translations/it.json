@@ -549,6 +549,114 @@
 					"0":"curva",
 					"1":"fissa"
 				}
+			},
+			"analog_in_1":{
+				"name":"Ingresso analogico 1"
+			},
+			"analog_in_2":{
+				"name":"Ingresso analogico 2"
+			},
+			"analog_in_3":{
+				"name":"Ingresso analogico 3"
+			},
+			"cooling_energy":{
+				"name":"Energia di raffreddamento"
+			},
+			"cooling_power":{
+				"name":"Potenza di raffreddamento"
+			},
+			"heatpump_runtime":{
+				"name":"Ore di funzionamento pompa di calore"
+			},
+			"heat_generator_2_runtime":{
+				"name":"Ore di funzionamento generatore 2"
+			},
+			"pv2heat_runtime":{
+				"name":"Ore di funzionamento PV2Heat"
+			},
+			"hkr1_demand_temp":{
+				"name":"HKR1 Temperatura richiesta"
+			},
+			"hkr2_demand_temp":{
+				"name":"HKR2 Temperatura richiesta"
+			},
+			"hkr3_demand_temp":{
+				"name":"HKR3 Temperatura richiesta"
+			},
+			"hkr1_control_state":{
+				"name":"HKR1 Stato di regolazione"
+			},
+			"hkr2_control_state":{
+				"name":"HKR2 Stato di regolazione"
+			},
+			"hkr3_control_state":{
+				"name":"HKR3 Stato di regolazione"
+			},
+			"hkr1_mixer_control_state":{
+				"name":"HKR1 Stato di regolazione miscelatore"
+			},
+			"hkr2_mixer_control_state":{
+				"name":"HKR2 Stato di regolazione miscelatore"
+			},
+			"hkr3_mixer_control_state":{
+				"name":"HKR3 Stato di regolazione miscelatore"
+			},
+			"heating_circuit_flow_temp":{
+				"name":"Temperatura di mandata circuito"
+			},
+			"heating_circuit_return_temp":{
+				"name":"Temperatura di ritorno circuito"
+			},
+			"heating_circuit_spread":{
+				"name":"Differenziale circuito"
+			},
+			"heating_circuit_volume_flow":{
+				"name":"Portata circuito"
+			},
+			"heating_circuit_power":{
+				"name":"Potenza circuito"
+			},
+			"smart_energy_power_to_use":{
+				"name":"Smart Energy potenza utilizzabile"
+			},
+			"smart_energy_power_from_grid":{
+				"name":"Smart Energy prelievo dalla rete"
+			},
+			"smart_energy_consumer_1_status":{
+				"name":"Smart Energy stato utenza 1"
+			},
+			"message_1_code":{
+				"name":"Messaggio 1 codice"
+			},
+			"message_2_code":{
+				"name":"Messaggio 2 codice"
+			},
+			"message_3_code":{
+				"name":"Messaggio 3 codice"
+			},
+			"message_4_code":{
+				"name":"Messaggio 4 codice"
+			},
+			"message_5_code":{
+				"name":"Messaggio 5 codice"
+			},
+			"message_6_code":{
+				"name":"Messaggio 6 codice"
+			},
+			"message_7_code":{
+				"name":"Messaggio 7 codice"
+			},
+			"message_8_code":{
+				"name":"Messaggio 8 codice"
+			},
+			"message_9_code":{
+				"name":"Messaggio 9 codice"
+			},
+			"message_10_code":{
+				"name":"Messaggio 10 codice"
+			},
+			"controller_unix_time":{
+				"name":"Ora unix del regolatore"
 			}
 		},
 		"switch": {

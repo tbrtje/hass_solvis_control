@@ -549,6 +549,114 @@
 					"0":"Curve",
 					"1":"Vast"
 				}
+			},
+			"analog_in_1":{
+				"name":"Analoge ingang 1"
+			},
+			"analog_in_2":{
+				"name":"Analoge ingang 2"
+			},
+			"analog_in_3":{
+				"name":"Analoge ingang 3"
+			},
+			"cooling_energy":{
+				"name":"Koelenergie"
+			},
+			"cooling_power":{
+				"name":"Koelvermogen"
+			},
+			"heatpump_runtime":{
+				"name":"Warmtepomp bedrijfsuren"
+			},
+			"heat_generator_2_runtime":{
+				"name":"Warmteopwekker 2 bedrijfsuren"
+			},
+			"pv2heat_runtime":{
+				"name":"PV2Heat bedrijfsuren"
+			},
+			"hkr1_demand_temp":{
+				"name":"HKR1 Gevraagde temperatuur"
+			},
+			"hkr2_demand_temp":{
+				"name":"HKR2 Gevraagde temperatuur"
+			},
+			"hkr3_demand_temp":{
+				"name":"HKR3 Gevraagde temperatuur"
+			},
+			"hkr1_control_state":{
+				"name":"HKR1 Regelstatus"
+			},
+			"hkr2_control_state":{
+				"name":"HKR2 Regelstatus"
+			},
+			"hkr3_control_state":{
+				"name":"HKR3 Regelstatus"
+			},
+			"hkr1_mixer_control_state":{
+				"name":"HKR1 Mengklep regelstatus"
+			},
+			"hkr2_mixer_control_state":{
+				"name":"HKR2 Mengklep regelstatus"
+			},
+			"hkr3_mixer_control_state":{
+				"name":"HKR3 Mengklep regelstatus"
+			},
+			"heating_circuit_flow_temp":{
+				"name":"Verwarmingscircuit aanvoertemperatuur"
+			},
+			"heating_circuit_return_temp":{
+				"name":"Verwarmingscircuit retourtemperatuur"
+			},
+			"heating_circuit_spread":{
+				"name":"Verwarmingscircuit spreiding"
+			},
+			"heating_circuit_volume_flow":{
+				"name":"Verwarmingscircuit debiet"
+			},
+			"heating_circuit_power":{
+				"name":"Verwarmingscircuit vermogen"
+			},
+			"smart_energy_power_to_use":{
+				"name":"Smart Energy bruikbaar vermogen"
+			},
+			"smart_energy_power_from_grid":{
+				"name":"Smart Energy netafname"
+			},
+			"smart_energy_consumer_1_status":{
+				"name":"Smart Energy verbruiker 1 status"
+			},
+			"message_1_code":{
+				"name":"Melding 1 code"
+			},
+			"message_2_code":{
+				"name":"Melding 2 code"
+			},
+			"message_3_code":{
+				"name":"Melding 3 code"
+			},
+			"message_4_code":{
+				"name":"Melding 4 code"
+			},
+			"message_5_code":{
+				"name":"Melding 5 code"
+			},
+			"message_6_code":{
+				"name":"Melding 6 code"
+			},
+			"message_7_code":{
+				"name":"Melding 7 code"
+			},
+			"message_8_code":{
+				"name":"Melding 8 code"
+			},
+			"message_9_code":{
+				"name":"Melding 9 code"
+			},
+			"message_10_code":{
+				"name":"Melding 10 code"
+			},
+			"controller_unix_time":{
+				"name":"Regelaar unixtijd"
 			}
 		},
 		"switch": {
