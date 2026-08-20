@@ -120,10 +120,18 @@ history timeline. Decoding lives in `custom_components/solvis_control/utils/sche
 - **"Unused slot" encoding is assumed to be `start == stop`.** Slots with equal
   start and stop, and values outside 0..95, are dropped. If the controller marks
   unused slots differently, empty windows may appear.
-- **42-register block reads are unverified on hardware.** If the controller caps the
-  block length and answers with exception code 2, the tolerant coordinator skips the
-  register; code 3 (illegal data value) would still fail the poll and would need the
-  tolerance extended.
+- ~~42-register block reads are unverified on hardware.~~ **Confirmed working** on a
+  SolvisLeo 180: `read_holding_registers(34174, count=42)` was answered with a
+  well-formed 84-byte response, no exception code. One request instead of 42.
+- **The SolvisLeo 180 does not export schedules at all.** All six plans read as 42
+  zeros over *both* function codes, while the controller has time programmes stored
+  and `hkr1_operating_mode` is 2 ("Automatik"), so they are actively in use. Same
+  pattern as the `0x83xx` energy block: structurally readable, semantically empty.
+  The code is correct; there is simply nothing to decode on this model.
+  A wrong register type was ruled out with a control read: S1 (33024) returns the
+  same value via FC3 and FC4, so the controller serves both identically.
+- **Therefore the day-1 and unused-slot assumptions above remain unverifiable** until
+  a device shows up that populates the block.
 - DST: window edges use `ZoneInfo` wall-clock arithmetic, which is correct except in
   the repeated hour of the autumn switch, where `fold=0` is chosen.
 
@@ -153,3 +161,29 @@ Two open leads:
 
 A throwaway probe that reads every documented address on both function codes and
 prints the non-zero ones was used for this analysis and can be recreated as needed.
+
+---
+
+## 6. Addressing model: only CSV base addresses are valid in the 0x8xxx block
+
+**Status:** confirmed on hardware, no action required — but constrains future work
+
+The controller does not expose a flat register space above `0x8000`. Only addresses
+listed in the SC3 GLT map are valid *start* addresses; the length may vary. Probed
+on a SolvisLeo 180:
+
+```
+FC4 34046 count=8 -> ILLEGAL DATA ADDRESS   (not a CSV address)
+FC4 34048 count=8 -> ok                     (Wochenplan_HK_1 base)
+FC4 34050 count=8 -> ILLEGAL DATA ADDRESS   (inside the block, but not a base)
+```
+
+34050 sits well inside the 34048..34089 plan and is still rejected, so this is about
+the start address, not the range.
+
+This retroactively explains why `digin_error` (33045) and `analog_out_o6` (33299)
+answer with exception code 2: neither appears in the CSV.
+
+**Consequence for the message sub-registers** (backlog item 4): `Meldung_N UnixZeit H/L`
+and `Par 1/2` cannot be read individually — only as a block starting at the documented
+`Meldung_N` base with `count=5`.
