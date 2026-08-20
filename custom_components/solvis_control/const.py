@@ -90,6 +90,8 @@ class ModbusFieldConfig:
     # Configuration for which state class a register belongs to
     # Possibilities:
     # sensor (0), select (1), number (2), switch (3), binary_sensor (4), update (5)
+    # block data (6): polled by the coordinator, but no generic entity is built from it.
+    #                 A dedicated entity class consumes the raw words (see SCHEDULES).
 
     data_processing: int = 0
     # Option to further process data
@@ -134,6 +136,20 @@ class ModbusFieldConfig:
 # [parameter] = description & name of sensor, each word seperated with an underscore [hot_water_temp]
 # [solvis_name] = if applicable add Solvis own Name of entity, letters in lowercase (due to hass), numbers without a leading zero. [s12, o1]
 # Example: hkr1_flow_water_temp_s12
+
+# Weekly schedule layout (Wochenplan), identical for all six plans.
+# 7 days, 3 start/stop pairs per day, one register each.
+SCHEDULE_DAYS = 7
+SCHEDULE_SLOTS_PER_DAY = 3
+SCHEDULE_REGISTER_COUNT = SCHEDULE_DAYS * SCHEDULE_SLOTS_PER_DAY * 2  # 42
+
+# Register values are a quarter-hour index: 0 = 00:00, 95 = 23:45.
+SCHEDULE_MAX_INDEX = 95
+SCHEDULE_MINUTES_PER_STEP = 15
+
+# Solvis counts "Tag 1" first; assumed to be Monday.
+SCHEDULE_DAY_KEYS = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
+
 
 REGISTERS = [
     ModbusFieldConfig(  # Number of HKR
@@ -220,6 +236,102 @@ REGISTERS = [
         entity_category="diagnostic",
         poll_time=0,
         multiplier=1,
+    ),
+    ModbusFieldConfig(  # Wochenplan Heizkreis 1: 42 Register = 7 Tage x 3 Slots x Start/Stop
+        name="hkr1_schedule",
+        address=34048,
+        count=SCHEDULE_REGISTER_COUNT,
+        register=2,
+        unit=None,
+        device_class=None,
+        state_class=None,
+        multiplier=1,
+        input_type=6,
+        conf_option=0,
+        enabled_by_default=False,
+        poll_time=0,
+        poll_rate=1,
+        supported_version=1,
+    ),
+    ModbusFieldConfig(  # Wochenplan Heizkreis 2: 42 Register = 7 Tage x 3 Slots x Start/Stop
+        name="hkr2_schedule",
+        address=34090,
+        count=SCHEDULE_REGISTER_COUNT,
+        register=2,
+        unit=None,
+        device_class=None,
+        state_class=None,
+        multiplier=1,
+        input_type=6,
+        conf_option=1,
+        enabled_by_default=False,
+        poll_time=0,
+        poll_rate=1,
+        supported_version=1,
+    ),
+    ModbusFieldConfig(  # Wochenplan Heizkreis 3: 42 Register = 7 Tage x 3 Slots x Start/Stop
+        name="hkr3_schedule",
+        address=34132,
+        count=SCHEDULE_REGISTER_COUNT,
+        register=2,
+        unit=None,
+        device_class=None,
+        state_class=None,
+        multiplier=1,
+        input_type=6,
+        conf_option=2,
+        enabled_by_default=False,
+        poll_time=0,
+        poll_rate=1,
+        supported_version=1,
+    ),
+    ModbusFieldConfig(  # Wochenplan Warmwasser: 42 Register = 7 Tage x 3 Slots x Start/Stop
+        name="warm_water_schedule",
+        address=34174,
+        count=SCHEDULE_REGISTER_COUNT,
+        register=2,
+        unit=None,
+        device_class=None,
+        state_class=None,
+        multiplier=1,
+        input_type=6,
+        conf_option=0,
+        enabled_by_default=False,
+        poll_time=0,
+        poll_rate=1,
+        supported_version=1,
+    ),
+    ModbusFieldConfig(  # Wochenplan Zirkulation: 42 Register = 7 Tage x 3 Slots x Start/Stop
+        name="circulation_schedule",
+        address=34216,
+        count=SCHEDULE_REGISTER_COUNT,
+        register=2,
+        unit=None,
+        device_class=None,
+        state_class=None,
+        multiplier=1,
+        input_type=6,
+        conf_option=0,
+        enabled_by_default=False,
+        poll_time=0,
+        poll_rate=1,
+        supported_version=1,
+    ),
+    ModbusFieldConfig(  # Wochenplan Eco: 42 Register = 7 Tage x 3 Slots x Start/Stop
+        name="eco_schedule",
+        address=34258,
+        count=SCHEDULE_REGISTER_COUNT,
+        register=2,
+        unit=None,
+        device_class=None,
+        state_class=None,
+        multiplier=1,
+        input_type=6,
+        conf_option=0,
+        enabled_by_default=False,
+        poll_time=0,
+        poll_rate=1,
+        supported_version=1,
     ),
     ModbusFieldConfig(  # Unixzeit des Reglers, 32 Bit ueber 32768 (low) + 32769 (high)
         name="controller_unix_time",
@@ -1930,6 +2042,18 @@ DERIVATIVE_SENSORS: dict[str, dict] = {
         "suggested_display_precision": 0,
         "compute_mode": "stored_energy_12",
     },
+}
+
+SCHEDULES: dict[str, dict] = {
+    # key = name of the block register in REGISTERS; each plan yields one sensor
+    # (next switching time + full week in attributes) and one binary sensor
+    # (active right now, which is what gives a usable history timeline).
+    "hkr1_schedule": {"conf_option": 0},
+    "hkr2_schedule": {"conf_option": 1},
+    "hkr3_schedule": {"conf_option": 2},
+    "warm_water_schedule": {"conf_option": 0},
+    "circulation_schedule": {"conf_option": 0},
+    "eco_schedule": {"conf_option": 0},
 }
 
 STORAGE_TYPE_CONFIG: dict[str, dict] = {

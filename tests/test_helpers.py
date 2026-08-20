@@ -36,6 +36,7 @@ from custom_components.solvis_control.const import (
     CONF_OPTION_8,
     CONF_OPTION_13,
     REGISTERS,
+    SCHEDULES,
     STORAGE_TYPE_CONFIG,
     POLL_RATE_SLOW,
     POLL_RATE_DEFAULT,
@@ -420,7 +421,24 @@ def test_every_register_has_a_translation(lang):
     path = pathlib.Path("custom_components/solvis_control/translations") / f"{lang}.json"
     entity = json.loads(path.read_text(encoding="utf-8"))["entity"]
 
-    missing = sorted({(platform_of[r.input_type], r.name) for r in REGISTERS if r.name not in entity.get(platform_of[r.input_type], {})})
+    # input_type 6 is raw block data; its entities are declared in SCHEDULES, not per register
+    missing = sorted({(platform_of[r.input_type], r.name) for r in REGISTERS if r.input_type in platform_of and r.name not in entity.get(platform_of[r.input_type], {})})
+
+    assert not missing, f"{lang}.json is missing names for: {missing}"
+
+
+@pytest.mark.parametrize("lang", ["en", "de", "it", "nl"])
+def test_every_schedule_has_translations(lang):
+    """Each schedule yields a sensor and a companion binary sensor; both need a name."""
+    path = pathlib.Path("custom_components/solvis_control/translations") / f"{lang}.json"
+    entity = json.loads(path.read_text(encoding="utf-8"))["entity"]
+
+    missing = []
+    for key in SCHEDULES:
+        if key not in entity.get("sensor", {}):
+            missing.append(("sensor", key))
+        if f"{key}_active" not in entity.get("binary_sensor", {}):
+            missing.append(("binary_sensor", f"{key}_active"))
 
     assert not missing, f"{lang}.json is missing names for: {missing}"
 

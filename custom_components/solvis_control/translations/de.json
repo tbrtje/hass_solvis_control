@@ -657,6 +657,24 @@
 			},
 			"controller_unix_time":{
 				"name":"Regler Unixzeit"
+			},
+			"hkr1_schedule":{
+				"name":"HKR1 Wochenplan"
+			},
+			"hkr2_schedule":{
+				"name":"HKR2 Wochenplan"
+			},
+			"hkr3_schedule":{
+				"name":"HKR3 Wochenplan"
+			},
+			"warm_water_schedule":{
+				"name":"Warmwasser Wochenplan"
+			},
+			"circulation_schedule":{
+				"name":"Zirkulation Wochenplan"
+			},
+			"eco_schedule":{
+				"name":"Eco Wochenplan"
 			}
 		},
 		"switch": {
@@ -755,6 +773,24 @@
 						"name": "Kondensat"
 					}
 				}
+			},
+			"hkr1_schedule_active":{
+				"name":"HKR1 Wochenplan aktiv"
+			},
+			"hkr2_schedule_active":{
+				"name":"HKR2 Wochenplan aktiv"
+			},
+			"hkr3_schedule_active":{
+				"name":"HKR3 Wochenplan aktiv"
+			},
+			"warm_water_schedule_active":{
+				"name":"Warmwasser Wochenplan aktiv"
+			},
+			"circulation_schedule_active":{
+				"name":"Zirkulation Wochenplan aktiv"
+			},
+			"eco_schedule_active":{
+				"name":"Eco Wochenplan aktiv"
 			}
 		}
 	},

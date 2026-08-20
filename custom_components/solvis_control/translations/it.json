@@ -657,6 +657,24 @@
 			},
 			"controller_unix_time":{
 				"name":"Ora unix del regolatore"
+			},
+			"hkr1_schedule":{
+				"name":"HKR1 Programma settimanale"
+			},
+			"hkr2_schedule":{
+				"name":"HKR2 Programma settimanale"
+			},
+			"hkr3_schedule":{
+				"name":"HKR3 Programma settimanale"
+			},
+			"warm_water_schedule":{
+				"name":"Programma settimanale acqua calda"
+			},
+			"circulation_schedule":{
+				"name":"Programma settimanale ricircolo"
+			},
+			"eco_schedule":{
+				"name":"Programma settimanale eco"
 			}
 		},
 		"switch": {
@@ -755,6 +773,24 @@
 						"name": "condensa"
 					}
 				}
+			},
+			"hkr1_schedule_active":{
+				"name":"HKR1 Programma settimanale attivo"
+			},
+			"hkr2_schedule_active":{
+				"name":"HKR2 Programma settimanale attivo"
+			},
+			"hkr3_schedule_active":{
+				"name":"HKR3 Programma settimanale attivo"
+			},
+			"warm_water_schedule_active":{
+				"name":"Programma settimanale acqua calda attivo"
+			},
+			"circulation_schedule_active":{
+				"name":"Programma settimanale ricircolo attivo"
+			},
+			"eco_schedule_active":{
+				"name":"Programma settimanale eco attivo"
 			}
 		}
 	},

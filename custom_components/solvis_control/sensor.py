@@ -7,7 +7,8 @@ Version: v2.1.3
 import logging
 
 from homeassistant.components import persistent_notification
-from homeassistant.components.sensor import SensorEntity, SensorStateClass
+from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, SensorStateClass
+from homeassistant.util import dt as dt_util
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant, callback
@@ -16,9 +17,11 @@ from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN, CONF_NAME, CONF_HOST, DATA_COORDINATOR, DERIVATIVE_SENSORS, STORAGE_TYPE_CONFIG, CONF_OPTION_13
+from .const import DOMAIN, CONF_NAME, CONF_HOST, DATA_COORDINATOR, DERIVATIVE_SENSORS, SCHEDULES, STORAGE_TYPE_CONFIG, CONF_OPTION_13
 from .coordinator import SolvisModbusCoordinator
 from .utils.helpers import async_setup_solvis_entities, generate_device_info
+from .utils.helpers import conf_options_map
+from .utils.schedule import decode_schedule, next_switch, schedule_as_attributes
 from .entity import SolvisEntity
 
 _LOGGER = logging.getLogger(__name__)
@@ -129,6 +132,60 @@ class SolvisDerivativeSensor(SolvisEntity, SensorEntity):
         return
 
 
+class SolvisScheduleSensor(SolvisEntity, SensorEntity):
+    """A weekly schedule read as one register block.
+
+    The state is the next switching time; the full week lives in the attributes,
+    because Home Assistant graphs states and ignores attributes. The companion
+    binary sensor is what produces a usable timeline.
+    """
+
+    def __init__(
+        self,
+        coordinator: SolvisModbusCoordinator,
+        device_info: DeviceInfo,
+        host: str,
+        name: str,
+    ) -> None:
+        super().__init__(
+            coordinator,
+            device_info,
+            host,
+            name,
+            modbus_address=None,
+            supported_version=coordinator.supported_version,
+            enabled_by_default=False,
+            data_processing=0,
+            poll_rate=False,
+        )
+
+        self._attr_unique_id = f"{host}_{name}"
+        self._attr_device_class = SensorDeviceClass.TIMESTAMP
+        self._attr_native_value = None
+        self._attr_extra_state_attributes = {}
+        self.source_key = name
+        self.coordinator = coordinator
+
+        self.coordinator.async_add_listener(self._async_update_from_coordinator)
+
+    def _async_update_from_coordinator(self) -> None:
+        words = (self.coordinator.data or {}).get(self.source_key)
+        if words is None:
+            self._attr_native_value = None
+            self._attr_extra_state_attributes = {}
+        else:
+            schedule = decode_schedule(words)
+            self._attr_native_value = next_switch(schedule, dt_util.now())
+            self._attr_extra_state_attributes = schedule_as_attributes(schedule)
+
+        if self.hass is not None:
+            self.async_write_ha_state()
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        return
+
+
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     """Set up Solvis sensor entities."""
     await async_setup_solvis_entities(
@@ -176,6 +233,21 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
                 suggested_display_precision=cfg.get("suggested_display_precision", 2),
                 compute_mode=cfg.get("compute_mode", "sum"),
                 config_entry=entry,
+            )
+        )
+
+    # Setup SolvisScheduleSensor: one per weekly schedule the configuration enables
+    for key, cfg in SCHEDULES.items():
+        option = cfg.get("conf_option", 0)
+        if option and not entry.data.get(conf_options_map.get(option)):
+            _LOGGER.debug(f"[{key}] Skipping schedule sensor: conf_option {option} not enabled.")
+            continue
+        sdc_instances.append(
+            SolvisScheduleSensor(
+                coordinator=coordinator,
+                device_info=device_info,
+                host=host,
+                name=key,
             )
         )
 

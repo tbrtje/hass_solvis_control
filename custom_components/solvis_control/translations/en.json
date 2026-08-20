@@ -657,6 +657,24 @@
 			},
 			"controller_unix_time":{
 				"name":"Controller unix time"
+			},
+			"hkr1_schedule":{
+				"name":"HKR1 Schedule"
+			},
+			"hkr2_schedule":{
+				"name":"HKR2 Schedule"
+			},
+			"hkr3_schedule":{
+				"name":"HKR3 Schedule"
+			},
+			"warm_water_schedule":{
+				"name":"Hot water schedule"
+			},
+			"circulation_schedule":{
+				"name":"Circulation schedule"
+			},
+			"eco_schedule":{
+				"name":"Eco schedule"
 			}
 		},
 		"switch": {
@@ -755,6 +773,24 @@
 						"name": "Condensate"
 					}
 				}
+			},
+			"hkr1_schedule_active":{
+				"name":"HKR1 Schedule active"
+			},
+			"hkr2_schedule_active":{
+				"name":"HKR2 Schedule active"
+			},
+			"hkr3_schedule_active":{
+				"name":"HKR3 Schedule active"
+			},
+			"warm_water_schedule_active":{
+				"name":"Hot water schedule active"
+			},
+			"circulation_schedule_active":{
+				"name":"Circulation schedule active"
+			},
+			"eco_schedule_active":{
+				"name":"Eco schedule active"
 			}
 		}
 	},

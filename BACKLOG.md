@@ -100,37 +100,32 @@ controllers may only serve one of the two.
 
 ---
 
-## 4. Weekly schedules (`Wochenplan_*`) not exposed yet
+## 4. Weekly schedules: writing, and the day-1 assumption
 
-**Status:** design agreed, foundation built, presentation layer outstanding
+**Status:** reading implemented; writing deliberately out of scope
 
-Six schedules at 34048, 34090, 34132, 34174, 34216, 34258 — each **42 holding
-registers** (7 days x 3 slots x start/stop), values 0-95 as a quarter-hour index
-(0 = 00:00, 95 = 23:45). Fully documented in `supported-entities.md`.
+The six schedules (34048, 34090, 34132, 34174, 34216, 34258) are read as one
+42-register block each and exposed per plan as `sensor.<plan>_schedule` (next
+switching time, full week in attributes) plus `binary_sensor.<plan>_active` for the
+history timeline. Decoding lives in `custom_components/solvis_control/utils/schedule.py`.
 
-**Done:** `ModbusFieldConfig.count` plus block reads in the coordinator, so one
-schedule costs a single Modbus request instead of 42. A block without a combining
-`datatype` is stored as a tuple of unsigned words — which is exactly the shape the
-schedules need.
+**Open:**
 
-**Agreed design (not built yet):** two entities per schedule, both fed from the one
-block read, read-only for now:
-
-- `sensor.<plan>_schedule` — state = next switching time, attributes = full week
-- `binary_sensor.<plan>_active` — on while inside a window; this is what produces a
-  usable timeline in history, since HA core graphs states and ignores attributes
-
-The binary sensor must flip via `async_track_point_in_time` on the slot boundary,
-not on the poll tick, otherwise the edges are off by up to one poll interval.
-
-Gate HK2/HK3 schedules behind `conf_option` 1/2. Writing is explicitly out of scope
-for the first iteration: a bad write overwrites the user's heating programme, and it
-would need FC16 (`write_registers`), which the integration does not use today.
-
-**Unverified assumption:** that the controller answers a 42-register block read.
-Protocol-legal, but some controllers cap the block length. If it answers with
-exception code 2, the tolerant coordinator already handles it; code 3 (illegal data
-value) would still fail the poll and would need the tolerance extended.
+- **Writing.** Would need FC16 (`write_registers`), which the integration does not
+  use, plus read-back verification — a bad write overwrites the user's heating
+  programme.
+- **"Tag 1" is assumed to be Monday** (`SCHEDULE_DAY_KEYS`). Not verified against
+  hardware. If Solvis counts from Sunday, every day label is off by one; the fix is
+  a one-line rotation of that tuple.
+- **"Unused slot" encoding is assumed to be `start == stop`.** Slots with equal
+  start and stop, and values outside 0..95, are dropped. If the controller marks
+  unused slots differently, empty windows may appear.
+- **42-register block reads are unverified on hardware.** If the controller caps the
+  block length and answers with exception code 2, the tolerant coordinator skips the
+  register; code 3 (illegal data value) would still fail the poll and would need the
+  tolerance extended.
+- DST: window edges use `ZoneInfo` wall-clock arithmetic, which is correct except in
+  the repeated hour of the autumn switch, where `fold=0` is chosen.
 
 Also still unimplemented, lower value: the per-message sub-registers (`UnixZeit H/L`,
 `Par 1/2`) behind each `Meldung_N`. Only the message codes are read today.

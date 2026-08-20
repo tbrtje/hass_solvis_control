@@ -657,6 +657,24 @@
 			},
 			"controller_unix_time":{
 				"name":"Regelaar unixtijd"
+			},
+			"hkr1_schedule":{
+				"name":"HKR1 Weekprogramma"
+			},
+			"hkr2_schedule":{
+				"name":"HKR2 Weekprogramma"
+			},
+			"hkr3_schedule":{
+				"name":"HKR3 Weekprogramma"
+			},
+			"warm_water_schedule":{
+				"name":"Warmwater weekprogramma"
+			},
+			"circulation_schedule":{
+				"name":"Circulatie weekprogramma"
+			},
+			"eco_schedule":{
+				"name":"Eco weekprogramma"
 			}
 		},
 		"switch": {
@@ -755,6 +773,24 @@
 						"name": "Condensaat"
 					}
 				}
+			},
+			"hkr1_schedule_active":{
+				"name":"HKR1 Weekprogramma actief"
+			},
+			"hkr2_schedule_active":{
+				"name":"HKR2 Weekprogramma actief"
+			},
+			"hkr3_schedule_active":{
+				"name":"HKR3 Weekprogramma actief"
+			},
+			"warm_water_schedule_active":{
+				"name":"Warmwater weekprogramma actief"
+			},
+			"circulation_schedule_active":{
+				"name":"Circulatie weekprogramma actief"
+			},
+			"eco_schedule_active":{
+				"name":"Eco weekprogramma actief"
 			}
 		}
 	},

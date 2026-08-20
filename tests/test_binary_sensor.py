@@ -162,12 +162,20 @@ async def test_handle_coordinator_update_no_data(mock_solvis_binary_sensor):
     assert mock_solvis_binary_sensor._attr_available is False
 
 
+def _coordinator_mock():
+    """AsyncMock coordinator whose async_add_listener stays synchronous, as in real HA."""
+    coordinator = AsyncMock()
+    coordinator.async_add_listener = MagicMock()
+    coordinator.data = {}
+    return coordinator
+
+
 @pytest.mark.asyncio
 async def test_async_setup_entry_no_host_binary_sensor(hass, mock_config_entry):
     """Test setup entry when no host is provided for binary sensor."""
     mock_config_entry.data.pop(CONF_HOST, None)
     with patch("custom_components.solvis_control.utils.helpers._LOGGER.error") as mock_logger:
-        hass.data = {DOMAIN: {mock_config_entry.entry_id: {DATA_COORDINATOR: AsyncMock()}}}
+        hass.data = {DOMAIN: {mock_config_entry.entry_id: {DATA_COORDINATOR: _coordinator_mock()}}}
         await async_setup_entry(hass, mock_config_entry, AsyncMock())
         mock_logger.assert_called_with("Device has no address")
 
@@ -175,7 +183,7 @@ async def test_async_setup_entry_no_host_binary_sensor(hass, mock_config_entry):
 @pytest.mark.asyncio
 async def test_async_setup_entry_binary_sensor_entity_removal_exception(hass, mock_config_entry):
     """Test exception handling during entity removal for binary sensor."""
-    hass.data = {DOMAIN: {mock_config_entry.entry_id: {DATA_COORDINATOR: AsyncMock()}}}
+    hass.data = {DOMAIN: {mock_config_entry.entry_id: {DATA_COORDINATOR: _coordinator_mock()}}}
     with (
         patch("homeassistant.helpers.entity_registry.async_get", side_effect=Exception("Test Exception")),
         patch("custom_components.solvis_control.utils.helpers.generate_device_info"),
@@ -191,7 +199,7 @@ async def test_async_setup_entry_binary_sensor_entity_removal_exception(hass, mo
 @pytest.mark.asyncio
 async def test_async_setup_entry_binary_sensor_existing_entities_handling(hass, mock_config_entry):
     """Test removal of existing binary sensor entities during setup."""
-    hass.data = {DOMAIN: {mock_config_entry.entry_id: {DATA_COORDINATOR: AsyncMock()}}}
+    hass.data = {DOMAIN: {mock_config_entry.entry_id: {DATA_COORDINATOR: _coordinator_mock()}}}
     mock_entity_registry = MagicMock()
     mock_entity_registry.entities = {
         "sensor_1": MagicMock(unique_id="old_1", entity_id="sensor_1", config_entry_id=mock_config_entry.entry_id),

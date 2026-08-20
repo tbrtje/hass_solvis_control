@@ -220,7 +220,7 @@
 | 33543   | Leistung Solarthermie                   | 1.1.3              | 0         | 3            | not in Solvis Documentation         | 0    |       | kW       |
 | 33544   | Wärmepumpe Leistung                     | 0.9                | 0         | 4            | not in Solvis Documentation         |      |       | kW       |
 | 33545   | Elektrische Wärmepumpenleistung         | 0.9                | 0         | 4            | not in Solvis Documentation         |      |       | kW       |
-| 34048   | Wochenplan HK 1 Tag 1 Start 0           |                    |           |              |                                     | 0    | 95    | 0,25h    |
+| 34048     | Wochenplan HK 1 Tag 1 Start 0                  | 2.2.0              | 6         | 0            | Blockread, 42 Register    | 0   | 95     | 0,25 h                   |
 | 34049   | Wochenplan HK 1 Tag 1 Stop 0            |                    |           |              |                                     | 0    | 95    | 0,25h    |
 | 34050   | Wochenplan HK 1 Tag 1 Start 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
 | 34051   | Wochenplan HK 1 Tag 1 Stop 1            |                    |           |              |                                     | 0    | 95    | 0,25h    |
@@ -262,7 +262,7 @@
 | 34087   | Wochenplan HK 1 Tag 7 Stop 1            |                    |           |              |                                     | 0    | 95    | 0,25h    |
 | 34088   | Wochenplan HK 1 Tag 7 Start 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
 | 34089   | Wochenplan HK 1 Tag 7 Stop 2            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34090   | Wochenplan HK 2 Tag 1 Start 0           |                    |           |              |                                     | 0    | 95    | 0,25h    |
+| 34090     | Wochenplan HK 2 Tag 1 Start 0                  | 2.2.0              | 6         | 1            | Blockread, 42 Register    | 0   | 95     | 0,25 h                   |
 | 34091   | Wochenplan HK 2 Tag 1 Stop 0            |                    |           |              |                                     | 0    | 95    | 0,25h    |
 | 34092   | Wochenplan HK 2 Tag 1 Start 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
 | 34093   | Wochenplan HK 2 Tag 1 Stop 1            |                    |           |              |                                     | 0    | 95    | 0,25h    |
@@ -304,7 +304,7 @@
 | 34129   | Wochenplan HK 2 Tag 7 Stop 1            |                    |           |              |                                     | 0    | 95    | 0,25h    |
 | 34130   | Wochenplan HK 2 Tag 7 Start 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
 | 34131   | Wochenplan HK 2 Tag 7 Stop 2            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34132   | Wochenplan HK 3 Tag 1 Start 0           |                    |           |              |                                     | 0    | 95    | 0,25h    |
+| 34132     | Wochenplan HK 3 Tag 1 Start 0                  | 2.2.0              | 6         | 2            | Blockread, 42 Register    | 0   | 95     | 0,25 h                   |
 | 34133   | Wochenplan HK 3 Tag 1 Stop 0            |                    |           |              |                                     | 0    | 95    | 0,25h    |
 | 34134   | Wochenplan HK 3 Tag 1 Start 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
 | 34135   | Wochenplan HK 3 Tag 1 Stop 1            |                    |           |              |                                     | 0    | 95    | 0,25h    |
@@ -346,7 +346,7 @@
 | 34171   | Wochenplan HK 3 Tag 7 Stop 1            |                    |           |              |                                     | 0    | 95    | 0,25h    |
 | 34172   | Wochenplan HK 3 Tag 7 Start 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
 | 34173   | Wochenplan HK 3 Tag 7 Stop 2            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34174   | Wochenplan HK WW Tag 1 Start 0          |                    |           |              |                                     | 0    | 95    | 0,25h    |
+| 34174     | Wochenplan HK WW Tag 1 Start 0                 | 2.2.0              | 6         | 0            | Blockread, 42 Register    | 0   | 95     | 0,25 h                   |
 | 34175   | Wochenplan HK WW Tag 1 Stop 0           |                    |           |              |                                     | 0    | 95    | 0,25h    |
 | 34176   | Wochenplan HK WW Tag 1 Start 1          |                    |           |              |                                     | 0    | 95    | 0,25h    |
 | 34177   | Wochenplan HK WW Tag 1 Stop 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
@@ -388,7 +388,7 @@
 | 34213   | Wochenplan HK WW Tag 7 Stop 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
 | 34214   | Wochenplan HK WW Tag 7 Start 2          |                    |           |              |                                     | 0    | 95    | 0,25h    |
 | 34215   | Wochenplan HK WW Tag 7 Stop 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34216   | Wochenplan HK Zirk Tag 1 Start 0        |                    |           |              |                                     | 0    | 95    | 0,25h    |
+| 34216     | Wochenplan HK Zirk Tag 1 Start 0               | 2.2.0              | 6         | 0            | Blockread, 42 Register    | 0   | 95     | 0,25 h                   |
 | 34217   | Wochenplan HK Zirk Tag 1 Stop 0         |                    |           |              |                                     | 0    | 95    | 0,25h    |
 | 34218   | Wochenplan HK Zirk Tag 1 Start 1        |                    |           |              |                                     | 0    | 95    | 0,25h    |
 | 34219   | Wochenplan HK Zirk Tag 1 Stop 1         |                    |           |              |                                     | 0    | 95    | 0,25h    |
@@ -430,7 +430,7 @@
 | 34255   | Wochenplan HK Zirk Tag 7 Stop 1         |                    |           |              |                                     | 0    | 95    | 0,25h    |
 | 34256   | Wochenplan HK Zirk Tag 7 Start 2        |                    |           |              |                                     | 0    | 95    | 0,25h    |
 | 34257   | Wochenplan HK Zirk Tag 7 Stop 2         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34258   | Wochenplan HK Eco Tag 1 Start 0         |                    |           |              |                                     | 0    | 95    | 0,25h    |
+| 34258     | Wochenplan HK Eco Tag 1 Start 0                | 2.2.0              | 6         | 0            | Blockread, 42 Register    | 0   | 95     | 0,25 h                   |
 | 34259   | Wochenplan HK Eco Tag 1 Stop 0          |                    |           |              |                                     | 0    | 95    | 0,25h    |
 | 34260   | Wochenplan HK Eco Tag 1 Start 1         |                    |           |              |                                     | 0    | 95    | 0,25h    |
 | 34261   | Wochenplan HK Eco Tag 1 Stop 1          |                    |           |              |                                     | 0    | 95    | 0,25h    |
