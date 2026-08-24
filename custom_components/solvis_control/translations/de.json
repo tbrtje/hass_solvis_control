@@ -505,9 +505,6 @@
 			"warm_water_pump_o5": {
 				"name": "Warmwasserpumpe (O5)"
 			},
-			"analog_out_o6": {
-				"name": "Analog Out (O6)"
-			},
 			"stored_energy_12": {
 				"name": "Gespeicherte Energie Schichtenspeicher (Referenz 12 °C)"
 			},
@@ -723,38 +720,6 @@
 			},
 			"heatpump_switching_valve_a14": {
 				"name":"Wärmepumpe Umschaltventil (A14)"
-			},
-			"digin_error":{
-				"name": "DigIn Fehler",
-				"state_attributes": {
-					"sicherung_netzbaugruppe": {
-						"name": "Sicherung Netzbaugruppe"
-					},
-					"brennerfehler": {
-						"name": "Brennerfehler"
-					},
-					"stb1_fehler": {
-						"name": "STB1 Fehler"
-					},
-					"stb2_fehler": {
-						"name": "STB2 Fehler"
-					},
-					"brenner_cm424": {
-						"name": "Brenner CM424"
-					},
-					"solardruck": {
-						"name": "Solardruck"
-					},
-					"unbekannt": {
-						"name": "unbekannt"
-					},
-					"anlagendruck": {
-						"name": "Anlagendruck"
-					},
-					"kondensat": {
-						"name": "Kondensat"
-					}
-				}
 			},
 			"hkr1_schedule_active":{
 				"name":"HKR1 Wochenplan aktiv"

@@ -81,7 +81,6 @@ class ModbusFieldConfig:
     # Option to further process data
     # 0: no processing
     # 1: version string split for version sc & version nbg, registers 32770 & 32771
-    # 4: special conversion for digin_error, register 33045
 
     supported_version: int = 0
     # Retained until issue #12 simplifies entity identifiers.
@@ -499,19 +498,6 @@ REGISTERS = [
         supported_version=1,
         poll_time=0,
     ),
-    ModbusFieldConfig(
-        name="digin_error",
-        address=33045,
-        unit=None,
-        device_class=None,
-        state_class=None,
-        multiplier=1,
-        entity_category="diagnostic",
-        poll_time=0,
-        suggested_precision=0,
-        data_processing=4,
-        input_type=4,
-    ),
     ModbusFieldConfig(  # A01 Pumpe Zirkulation
         name="circulation_pump_a1",
         address=33280,
@@ -716,18 +702,6 @@ REGISTERS = [
         device_class=None,
         state_class=SensorStateClass.MEASUREMENT,
         register=1,
-        input_type=0,
-        poll_time=0,
-        suggested_precision=0,
-    ),  #  Added with #144
-    ModbusFieldConfig(
-        name="analog_out_o6",
-        address=33299,
-        unit="%",
-        device_class=None,
-        state_class=SensorStateClass.MEASUREMENT,
-        register=1,
-        enabled_by_default=False,
         input_type=0,
         poll_time=0,
         suggested_precision=0,

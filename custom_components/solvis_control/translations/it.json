@@ -505,9 +505,6 @@
 			"warm_water_pump_o5": {
 				"name": "(O5) pompa ACS"
 			},
-			"analog_out_o6": {
-				"name": "(O6) Uscita analogica "
-			},
 			"stored_energy_12": {
 				"name": "Gespeicherte Energie Schichtenspeicher (Referenz 12 °C)"
 			},
@@ -723,38 +720,6 @@
 			},
 			"heatpump_switching_valve_a14": {
 				"name":"(A14) Valvola di commutazione della pompa di calore"
-			},
-			"digin_error":{
-				"name": "errore Digln",
-				"state_attributes": {
-					"sicherung_netzbaugruppe": {
-						"name": "Modulo di rete fusibile"
-					},
-					"brennerfehler": {
-						"name": "errore bruciatore"
-					},
-					"stb1_fehler": {
-						"name": "errore STB1"
-					},
-					"stb2_fehler": {
-						"name": "errore STB2"
-					},
-					"brenner_cm424": {
-						"name": "bruciatore CM424"
-					},
-					"solardruck": {
-						"name": "pressione solare"
-					},
-					"unbekannt": {
-						"name": "sconosciuto"
-					},
-					"anlagendruck": {
-						"name": "pressione"
-					},
-					"kondensat": {
-						"name": "condensa"
-					}
-				}
 			},
 			"hkr1_schedule_active":{
 				"name":"HKR1 Programma settimanale attivo"

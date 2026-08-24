@@ -254,9 +254,6 @@
       "analog_out_o6_status": {
         "default": "mdi:numeric-6"
       },
-      "digin_error": {
-        "default": "mdi:alert-circle"
-      },
       "heat_meter_power_thermal": {
         "default": "mdi:gas-burner"
       },
@@ -274,9 +271,6 @@
       },
       "warm_water_pump_o5": {
         "default": "mdi:water-boiler"
-      },
-      "analog_out_o6": {
-        "default": "mdi:numeric-6"
       },
       "stored_energy_12": {
         "default": "mdi:lightning-bolt"

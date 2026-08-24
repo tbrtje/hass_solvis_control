@@ -22,6 +22,8 @@ from tests.modbus import AddressableModbusClient
 
 ROOT = Path(__file__).parents[1]
 
+# The recorded inventory rejects GLT addresses 33045 and 33299, so their former
+# digin_error and analog_out_o6 entities are deliberately absent here.
 EXPECTED_ENTITY_IDS = {
     "binary_sensor.solvisleo_180_burner_status_a12",
     "binary_sensor.solvisleo_180_circulation_pump_a1",
@@ -30,7 +32,6 @@ EXPECTED_ENTITY_IDS = {
     "binary_sensor.solvisleo_180_heat_pump_changeover_valve_a14",
     "binary_sensor.solvisleo_180_heat_pump_charging_pump_a2",
     "binary_sensor.solvisleo_180_heat_pump_heating_element_stage_2_3_a13",
-    "binary_sensor.solvisleo_180_digin_error",
     "binary_sensor.solvisleo_180_hkr2_mixer_heating_circuit_closed_a11",
     "binary_sensor.solvisleo_180_hkr2_mixer_heating_circuit_open_a10",
     "binary_sensor.solvisleo_180_hkr2_pump_a4",
@@ -73,7 +74,6 @@ EXPECTED_ENTITY_IDS = {
     "sensor.solvisleo_180_analog_in_1",
     "sensor.solvisleo_180_analog_in_2",
     "sensor.solvisleo_180_analog_in_3",
-    "sensor.solvisleo_180_analog_out_o6",
     "sensor.solvisleo_180_analog_out_o6_mode",
     "sensor.solvisleo_180_burner_modulation_mode",
     "sensor.solvisleo_180_burner_modulation_o1",

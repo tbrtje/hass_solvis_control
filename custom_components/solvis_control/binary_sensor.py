@@ -181,21 +181,8 @@ class SolvisBinarySensor(SolvisEntity, BinarySensorEntity):
 
     def _update_value(self, value, extra_attrs) -> None:
         """Update the entity's state when data is available."""
-        match self.data_processing:
-            case 4:
-                # extract "first" 9 bits (which are bits 15 to 7 in big endian)
-                first_9_bits = (value >> 8) & 0x1FF
-                digin_error_keys = ["sicherung_netzbaugruppe", "brennerfehler", "stb1_fehler", "stb2_fehler", "brenner_cm424", "solardruck", "unbekannt", "anlagendruck", "kondensat"]
-                extra_attributes = {digin_error_keys[i]: bool(first_9_bits & (1 << (8 - i))) for i in range(9)}
-                error_count = sum(extra_attributes.values())
-                self._attr_is_on = any(extra_attributes.values())
-                self._attr_extra_state_attributes = {"unprocessed_value": value, "error_count": error_count, "first_9_bits": f"{first_9_bits:09b}"}
-                # save errors in attributes
-                if self._attr_is_on:
-                    self._attr_extra_state_attributes.update(extra_attributes)
-            case _:
-                self._attr_is_on = bool(value)  # Update the sensor value
-                self._attr_extra_state_attributes = {"unprocessed_value": value}
+        self._attr_is_on = bool(value)
+        self._attr_extra_state_attributes = {"unprocessed_value": value}
         _LOGGER.debug(f"[{self._response_key}] Successfully updated value: {self._attr_is_on} (Raw: {value})")
 
     def _reset_value(self) -> None:

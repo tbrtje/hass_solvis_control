@@ -505,9 +505,6 @@
 			"warm_water_pump_o5": {
 				"name": "Hot water pump (O5)"
 			},
-			"analog_out_o6": {
-				"name": "Analog Out (O6)"
-			},
 			"stored_energy_12": {
 				"name": "Stored energy of stratified storage (reference 12 °C)"
 			},
@@ -723,38 +720,6 @@
 			},
 			"heatpump_switching_valve_a14": {
 				"name":"Heat pump changeover valve (A14)"
-			},
-			"digin_error":{
-				"name": "DigIn error",
-				"state_attributes": {
-					"sicherung_netzbaugruppe": {
-						"name": "Fuse power supply"
-					},
-					"brennerfehler": {
-						"name": "Burner error"
-					},
-					"stb1_fehler": {
-						"name": "STB1 error"
-					},
-					"stb2_fehler": {
-						"name": "STB2 error"
-					},
-					"brenner_cm424": {
-						"name": "Burner CM424"
-					},
-					"solardruck": {
-						"name": "Solar pressure"
-					},
-					"unbekannt": {
-						"name": "Unknown"
-					},
-					"anlagendruck": {
-						"name": "System pressure"
-					},
-					"kondensat": {
-						"name": "Condensate"
-					}
-				}
 			},
 			"hkr1_schedule_active":{
 				"name":"HKR1 Schedule active"
