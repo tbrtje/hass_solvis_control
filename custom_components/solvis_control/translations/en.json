@@ -4,18 +4,20 @@
 		"step":{
 			"user":{
 				"title": "Solvis Control Basic Setup",
-				"description": "Please select a name and enter the connection parameters for your Solvis heating system. Before proceeding with the setup, please ensure that the TCP Modbus interface is enabled. You can find instructions on how to do this in the help section.",
+				"description": "Configure the controller connection and polling intervals.",
 				"data":{
-					"name": "name",
 					"host": "host",
 					"port": "Port",
-					"mac": "MAC address (optional)"
+					"poll_rate_default": "Standard polling interval (in s)",
+					"poll_rate_slow": "Low polling interval (in s)",
+					"poll_rate_high": "High polling interval (in s)"
 				},
 				"data_description": {
-					"name": "Name of the system in Home Assistant (freely selectable)",
 					"host": "IP address or host name of the Solvis system controller",
 					"port": "Modbus port number of the Solvis system controller (usually does not need to be changed)",
-					"mac": "MAC address of the Solvis system controller (enter only when prompted: it is detected automatically; manual entry may be necessary, e.g., in Docker environments.)"
+					"poll_rate_default": "Must be a multiple of the high query interval.",
+					"poll_rate_slow": "Must be a multiple of the standard query interval.",
+					"poll_rate_high": "Must be at least 2 seconds."
 				}
 			},
 			"device":{
@@ -97,16 +99,20 @@
 		"step":{
 			"init":{
 				"title": "Solvis Control Basic Setup",
-				"description": "Please select a name and enter the connection parameters for your Solvis heating system. Before proceeding with the setup, please ensure that the TCP Modbus interface is enabled. You can find instructions on how to do this in the help section.",
+				"description": "Configure the controller connection and polling intervals.",
 				"data":{
-					"name": "name",
 					"host": "host",
-					"port": "Port"
+					"port": "Port",
+					"poll_rate_default": "Standard polling interval (in s)",
+					"poll_rate_slow": "Low polling interval (in s)",
+					"poll_rate_high": "High polling interval (in s)"
 				},
 				"data_description": {
-					"name": "Name of the system in Home Assistant (freely selectable)",
 					"host": "IP address or host name of the Solvis system controller",
-					"port": "Modbus port number of the Solvis system controller (usually does not need to be changed)"
+					"port": "Modbus port number of the Solvis system controller (usually does not need to be changed)",
+					"poll_rate_default": "Must be a multiple of the high query interval.",
+					"poll_rate_slow": "Must be a multiple of the standard query interval.",
+					"poll_rate_high": "Must be at least 2 seconds."
 				}
 			},
 			"device":{

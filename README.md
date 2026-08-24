@@ -105,26 +105,17 @@ Once the integration is installed and Modbus access is enabled, add the device i
 
 1. Go to **Settings → Devices & Services → Integrations**.
 2. Click **Add Integration** and search for **Solvis Control**. Click on it.
-3. Configure the integration:
-   - Assign a **device name** (optional).
-   - Enter the **IP address** of the SC3 controller (found in your router's DHCP list).
-   - Keep the **port** unchanged.
-4. Set the **low, standard and high polling intervals**.
-5. Use the checkboxes to select which **assemblies and system components** (second and/or third heating circuit, heat pump, solar collector, heat meter, PV2Heat) are connected to the heating system.
-6. Next, for each available heating circuit (as defined in the previous step), you can configure the presence and behavior of the **room temperature sensor**. Select 'disabled' if no sensor is installed, 'read' to only read the value (default), or 'write' if the value should be writable.
-7. Choose your model of the **stratified storage**.
-8. In the final step you can set **individual names for every existing heating circuit**.
+3. Enter the **IP address** of the SC3 controller (found in your router's DHCP list), its **port**, and the three polling intervals.
 
 After setup, the integration polls an initial set of parameters and completes the installation with a **success message**.
 
 > **Notes:**
-> - The integration attempts to determine the number of existing heating circuits via Modbus query. If the automatically determined number is incorrect or a different configuration is desired, the second and third heating circuits can be manually enabled or disabled. The corresponding entities will then be (not) added accordingly.
+> - Open **Configure** on the integration at any time to change the controller address, port, or polling intervals.
 > - The integration uses three polling intervals: high, standard, and low.
 >    - The **high polling interval** defaults to 10 seconds, with a minimum of 2 seconds. It is used for frequently changing values (e.g., flow temperatures).
 >    - The **standard polling interval** defaults to 30 seconds, with a minimum of 2 seconds. It must be a multiple of the high interval and is used for regularly changing values (e.g., room temperature).
 >    - The **low polling interval** defaults to 300 seconds, must be greater than 10 seconds, and must be a multiple of the standard interval. It is used for rarely changing values (e.g., firmware version).
 > - For an overview of which values are retrieved at which interval, please refer to [the polling groups list](https://github.com/LarsK1/hass_solvis_control/blob/main/polling-groups.md)
-> - The selected stratified storage model and configuration determine the amount of energy stored and reported by the integration. Three types of stratified storage tanks are available: SolvisBen (single size), SolvisMax (available in 457, 757, and 957 sizes) and SolvisLeo (180). Both models can be deployed in solo mode (without a heat generator), with a heat pump, or in hybrid mode (gas/oil burner and heat pump). The SolvisMax 957 offers three sensor-position configurations — 82/34/796, 212/34/663, and 301/34/574 — where the first number indicates the domestic hot water volume (OK-S4), the second the heating buffer volume (S4-S9), and the third the solar buffer volume (S4-UK). The SolvisLeo 180 is a two-zone tank instead: 80 litres in the upper zone (S1-S4) and 100 litres in the lower zone (S4-S9), 180 litres in total.
 
 
 # Features

@@ -4,18 +4,20 @@
 		"step":{
 			"user":{
 				"title": "Solvis Control Basisinstallatie",
-				"description": "Gelieve een naam te kiezen en de verbindingsparameters van uw Solvis-verwarmingssysteem in te voeren. Zorg ervoor dat de TCP-Modbus-interface is ingeschakeld voordat u met de installatie begint. Een handleiding hiervoor vindt u in de hulp.",
+				"description": "Configureer de verbinding met de regelaar en de pollingintervallen.",
 				"data":{
-					"name": "Naam",
 					"host": "Host",
 					"port": "Poort",
-					"mac": "MAC-Adresse (optional)"
+					"poll_rate_default": "Standaard opvraaginterval (in seconden)",
+					"poll_rate_slow": "Laag opvraaginterval (in seconden)",
+					"poll_rate_high": "Hoge opvraaginterval (in seconden)"
 				},
 				"data_description": {
-					"name": "Naam van de installatie (vrij te kiezen)",
 					"host": "IP-adres of hostnaam van het Solvis-systeem",
 					"port": "Modbus-poortnummer van de Solvis-systeemregeling (hoeft doorgaans niet te worden gewijzigd)",
-					"mac": "MAC-Adresse der Solvis Systemregelung (Bitte nur nach Aufforderung eingeben: wird automatisch erkannt. Eine manuelle Eingabe kann z. B. in Docker-Umgebungen erforderlich sein.)"
+					"poll_rate_default": "Moet een veelvoud zijn van het hoge opvraaginterval.",
+					"poll_rate_slow": "Moet een veelvoud zijn van het standaard opvraaginterval.",
+					"poll_rate_high": "Moet minimaal 2 seconden zijn."
 				}
 			},
 			"device":{
@@ -97,16 +99,20 @@
 		"step":{
 			"init":{
 				"title": "Solvis Control Basisinstallatie",
-				"description": "Kies een naam en voer de verbindingsparameters van het Solvis-verwarmingssysteem in. Zorg ervoor dat de TCP-Modbus-interface is ingeschakeld voordat u met de installatie begint. Een handleiding hiervoor vindt u in de hulp.",
+				"description": "Configureer de verbinding met de regelaar en de pollingintervallen.",
 				"data":{
-					"name": "Naam",
 					"host": "Host",
-					"port": "Poort"
+					"port": "Poort",
+					"poll_rate_default": "Standaard opvraaginterval (in seconden)",
+					"poll_rate_slow": "Laag opvraaginterval (in seconden)",
+					"poll_rate_high": "Hoge opvraaginterval (in seconden)"
 				},
 				"data_description": {
-					"name": "Naam van de installatie (vrij te kiezen)",
 					"host": "IP-adres of hostnaam van het Solvis-systeem",
-					"port": "Modbus-poortnummer van de Solvis-systeemregeling (hoeft doorgaans niet te worden gewijzigd)"
+					"port": "Modbus-poortnummer van de Solvis-systeemregeling (hoeft doorgaans niet te worden gewijzigd)",
+					"poll_rate_default": "Moet een veelvoud zijn van het hoge opvraaginterval.",
+					"poll_rate_slow": "Moet een veelvoud zijn van het standaard opvraaginterval.",
+					"poll_rate_high": "Moet minimaal 2 seconden zijn."
 				}
 			},
 			"device":{
