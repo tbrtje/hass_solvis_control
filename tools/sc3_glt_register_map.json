@@ -1,0 +1,521 @@
+{
+  "registers": [
+    {
+      "address": 32768,
+      "count": 2,
+      "documented": true
+    },
+    {
+      "address": 32770,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 32771,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33024,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33025,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33026,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33027,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33028,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33029,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33030,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33031,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33032,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33033,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33034,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33035,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33036,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33037,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33038,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33039,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33040,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33041,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33042,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33043,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33044,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33045,
+      "count": 1,
+      "documented": false
+    },
+    {
+      "address": 33280,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33281,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33282,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33283,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33284,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33285,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33286,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33287,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33288,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33289,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33290,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33291,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33292,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33293,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33294,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33295,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33296,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33297,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33298,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33299,
+      "count": 1,
+      "documented": false
+    },
+    {
+      "address": 33536,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33537,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33538,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33539,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33540,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33541,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33542,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33543,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33544,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33545,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33546,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33547,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33548,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33549,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33550,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33551,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33552,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33553,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33554,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33555,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33556,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33792,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 33793,
+      "count": 5,
+      "documented": true
+    },
+    {
+      "address": 33798,
+      "count": 5,
+      "documented": true
+    },
+    {
+      "address": 33803,
+      "count": 5,
+      "documented": true
+    },
+    {
+      "address": 33808,
+      "count": 5,
+      "documented": true
+    },
+    {
+      "address": 33813,
+      "count": 5,
+      "documented": true
+    },
+    {
+      "address": 33818,
+      "count": 5,
+      "documented": true
+    },
+    {
+      "address": 33823,
+      "count": 5,
+      "documented": true
+    },
+    {
+      "address": 33828,
+      "count": 5,
+      "documented": true
+    },
+    {
+      "address": 33833,
+      "count": 5,
+      "documented": true
+    },
+    {
+      "address": 33838,
+      "count": 5,
+      "documented": true
+    },
+    {
+      "address": 34048,
+      "count": 42,
+      "documented": true
+    },
+    {
+      "address": 34090,
+      "count": 42,
+      "documented": true
+    },
+    {
+      "address": 34132,
+      "count": 42,
+      "documented": true
+    },
+    {
+      "address": 34174,
+      "count": 42,
+      "documented": true
+    },
+    {
+      "address": 34216,
+      "count": 42,
+      "documented": true
+    },
+    {
+      "address": 34258,
+      "count": 42,
+      "documented": true
+    },
+    {
+      "address": 34304,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 34305,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 34306,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 34307,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 34308,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 34309,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 34310,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 34311,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 34312,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 34313,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 34314,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 34315,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 34316,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 34317,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 34318,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 34319,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 34320,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 34560,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 34561,
+      "count": 1,
+      "documented": true
+    },
+    {
+      "address": 34562,
+      "count": 1,
+      "documented": true
+    }
+  ],
+  "schema_version": 1,
+  "source": "Solvis SC3 GLT register map, plus integration-only addresses retained for rejection evidence"
+}

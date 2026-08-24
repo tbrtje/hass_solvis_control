@@ -1,0 +1,2533 @@
+{
+  "controller": {
+    "device_id": 1,
+    "host": "172.16.0.73",
+    "port": 502
+  },
+  "register_map": {
+    "schema_version": 1,
+    "source": "Solvis SC3 GLT register map, plus integration-only addresses retained for rejection evidence"
+  },
+  "registers": [
+    {
+      "address": 32768,
+      "count": 2,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "address": 32770,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 32771,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33024,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          495
+        ]
+      },
+      "input": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          495
+        ]
+      }
+    },
+    {
+      "address": 33025,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          420
+        ]
+      },
+      "input": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          420
+        ]
+      }
+    },
+    {
+      "address": 33026,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          285
+        ]
+      },
+      "input": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          285
+        ]
+      }
+    },
+    {
+      "address": 33027,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          368
+        ]
+      },
+      "input": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          368
+        ]
+      }
+    },
+    {
+      "address": 33028,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          2500
+        ]
+      },
+      "input": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          2500
+        ]
+      }
+    },
+    {
+      "address": 33029,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          335
+        ]
+      },
+      "input": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          335
+        ]
+      }
+    },
+    {
+      "address": 33030,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          2500
+        ]
+      },
+      "input": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          2500
+        ]
+      }
+    },
+    {
+      "address": 33031,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          2500
+        ]
+      },
+      "input": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          2500
+        ]
+      }
+    },
+    {
+      "address": 33032,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          249
+        ]
+      },
+      "input": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          249
+        ]
+      }
+    },
+    {
+      "address": 33033,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          195
+        ]
+      },
+      "input": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          195
+        ]
+      }
+    },
+    {
+      "address": 33034,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          315
+        ]
+      },
+      "input": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          315
+        ]
+      }
+    },
+    {
+      "address": 33035,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          285
+        ]
+      },
+      "input": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          284
+        ]
+      }
+    },
+    {
+      "address": 33036,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          2500
+        ]
+      },
+      "input": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          2500
+        ]
+      }
+    },
+    {
+      "address": 33037,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          2500
+        ]
+      },
+      "input": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          2500
+        ]
+      }
+    },
+    {
+      "address": 33038,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          403
+        ]
+      },
+      "input": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          403
+        ]
+      }
+    },
+    {
+      "address": 33039,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          2500
+        ]
+      },
+      "input": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          2500
+        ]
+      }
+    },
+    {
+      "address": 33040,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33041,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33042,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33043,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33044,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33045,
+      "count": 1,
+      "documented": false,
+      "holding": {
+        "exception_code": 2,
+        "status": "illegal_address"
+      },
+      "input": {
+        "exception_code": 2,
+        "status": "illegal_address"
+      }
+    },
+    {
+      "address": 33280,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33281,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          100
+        ]
+      },
+      "input": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          100
+        ]
+      }
+    },
+    {
+      "address": 33282,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33283,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33284,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33285,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33286,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33287,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33288,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33289,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33290,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33291,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33292,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33293,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33294,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33295,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33296,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33297,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33298,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33299,
+      "count": 1,
+      "documented": false,
+      "holding": {
+        "exception_code": 2,
+        "status": "illegal_address"
+      },
+      "input": {
+        "exception_code": 2,
+        "status": "illegal_address"
+      }
+    },
+    {
+      "address": 33536,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33537,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33538,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33539,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33540,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33541,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33542,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33543,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33544,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33545,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33546,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33547,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33548,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33549,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33550,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33551,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33552,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33553,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33554,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33555,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33556,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33792,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 33793,
+      "count": 5,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "address": 33798,
+      "count": 5,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "address": 33803,
+      "count": 5,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "address": 33808,
+      "count": 5,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "address": 33813,
+      "count": 5,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "address": 33818,
+      "count": 5,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "address": 33823,
+      "count": 5,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "address": 33828,
+      "count": 5,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "address": 33833,
+      "count": 5,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "address": 33838,
+      "count": 5,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "address": 34048,
+      "count": 42,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "address": 34090,
+      "count": 42,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "address": 34132,
+      "count": 42,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "address": 34174,
+      "count": 42,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "address": 34216,
+      "count": 42,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "address": 34258,
+      "count": 42,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "address": 34304,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 34305,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 34306,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 34307,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          5
+        ]
+      },
+      "input": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          5
+        ]
+      }
+    },
+    {
+      "address": 34308,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 34309,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 34310,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          5
+        ]
+      },
+      "input": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          5
+        ]
+      }
+    },
+    {
+      "address": 34311,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          1
+        ]
+      },
+      "input": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          1
+        ]
+      }
+    },
+    {
+      "address": 34312,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          1
+        ]
+      },
+      "input": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          1
+        ]
+      }
+    },
+    {
+      "address": 34313,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          1
+        ]
+      },
+      "input": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          1
+        ]
+      }
+    },
+    {
+      "address": 34314,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 34315,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 34316,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          294
+        ]
+      },
+      "input": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          294
+        ]
+      }
+    },
+    {
+      "address": 34317,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          273
+        ]
+      },
+      "input": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          273
+        ]
+      }
+    },
+    {
+      "address": 34318,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          65333
+        ]
+      },
+      "input": {
+        "nonzero": true,
+        "status": "answer",
+        "values": [
+          65333
+        ]
+      }
+    },
+    {
+      "address": 34319,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 34320,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 34560,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 34561,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    },
+    {
+      "address": 34562,
+      "count": 1,
+      "documented": true,
+      "holding": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      },
+      "input": {
+        "nonzero": false,
+        "status": "answer",
+        "values": [
+          0
+        ]
+      }
+    }
+  ],
+  "schema_version": 1
+}
