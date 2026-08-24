@@ -592,7 +592,7 @@ async def test_options_flow_step_init_modbus_exception(hass, mock_get_mac, mock_
 
 
 @pytest.mark.asyncio
-async def test_options_flow_step_init_connectionexception(monkeypatch, hass, mock_get_mac):
+async def test_options_flow_step_init_connectionexception(monkeypatch, hass, mock_get_mac, mock_modbus):
     async def fake_fetch(*args, **kwargs):
         raise ConnectionException("Test connection error")
 
