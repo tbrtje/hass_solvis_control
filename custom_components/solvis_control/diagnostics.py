@@ -1,7 +1,5 @@
 """
 Diagnostics support for Solvis Device.
-
-Version: v2.1.3
 """
 
 from typing import Any

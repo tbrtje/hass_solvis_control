@@ -1,19 +1,24 @@
 {
-  "release-type": "simple",
-  "bump-minor-pre-major": true,
-  "prerelease-type": "alpha",
-  "draft": true,
-  "prerelease": true,
-  "always-update": true,
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "bootstrap-sha": "7fb07b2d857aa7a6dc1c8bc1ff98cb77fc534aff",
   "release-search-depth": 400,
   "commit-search-depth": 500,
   "sequential-calls": true,
-  "versioning": "semver",
-  "extra-files": [
-    {
-      "type": "json",
-      "path": "custom_components/solvis_control/manifest.json",
-      "jsonpath": "$.json.version"
+  "packages": {
+    ".": {
+      "release-type": "simple",
+      "bump-minor-pre-major": true,
+      "draft": true,
+      "force-tag-creation": true,
+      "always-update": true,
+      "versioning": "semver",
+      "extra-files": [
+        {
+          "type": "json",
+          "path": "custom_components/solvis_control/manifest.json",
+          "jsonpath": "$.version"
+        }
+      ]
     }
-  ]
+  }
 }

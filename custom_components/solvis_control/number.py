@@ -1,7 +1,5 @@
 """
 Solvis Number Entity.
-
-Version: v2.1.3
 """
 
 import logging

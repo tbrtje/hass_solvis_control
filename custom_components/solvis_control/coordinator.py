@@ -1,7 +1,5 @@
 """
 Solvis Modbus Data Coordinator
-
-Version: v2.1.3
 """
 
 import logging

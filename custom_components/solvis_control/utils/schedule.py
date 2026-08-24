@@ -3,8 +3,6 @@ Decoding of Solvis weekly schedules (Wochenplan).
 
 A schedule is a block of 42 holding registers: 7 days, 3 start/stop pairs per day,
 one register each. Every value is a quarter-hour index, 0 = 00:00 .. 95 = 23:45.
-
-Version: v2.1.3
 """
 
 import logging

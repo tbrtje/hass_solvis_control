@@ -1,7 +1,5 @@
 """
 Helper file for various config modules
-
-Version: v2.1.3
 """
 
 import logging

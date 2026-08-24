@@ -2,8 +2,6 @@
 name: Bug report
 about: Create a report to help us improve
 title: "[BUG] Your bug title"
-labels: not verified
-assignees: LarsK1
 
 ---
 

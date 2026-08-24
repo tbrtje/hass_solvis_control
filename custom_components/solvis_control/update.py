@@ -1,7 +1,5 @@
 """
 Solvis Update Entity.
-
-Version: v2.0.0
 """
 
 import logging

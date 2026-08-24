@@ -1,8 +1,0 @@
-# Add translation label to any PR that modifies files in the translations folder
-translation:
-- changed-files:
-  - any-glob-to-any-file: 'custom_components/translations/*'
-
-# Add 'feature' label to any PR where the head branch name starts with `feature` or has a `feature` section in the name
-enhancement:
- - head-branch: ['^feature', 'feature']
