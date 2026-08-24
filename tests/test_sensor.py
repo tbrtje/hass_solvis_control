@@ -79,7 +79,6 @@ async def test_async_setup_entry_existing_entities_handling_sensor(hass, mock_co
         device_class=None,
         state_class=None,
         input_type=0,
-        conf_option=0,
         supported_version=0,
         suggested_precision=2,
     )
@@ -90,7 +89,6 @@ async def test_async_setup_entry_existing_entities_handling_sensor(hass, mock_co
         device_class=None,
         state_class=None,
         input_type=0,
-        conf_option=0,
         supported_version=0,
         suggested_precision=2,
     )

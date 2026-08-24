@@ -214,7 +214,6 @@ async def test_async_setup_entry_binary_sensor_existing_entities_handling(hass, 
         device_class=None,
         state_class=None,
         input_type=4,
-        conf_option=0,
         supported_version=0,
     )
     register2 = ModbusFieldConfig(
@@ -224,7 +223,6 @@ async def test_async_setup_entry_binary_sensor_existing_entities_handling(hass, 
         device_class=None,
         state_class=None,
         input_type=4,
-        conf_option=0,
         supported_version=0,
     )
 

@@ -287,7 +287,6 @@ async def test_select_async_setup_entry_existing_entities_handling(hass, mock_co
         device_class=None,
         state_class=None,
         input_type=1,
-        conf_option=0,
         supported_version=0,
     )
     mock_register2 = ModbusFieldConfig(
@@ -297,7 +296,6 @@ async def test_select_async_setup_entry_existing_entities_handling(hass, mock_co
         device_class=None,
         state_class=None,
         input_type=1,
-        conf_option=0,
         supported_version=0,
     )
     with patch("homeassistant.helpers.entity_registry.async_get", return_value=mock_entity_registry):

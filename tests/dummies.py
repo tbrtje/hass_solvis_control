@@ -165,7 +165,6 @@ class DummyRegister:
         self,
         name,
         address,
-        conf_option,
         supported_version,
         poll_rate=10,
         poll_time=10,
@@ -178,7 +177,6 @@ class DummyRegister:
     ):
         self.name = name
         self.address = address
-        self.conf_option = conf_option
         self.supported_version = supported_version
         self.poll_rate = poll_rate
         self.poll_time = poll_time

@@ -38,7 +38,6 @@ def patch_registers(monkeypatch):
     dummy_register = DummyRegister(
         name="dummy_sensor",
         address=100,
-        conf_option=0,  # 0: always process
         supported_version=1,  # fits to device version
         poll_rate=0,  # DEFAULT_POLL_GROUP
         poll_time=0,  # it's polling time!
@@ -64,7 +63,6 @@ async def test_async_update_data_skip_poll_rate(dummy_coordinator, monkeypatch):
     dummy_register = DummyRegister(
         name="slow_sensor",
         address=200,
-        conf_option=0,
         supported_version=1,
         poll_rate=0,  # DEFAULT_POLL_GROUP
         poll_time=5,  # no polling time
@@ -84,7 +82,7 @@ async def test_async_update_data_skip_poll_rate(dummy_coordinator, monkeypatch):
 @pytest.mark.asyncio
 async def test_block_read_uint32_uses_csv_word_order(dummy_coordinator, monkeypatch):
     """32768 is the low word, 32769 the high word (order per the SC3 GLT CSV)."""
-    reg = DummyRegister(name="controller_unix_time", address=32768, conf_option=0, supported_version=1, poll_rate=0, poll_time=0, reg=1, multiplier=1)
+    reg = DummyRegister(name="controller_unix_time", address=32768, supported_version=1, poll_rate=0, poll_time=0, reg=1, multiplier=1)
     reg.count = 2
     reg.datatype = "UINT32"
     monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [reg])
@@ -109,7 +107,7 @@ async def test_block_read_uint32_uses_csv_word_order(dummy_coordinator, monkeypa
 @pytest.mark.asyncio
 async def test_block_read_without_datatype_keeps_raw_words(dummy_coordinator, monkeypatch):
     """A block without a combining datatype is kept as unsigned words (weekly schedules)."""
-    reg = DummyRegister(name="schedule", address=34048, conf_option=0, supported_version=1, poll_rate=0, poll_time=0, reg=2, multiplier=1)
+    reg = DummyRegister(name="schedule", address=34048, supported_version=1, poll_rate=0, poll_time=0, reg=2, multiplier=1)
     reg.count = 42
     monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [reg])
 
@@ -129,7 +127,7 @@ async def test_block_read_without_datatype_keeps_raw_words(dummy_coordinator, mo
 @pytest.mark.asyncio
 async def test_short_block_read_is_skipped(dummy_coordinator, monkeypatch):
     """A truncated block must not be silently interpreted as a valid value."""
-    reg = DummyRegister(name="controller_unix_time", address=32768, conf_option=0, supported_version=1, poll_rate=0, poll_time=0, reg=1, multiplier=1)
+    reg = DummyRegister(name="controller_unix_time", address=32768, supported_version=1, poll_rate=0, poll_time=0, reg=1, multiplier=1)
     reg.count = 2
     reg.datatype = "UINT32"
     monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [reg])
@@ -176,9 +174,9 @@ class IllegalAddressResponse:
 @pytest.mark.asyncio
 async def test_illegal_data_address_does_not_fail_update(dummy_coordinator, patch_registers, monkeypatch):
     """A register the device does not implement must not take the whole poll down."""
-    good = DummyRegister(name="good_sensor", address=100, conf_option=0, supported_version=1, poll_rate=0, poll_time=0, reg=1, multiplier=1.0)
-    missing = DummyRegister(name="missing_sensor", address=33045, conf_option=0, supported_version=1, poll_rate=0, poll_time=0, reg=1, multiplier=1.0)
-    missing_alias = DummyRegister(name="missing_alias", address=33045, conf_option=0, supported_version=1, poll_rate=0, poll_time=0, reg=1, multiplier=1.0)
+    good = DummyRegister(name="good_sensor", address=100, supported_version=1, poll_rate=0, poll_time=0, reg=1, multiplier=1.0)
+    missing = DummyRegister(name="missing_sensor", address=33045, supported_version=1, poll_rate=0, poll_time=0, reg=1, multiplier=1.0)
+    missing_alias = DummyRegister(name="missing_alias", address=33045, supported_version=1, poll_rate=0, poll_time=0, reg=1, multiplier=1.0)
     monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [missing, missing_alias, good])
 
     real_read = dummy_coordinator.modbus.read_input_registers
@@ -201,7 +199,7 @@ async def test_illegal_data_address_does_not_fail_update(dummy_coordinator, patc
 @pytest.mark.asyncio
 async def test_illegal_data_address_is_retried(dummy_coordinator, monkeypatch):
     """A rejected address must be requested again on its next poll."""
-    missing = DummyRegister(name="missing_sensor", address=33045, conf_option=0, supported_version=1, poll_rate=2, poll_time=0, reg=1, multiplier=1.0)
+    missing = DummyRegister(name="missing_sensor", address=33045, supported_version=1, poll_rate=2, poll_time=0, reg=1, multiplier=1.0)
     monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [missing])
 
     attempts = []
@@ -229,7 +227,7 @@ async def test_other_modbus_errors_are_skipped(dummy_coordinator, monkeypatch):
         def isError(self):
             return True
 
-    reg = DummyRegister(name="broken", address=100, conf_option=0, supported_version=1, poll_rate=0, poll_time=0, reg=1, multiplier=1.0)
+    reg = DummyRegister(name="broken", address=100, supported_version=1, poll_rate=0, poll_time=0, reg=1, multiplier=1.0)
     monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [reg])
 
     async def read(address, count=1, **kwargs):
@@ -246,7 +244,6 @@ async def test_async_update_data_invalid_response(dummy_coordinator, monkeypatch
     dummy_register = DummyRegister(
         name="invalid_sensor",
         address=300,
-        conf_option=0,
         supported_version=1,
         poll_rate=0,
         poll_time=0,
@@ -274,7 +271,6 @@ async def test_async_update_data_modbus_exception(dummy_coordinator, monkeypatch
     dummy_register = DummyRegister(
         name="error_sensor",
         address=400,
-        conf_option=0,
         supported_version=1,
         poll_rate=0,
         poll_time=0,
@@ -299,7 +295,6 @@ async def test_poll_rate_slow_reset(dummy_coordinator, monkeypatch):
     dummy_register = DummyRegister(
         name="slow_sensor_reset",
         address=250,
-        conf_option=0,
         supported_version=1,
         poll_rate=1,  # SLOW_POLL_GROUP
         poll_time=0,  # reset: <= 0
@@ -319,7 +314,6 @@ async def test_poll_rate_default_reset(dummy_coordinator, monkeypatch):
     dummy_register = DummyRegister(
         name="default_sensor_reset",
         address=350,
-        conf_option=0,
         supported_version=1,
         poll_rate=0,  # DEFAULT_POLL_GROUP
         poll_time=0,  # reset: <= 0
@@ -339,7 +333,6 @@ async def test_skip_disabled_entity(dummy_coordinator, monkeypatch):
     dummy_register = DummyRegister(
         name="disabled_sensor",
         address=500,
-        conf_option=0,
         supported_version=1,
         poll_rate=0,
         poll_time=0,
@@ -363,7 +356,6 @@ async def test_exception_response(dummy_coordinator, monkeypatch):
     dummy_register = DummyRegister(
         name="exception_sensor",
         address=600,
-        conf_option=0,
         supported_version=1,
         poll_rate=0,
         poll_time=0,
@@ -393,7 +385,6 @@ async def test_data_conversion_error(dummy_coordinator, monkeypatch):
     dummy_register = DummyRegister(
         name="conversion_error_sensor",
         address=700,
-        conf_option=0,
         supported_version=1,
         poll_rate=0,
         poll_time=0,

@@ -33,10 +33,8 @@ from custom_components.solvis_control.const import (
     CONF_OPTION_6,
     CONF_OPTION_7,
     CONF_OPTION_8,
-    CONF_OPTION_13,
     REGISTERS,
     SCHEDULES,
-    STORAGE_TYPE_CONFIG,
     POLL_RATE_SLOW,
     POLL_RATE_DEFAULT,
     POLL_RATE_HIGH,
@@ -353,9 +351,6 @@ def test_process_coordinator_data_valid():
     assert attrs == {"raw_value": 42}
 
 
-# # # Tests for should_skip_register # # #
-
-
 @pytest.mark.parametrize(
     "raw, expected",
     [
@@ -373,29 +368,8 @@ def test_parse_solvis_version(raw, expected):
     assert helpers.parse_solvis_version(raw) == expected
 
 
-def test_should_skip_register_unsupported_on_storage_type():
-    """digin_error (33045) does not exist on a SolvisLeo 180 and must never be polled."""
-    entry_data = {CONF_OPTION_13: "SolvisLeo 180"}
-    reg = DummyRegister(name="digin_error", address=33045, conf_option=0, supported_version=0)
-
-    assert helpers.should_skip_register(entry_data, reg) is True
-
-
-def test_should_skip_register_unsupported_only_for_that_storage_type():
-    """The same register stays active on a storage type that does implement it."""
-    entry_data = {CONF_OPTION_13: "SolvisBen Solo"}
-    reg = DummyRegister(name="digin_error", address=33045, conf_option=0, supported_version=0)
-
-    assert helpers.should_skip_register(entry_data, reg) is False
-
-
-def test_should_skip_register_unknown_storage_type_skips_nothing():
-    """An unset or unknown storage type must not start filtering registers."""
-    for storage_type in (None, "", "Not A Real Tank"):
-        entry_data = {CONF_OPTION_13: storage_type}
-        reg = DummyRegister(name="digin_error", address=33045, conf_option=0, supported_version=0)
-
-        assert helpers.should_skip_register(entry_data, reg) is False
+def test_register_definitions_do_not_gate_polling_by_configuration():
+    assert all(not hasattr(register, "conf_option") for register in REGISTERS)
 
 
 @pytest.mark.parametrize("lang", ["en", "de", "it", "nl"])
@@ -425,56 +399,6 @@ def test_every_schedule_has_translations(lang):
             missing.append(("binary_sensor", f"{key}_active"))
 
     assert not missing, f"{lang}.json is missing names for: {missing}"
-
-
-def test_unsupported_registers_exist_in_register_table():
-    """Guard against typos / drift: every excluded address must be a real register."""
-    known_addresses = {register.address for register in REGISTERS}
-    for storage_type, cfg in STORAGE_TYPE_CONFIG.items():
-        for address in cfg.get("unsupported_registers", ()):
-            assert address in known_addresses, f"{storage_type} excludes unknown address {address}"
-
-
-def test_should_skip_register_no_conf_option():
-    entry_data = {CONF_OPTION_1: False}
-    reg = DummyRegister(name="sensor", address=10, conf_option=0, supported_version=1)
-
-    assert helpers.should_skip_register(entry_data, reg) is False
-
-
-def test_should_skip_register_conf_option_disabled():
-    entry_data = {CONF_OPTION_1: False}
-    reg = DummyRegister(name="sensor", address=10, conf_option=1, supported_version=1)
-
-    assert helpers.should_skip_register(entry_data, reg) is True
-
-
-def test_should_skip_register_tuple_missing_option():
-    entry_data = {CONF_OPTION_1: True, CONF_OPTION_2: False}
-    reg = DummyRegister(name="sensor", address=10, conf_option=(1, 2), supported_version=1)
-
-    assert helpers.should_skip_register(entry_data, reg) is True
-
-
-def test_should_skip_register_ok():
-    entry_data = {CONF_OPTION_1: True}
-    reg = DummyRegister(name="sensor", address=10, conf_option=1, supported_version=1)
-
-    assert helpers.should_skip_register(entry_data, reg) is False
-
-
-def test_should_skip_register_tuple_all_true():
-    entry_data = {CONF_OPTION_1: True, CONF_OPTION_2: True}
-    reg = DummyRegister(name="sensor", address=10, conf_option=(1, 2), supported_version=1)
-
-    assert helpers.should_skip_register(entry_data, reg) is False
-
-
-def test_should_skip_register_tuple_missing_option():
-    entry_data = {CONF_OPTION_1: True, CONF_OPTION_2: False}
-    reg = DummyRegister(name="sensor", address=10, conf_option=(1, 2), supported_version=1)
-
-    assert helpers.should_skip_register(entry_data, reg) is True
 
 
 # # # Tests for async_setup_solvis_entities # # #

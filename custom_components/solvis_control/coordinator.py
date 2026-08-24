@@ -11,24 +11,11 @@ from pymodbus.client import AsyncModbusTcpClient
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.helpers import entity_registry as er
 from pymodbus.exceptions import ConnectionException, ModbusException, ModbusIOException
-from .utils.helpers import conf_options_map_coordinator, should_skip_register, ensure_connected
+from .utils.helpers import ensure_connected
 from .const import (
     CONF_HOST,
     CONF_PORT,
     DOMAIN,
-    CONF_OPTION_1,
-    CONF_OPTION_2,
-    CONF_OPTION_3,
-    CONF_OPTION_4,
-    CONF_OPTION_5,
-    CONF_OPTION_6,
-    CONF_OPTION_7,
-    CONF_OPTION_8,
-    CONF_OPTION_9,
-    CONF_OPTION_10,
-    CONF_OPTION_11,
-    CONF_OPTION_12,
-    CONF_OPTION_13,
     POLL_RATE_SLOW,
     POLL_RATE_DEFAULT,
     POLL_RATE_HIGH,
@@ -55,18 +42,6 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
         self._register_failures: dict[int, int] = {}
         self.host = entry.data.get(CONF_HOST)
         self.port = entry.data.get(CONF_PORT)
-        self.option_hkr2 = entry.data.get(CONF_OPTION_1)
-        self.option_hkr3 = entry.data.get(CONF_OPTION_2)
-        self.option_solar = entry.data.get(CONF_OPTION_3)
-        self.option_heatpump = entry.data.get(CONF_OPTION_4)
-        self.option_heatmeter = entry.data.get(CONF_OPTION_5)
-        self.option_hkr1_room_temperature_sensor = entry.data.get(CONF_OPTION_6)
-        self.option_hkr1_write_temperature_sensor = entry.data.get(CONF_OPTION_7)
-        self.option_pv2heat = entry.data.get(CONF_OPTION_8)
-        self.option_hkr2_room_temperature_sensor = entry.data.get(CONF_OPTION_9)
-        self.option_hkr2_write_temperature_sensor = entry.data.get(CONF_OPTION_10)
-        self.option_hkr3_room_temperature_sensor = entry.data.get(CONF_OPTION_11)
-        self.option_hkr3_write_temperature_sensor = entry.data.get(CONF_OPTION_12)
         self.supported_version = 1
         self.poll_rate_default = entry.data.get(POLL_RATE_DEFAULT)
         self.poll_rate_slow = entry.data.get(POLL_RATE_SLOW)
@@ -89,11 +64,6 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
 
         for register in REGISTERS:
             _LOGGER.debug(f"[{register.name} | {register.address}] Checking...")
-
-            # skip by config or device version
-            if should_skip_register(self.config_entry.data, register):
-                _LOGGER.debug(f"[{register.name} | {register.address}] Skipping register based on configuration and device version.")
-                continue
 
             # Calculation for passing entites, which are in SLOW_POLL_GROUP or STANDARD_POLL_GROUP
             if register.poll_rate == 1:  # SLOW_POLL_GROUP

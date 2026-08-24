@@ -42,7 +42,6 @@ from custom_components.solvis_control.const import (
     POLL_RATE_DEFAULT,
     POLL_RATE_HIGH,
     REGISTERS,
-    STORAGE_TYPE_CONFIG,
     CONF_HKR1_NAME,
     CONF_HKR2_NAME,
     CONF_HKR3_NAME,
@@ -154,23 +153,6 @@ conf_options_map = {
     11: CONF_OPTION_11,
     12: CONF_OPTION_12,
     13: CONF_OPTION_13,
-}
-
-
-conf_options_map_coordinator = {
-    1: "option_hkr2",
-    2: "option_hkr3",
-    3: "option_solar",
-    4: "option_heatpump",
-    5: "option_heatmeter",
-    6: "option_hkr1_room_temperature_sensor",
-    7: "option_hkr1_write_temperature_sensor",
-    8: "option_pv2heat",
-    9: "option_hkr2_room_temperature_sensor",
-    10: "option_hkr2_write_temperature_sensor",
-    11: "option_hkr3_room_temperature_sensor",
-    12: "option_hkr3_write_temperature_sensor",
-    13: "storage_type",
 }
 
 
@@ -296,36 +278,6 @@ def process_coordinator_data(coordinator_data: dict, response_key: str):
     return True, response_data, extra_state_attributes
 
 
-def should_skip_register(entry_data: dict, register) -> bool:
-    """
-    Determine whether a register should be skipped based on the storage type,
-    the config-options and the supported version.
-    Returns True, if the register should be skipped, else False.
-    """
-    # check registers the selected storage type does not implement at all
-    storage_type = entry_data.get(CONF_OPTION_13)
-    unsupported_registers = STORAGE_TYPE_CONFIG.get(storage_type, {}).get("unsupported_registers", ())
-    if register.address in unsupported_registers:
-        _LOGGER.debug(f"[{register.name} | {register.address}] Skipping register: not available on storage type {storage_type}.")
-        return True
-
-    # check config-options
-    if isinstance(register.conf_option, tuple):  # tuple
-        if not all(entry_data.get(conf_options_map[option]) for option in register.conf_option):
-            _LOGGER.debug(f"[{register.name} | {register.address}] Skipping register because not all conf_options are enabled: {register.conf_option}")
-            return True
-
-    else:  # single value
-        if register.conf_option == 0:
-            _LOGGER.debug(f"[{register.name} | {register.address}] conf_option {register.conf_option} allows processing. Continuing...")
-            pass
-        elif not entry_data.get(conf_options_map.get(register.conf_option)):
-            _LOGGER.debug(f"[{register.name} | {register.address}] Skipping register because conf_option {register.conf_option} is not enabled.")
-            return True
-
-    return False
-
-
 async def async_setup_solvis_entities(
     hass,
     entry,
@@ -352,9 +304,6 @@ async def async_setup_solvis_entities(
 
     for register in REGISTERS:
         if register.input_type != input_type:
-            continue
-
-        if should_skip_register(entry.data, register):
             continue
 
         kwargs = {
