@@ -18,6 +18,12 @@ _LOGGER = logging.getLogger(__name__)
 class SolvisEntity(CoordinatorEntity):
     """Base class for all Solvis entities."""
 
+    @property
+    def available(self) -> bool:
+        """Report both coordinator-wide and register-specific availability."""
+        register_available = self.modbus_address is None or self.coordinator.is_register_available(self.modbus_address)
+        return self.coordinator.last_update_success and register_available
+
     def __init__(
         self,
         coordinator,

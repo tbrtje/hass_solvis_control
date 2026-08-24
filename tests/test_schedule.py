@@ -136,6 +136,8 @@ def _entity_deps():
     coordinator.supported_version = 1
     coordinator.async_add_listener = MagicMock()
     coordinator.data = {}
+    coordinator.last_update_success = True
+    coordinator.is_register_available.return_value = True
     return coordinator, DeviceInfo(identifiers={("solvis", "dummy")})
 
 
@@ -147,7 +149,7 @@ def test_schedule_sensor_exposes_week_and_next_switch(monkeypatch):
     coordinator, device_info = _entity_deps()
     coordinator.data = {"hkr1_schedule": tuple(build(monday=[(24, 32)]))}
 
-    entity = SolvisScheduleSensor(coordinator=coordinator, device_info=device_info, host="h", name="hkr1_schedule")
+    entity = SolvisScheduleSensor(coordinator=coordinator, device_info=device_info, host="h", name="hkr1_schedule", modbus_address=34048)
     entity.hass = MagicMock()
     entity.async_write_ha_state = MagicMock()
 
@@ -164,7 +166,7 @@ def test_schedule_sensor_without_data_stays_empty():
     from custom_components.solvis_control.sensor import SolvisScheduleSensor
 
     coordinator, device_info = _entity_deps()
-    entity = SolvisScheduleSensor(coordinator=coordinator, device_info=device_info, host="h", name="hkr1_schedule")
+    entity = SolvisScheduleSensor(coordinator=coordinator, device_info=device_info, host="h", name="hkr1_schedule", modbus_address=34048)
     entity.hass = MagicMock()
     entity.async_write_ha_state = MagicMock()
 
@@ -172,6 +174,9 @@ def test_schedule_sensor_without_data_stays_empty():
 
     assert entity._attr_native_value is None
     assert entity._attr_extra_state_attributes == {}
+
+    coordinator.is_register_available.return_value = False
+    assert not entity.available
 
 
 def test_schedule_binary_sensor_arms_a_timer_at_the_next_boundary(monkeypatch):
@@ -187,7 +192,7 @@ def test_schedule_binary_sensor_arms_a_timer_at_the_next_boundary(monkeypatch):
     monkeypatch.setattr(bs_module, "async_track_point_in_time", lambda hass, cb, when: scheduled.append(when) or MagicMock())
     monkeypatch.setattr(bs_module.dt_util, "now", lambda: MONDAY.replace(hour=7))
 
-    entity = SolvisScheduleBinarySensor(coordinator=coordinator, device_info=device_info, host="h", name="hkr1_schedule_active", source_key="hkr1_schedule")
+    entity = SolvisScheduleBinarySensor(coordinator=coordinator, device_info=device_info, host="h", name="hkr1_schedule_active", source_key="hkr1_schedule", modbus_address=34048)
     entity.hass = MagicMock()
     entity.async_write_ha_state = MagicMock()
 
@@ -209,7 +214,7 @@ def test_schedule_binary_sensor_cancels_the_previous_timer(monkeypatch):
     monkeypatch.setattr(bs_module, "async_track_point_in_time", lambda hass, cb, when: unsub)
     monkeypatch.setattr(bs_module.dt_util, "now", lambda: MONDAY.replace(hour=7))
 
-    entity = SolvisScheduleBinarySensor(coordinator=coordinator, device_info=device_info, host="h", name="hkr1_schedule_active", source_key="hkr1_schedule")
+    entity = SolvisScheduleBinarySensor(coordinator=coordinator, device_info=device_info, host="h", name="hkr1_schedule_active", source_key="hkr1_schedule", modbus_address=34048)
     entity.hass = MagicMock()
     entity.async_write_ha_state = MagicMock()
 
@@ -224,7 +229,7 @@ def test_schedule_binary_sensor_without_data_is_unknown():
     from custom_components.solvis_control.binary_sensor import SolvisScheduleBinarySensor
 
     coordinator, device_info = _entity_deps()
-    entity = SolvisScheduleBinarySensor(coordinator=coordinator, device_info=device_info, host="h", name="hkr1_schedule_active", source_key="hkr1_schedule")
+    entity = SolvisScheduleBinarySensor(coordinator=coordinator, device_info=device_info, host="h", name="hkr1_schedule_active", source_key="hkr1_schedule", modbus_address=34048)
     entity.hass = MagicMock()
     entity.async_write_ha_state = MagicMock()
 

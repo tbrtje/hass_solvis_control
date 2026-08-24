@@ -294,7 +294,7 @@ def process_coordinator_data(coordinator_data: dict, response_key: str):
     response_data = coordinator_data.get(response_key)
 
     if response_data is None:
-        _LOGGER.warning(f"[{response_key}] No data available: response data is None.")
+        _LOGGER.debug(f"[{response_key}] No data available: response data is None.")
         return False, None, {}
 
     if not isinstance(response_data, (int, float, Decimal)) or isinstance(response_data, complex):  # complex numbers are not valid
@@ -447,7 +447,10 @@ async def ensure_connected(client) -> bool:
     if not client.connected:
         _LOGGER.debug("Modbus client not connected. Reconnecting...")
         try:
-            await client.connect()
+            connected = await client.connect()
+            if connected is False:
+                _LOGGER.error("Modbus reconnect failed: connect() returned False")
+                return False
             _LOGGER.debug("Modbus reconnect successful")
         except ConnectionException as e:
             _LOGGER.error(f"Modbus reconnect failed: {e}")

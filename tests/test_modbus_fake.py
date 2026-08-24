@@ -7,7 +7,6 @@ from pymodbus.exceptions import ModbusIOException
 
 from tests.modbus import AddressableModbusClient
 
-
 INVENTORY = Path(__file__).parents[1] / "inventory" / "solvisleo_180_sc3.json"
 
 

@@ -15,7 +15,7 @@ from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN, CONF_NAME, CONF_HOST, DATA_COORDINATOR, DERIVATIVE_SENSORS, SCHEDULES, STORAGE_TYPE_CONFIG, CONF_OPTION_13
+from .const import DOMAIN, CONF_NAME, CONF_HOST, DATA_COORDINATOR, DERIVATIVE_SENSORS, REGISTER_ADDRESSES_BY_NAME, SCHEDULES, STORAGE_TYPE_CONFIG, CONF_OPTION_13
 from .coordinator import SolvisModbusCoordinator
 from .utils.helpers import async_setup_solvis_entities, generate_device_info
 from .utils.helpers import conf_options_map
@@ -144,13 +144,14 @@ class SolvisScheduleSensor(SolvisEntity, SensorEntity):
         device_info: DeviceInfo,
         host: str,
         name: str,
+        modbus_address: int,
     ) -> None:
         super().__init__(
             coordinator,
             device_info,
             host,
             name,
-            modbus_address=None,
+            modbus_address=modbus_address,
             supported_version=coordinator.supported_version,
             enabled_by_default=False,
             data_processing=0,
@@ -246,6 +247,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
                 device_info=device_info,
                 host=host,
                 name=key,
+                modbus_address=REGISTER_ADDRESSES_BY_NAME[key],
             )
         )
 

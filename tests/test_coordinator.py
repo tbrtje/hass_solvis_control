@@ -131,7 +131,7 @@ async def test_block_read_without_datatype_keeps_raw_words(dummy_coordinator, mo
 
 
 @pytest.mark.asyncio
-async def test_short_block_read_fails_loudly(dummy_coordinator, monkeypatch):
+async def test_short_block_read_is_skipped(dummy_coordinator, monkeypatch):
     """A truncated block must not be silently interpreted as a valid value."""
     reg = DummyRegister(name="controller_unix_time", address=32768, conf_option=0, supported_version=1, poll_rate=0, poll_time=0, reg=1, multiplier=1)
     reg.count = 2
@@ -143,8 +143,10 @@ async def test_short_block_read_fails_loudly(dummy_coordinator, monkeypatch):
 
     dummy_coordinator.modbus.read_input_registers = read
 
-    with pytest.raises(UpdateFailed):
-        await dummy_coordinator._async_update_data()
+    data = await dummy_coordinator._async_update_data()
+
+    assert "controller_unix_time" not in data
+    assert dummy_coordinator._register_failures[32768] == 1
 
 
 @pytest.mark.asyncio
@@ -180,7 +182,8 @@ async def test_illegal_data_address_does_not_fail_update(dummy_coordinator, patc
     """A register the device does not implement must not take the whole poll down."""
     good = DummyRegister(name="good_sensor", address=100, conf_option=0, supported_version=1, poll_rate=0, poll_time=0, reg=1, multiplier=1.0)
     missing = DummyRegister(name="missing_sensor", address=33045, conf_option=0, supported_version=1, poll_rate=0, poll_time=0, reg=1, multiplier=1.0)
-    monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [missing, good])
+    missing_alias = DummyRegister(name="missing_alias", address=33045, conf_option=0, supported_version=1, poll_rate=0, poll_time=0, reg=1, multiplier=1.0)
+    monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [missing, missing_alias, good])
 
     real_read = dummy_coordinator.modbus.read_input_registers
 
@@ -195,13 +198,14 @@ async def test_illegal_data_address_does_not_fail_update(dummy_coordinator, patc
 
     assert "good_sensor" in data  # the healthy register still made it through
     assert "missing_sensor" not in data
-    assert 33045 in dummy_coordinator._unsupported_addresses
+    assert "missing_alias" not in data
+    assert dummy_coordinator._register_failures[33045] == 1
 
 
 @pytest.mark.asyncio
-async def test_illegal_data_address_is_not_retried(dummy_coordinator, monkeypatch):
-    """Once rejected, the address must not be requested again."""
-    missing = DummyRegister(name="missing_sensor", address=33045, conf_option=0, supported_version=1, poll_rate=0, poll_time=0, reg=1, multiplier=1.0)
+async def test_illegal_data_address_is_retried(dummy_coordinator, monkeypatch):
+    """A rejected address must be requested again on its next poll."""
+    missing = DummyRegister(name="missing_sensor", address=33045, conf_option=0, supported_version=1, poll_rate=2, poll_time=0, reg=1, multiplier=1.0)
     monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [missing])
 
     attempts = []
@@ -215,12 +219,12 @@ async def test_illegal_data_address_is_not_retried(dummy_coordinator, monkeypatc
     await dummy_coordinator._async_update_data()
     await dummy_coordinator._async_update_data()
 
-    assert attempts == [33045]  # asked exactly once, never again
+    assert attempts == [33045, 33045]
 
 
 @pytest.mark.asyncio
-async def test_other_modbus_errors_still_fail_update(dummy_coordinator, monkeypatch):
-    """Only ILLEGAL DATA ADDRESS is tolerated; other error responses must still raise."""
+async def test_other_modbus_errors_are_skipped(dummy_coordinator, monkeypatch):
+    """An SC3 failure response must only cost its own register."""
 
     class OtherError:
         exception_code = 4  # SLAVE DEVICE FAILURE
@@ -237,8 +241,8 @@ async def test_other_modbus_errors_still_fail_update(dummy_coordinator, monkeypa
 
     dummy_coordinator.modbus.read_input_registers = read
 
-    with pytest.raises(UpdateFailed):
-        await dummy_coordinator._async_update_data()
+    assert await dummy_coordinator._async_update_data() == {}
+    assert dummy_coordinator._register_failures[100] == 1
 
 
 @pytest.mark.asyncio
@@ -265,8 +269,8 @@ async def test_async_update_data_invalid_response(dummy_coordinator, monkeypatch
 
     dummy_coordinator.modbus.read_input_registers = invalid_read
 
-    with pytest.raises(UpdateFailed):
-        await dummy_coordinator._async_update_data()
+    assert await dummy_coordinator._async_update_data() == {}
+    assert dummy_coordinator._register_failures[300] == 1
 
 
 @pytest.mark.asyncio
@@ -290,8 +294,8 @@ async def test_async_update_data_modbus_exception(dummy_coordinator, monkeypatch
 
     dummy_coordinator.modbus.read_input_registers = raise_exception
 
-    with pytest.raises(UpdateFailed):
-        await dummy_coordinator._async_update_data()
+    assert await dummy_coordinator._async_update_data() == {}
+    assert dummy_coordinator._register_failures[400] == 1
 
 
 @pytest.mark.asyncio
@@ -384,8 +388,8 @@ async def test_exception_response(dummy_coordinator, monkeypatch):
 
     dummy_coordinator.modbus.read_input_registers = exception_response
 
-    with pytest.raises(UpdateFailed):
-        await dummy_coordinator._async_update_data()
+    assert await dummy_coordinator._async_update_data() == {}
+    assert dummy_coordinator._register_failures[600] == 1
 
 
 @pytest.mark.asyncio
@@ -409,8 +413,8 @@ async def test_data_conversion_error(dummy_coordinator, monkeypatch):
 
     dummy_coordinator.modbus.convert_from_registers = raise_value_error
 
-    with pytest.raises(UpdateFailed):
-        await dummy_coordinator._async_update_data()
+    assert await dummy_coordinator._async_update_data() == {}
+    assert dummy_coordinator._register_failures[700] == 1
 
 
 @pytest.mark.asyncio
@@ -476,8 +480,8 @@ async def test_initial_reconnect_failed_raises_updatefailed(monkeypatch, dummy_c
 
 
 @pytest.mark.asyncio
-async def test_skip_read_on_lost_connection(monkeypatch, dummy_coordinator, patch_registers):
-    # Inside loop: 2. ensure_connected → False → überspringen, kein Fehler
+async def test_lost_connection_fails_update(monkeypatch, dummy_coordinator, patch_registers):
+    # Inside loop: a lost connection fails the whole update.
     dummy_coordinator.supported_version = 1
     calls = 0
 
@@ -489,8 +493,8 @@ async def test_skip_read_on_lost_connection(monkeypatch, dummy_coordinator, patc
     monkeypatch.setattr("custom_components.solvis_control.coordinator.ensure_connected", fake_ensure)
     monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [patch_registers])
 
-    data = await dummy_coordinator._async_update_data()
-    assert patch_registers.name not in data
+    with pytest.raises(UpdateFailed):
+        await dummy_coordinator._async_update_data()
 
 
 @pytest.mark.asyncio

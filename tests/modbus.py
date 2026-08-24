@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 from typing import Self
 
-from pymodbus.exceptions import ModbusIOException
+from pymodbus.exceptions import ConnectionException, ModbusIOException
 
 
 class FakeModbusResponse:
@@ -34,7 +34,9 @@ class AddressableModbusClient:
         self._responses = responses
         self._illegal_addresses: set[tuple[str, int]] = set()
         self._communication_errors: set[tuple[str, int]] = set()
+        self._connection_losses: set[tuple[str, int]] = set()
         self._malformed_responses: set[tuple[str, int]] = set()
+        self._request_counts: dict[tuple[str, int], int] = {}
         self.connected = False
         self.DATATYPE = type("DATATYPE", (), {"INT16": "int16"})
 
@@ -43,13 +45,7 @@ class AddressableModbusClient:
         responses = {}
         for path in paths:
             document = json.loads(path.read_text(encoding="utf-8"))
-            responses.update(
-                {
-                    (register_type, register["address"]): register[register_type]
-                    for register in document["registers"]
-                    for register_type in ("holding", "input")
-                }
-            )
+            responses.update({(register_type, register["address"]): register[register_type] for register in document["registers"] for register_type in ("holding", "input")})
         return cls(responses)
 
     async def read_input_registers(self, address: int, count: int):
@@ -73,6 +69,22 @@ class AddressableModbusClient:
         """Make one function-code/address pair raise a communication error."""
         self._communication_errors.add((register_type, address))
 
+    def restore(self, register_type: str, address: int) -> None:
+        """Restore the recorded response for one function-code/address pair."""
+        key = (register_type, address)
+        self._communication_errors.discard(key)
+        self._connection_losses.discard(key)
+        self._illegal_addresses.discard(key)
+        self._malformed_responses.discard(key)
+
+    def lose_connection(self, register_type: str, address: int) -> None:
+        """Drop the connection while reading one function-code/address pair."""
+        self._connection_losses.add((register_type, address))
+
+    def request_count(self, register_type: str, address: int) -> int:
+        """Return how often one function-code/address pair was requested."""
+        return self._request_counts.get((register_type, address), 0)
+
     def reject(self, register_type: str, address: int) -> None:
         """Make one function-code/address pair return ILLEGAL DATA ADDRESS."""
         self._illegal_addresses.add((register_type, address))
@@ -82,6 +94,11 @@ class AddressableModbusClient:
         self._malformed_responses.add((register_type, address))
 
     def _read(self, register_type: str, address: int, count: int) -> FakeModbusResponse | MalformedModbusResponse:
+        key = (register_type, address)
+        self._request_counts[key] = self._request_counts.get(key, 0) + 1
+        if key in self._connection_losses:
+            self.connected = False
+            raise ConnectionException(f"Connection lost at {register_type} register {address}")
         if (register_type, address) in self._communication_errors:
             raise ModbusIOException(f"Communication error at {register_type} register {address}")
         if (register_type, address) in self._malformed_responses:

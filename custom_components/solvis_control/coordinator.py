@@ -40,10 +40,7 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
-# Modbus exception code 2: the device does not implement this address at all.
-# Not every model implements every register of the SC3 GLT map, so this is a
-# property of the device rather than a fault, and must not fail the whole poll.
-MODBUS_ILLEGAL_DATA_ADDRESS = 2
+REGISTER_FAILURE_THRESHOLD = 3
 
 
 class SolvisModbusCoordinator(DataUpdateCoordinator):
@@ -58,7 +55,7 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
             update_interval=timedelta(seconds=entry.data.get(POLL_RATE_HIGH)),
         )
         self.config_entry = entry  # !
-        self._unsupported_addresses: set[int] = set()
+        self._register_failures: dict[int, int] = {}
         self.host = entry.data.get(CONF_HOST)
         self.port = entry.data.get(CONF_PORT)
         self.option_hkr2 = entry.data.get(CONF_OPTION_1)
@@ -86,6 +83,7 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
 
         _LOGGER.debug("Polling data...")
         parsed_data = {}
+        failed_addresses: set[int] = set()
 
         # SC2-devices: reconnect
         if int(self.supported_version) == 2:
@@ -119,11 +117,6 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
                 _LOGGER.debug(f"[{register.name} | {register.address}] Skipping register based on configuration and device version.")
                 continue
 
-            # skip registers this device already answered with ILLEGAL DATA ADDRESS
-            if register.address in self._unsupported_addresses:
-                _LOGGER.debug(f"[{register.name} | {register.address}] Skipping register: device reported it as not implemented.")
-                continue
-
             # Calculation for passing entites, which are in SLOW_POLL_GROUP or STANDARD_POLL_GROUP
             if register.poll_rate == 1:  # SLOW_POLL_GROUP
                 if register.poll_time > 0:
@@ -152,8 +145,8 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
 
             # check connection / reconnect
             if not await ensure_connected(self.modbus):
-                _LOGGER.error(f"[{register.name} | {register.address}] Skipping read: no connection")
-                continue
+                _LOGGER.error(f"[{register.name} | {register.address}] Cannot read: connection lost")
+                raise UpdateFailed(f"[{register.name} | {register.address}] Connection lost")
 
             # READ
             try:
@@ -173,28 +166,30 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
                     await asyncio.sleep(0.3)
 
             except (ConnectionException, ModbusIOException, ModbusException) as err:
-                _LOGGER.error(f"[{register.name} | {register.address}] Exception during read: {err} - skipping read")
-                raise UpdateFailed(f"[{register.name} | {register.address}] Exception during read") from err
+                if isinstance(err, ConnectionException) or not self.modbus.connected:
+                    _LOGGER.error(f"[{register.name} | {register.address}] Connection lost during read: {err}")
+                    raise UpdateFailed(f"[{register.name} | {register.address}] Connection lost during read") from err
+                self._record_register_failure(register, parsed_data, failed_addresses, f"Exception during read: {err}")
+                continue
 
             # check for error response
             if not result or hasattr(result, "isError") and result.isError():
-                if getattr(result, "exception_code", None) == MODBUS_ILLEGAL_DATA_ADDRESS:
-                    # Remember it and carry on: one register the model does not have
-                    # must not take every other entity down with it.
-                    self._unsupported_addresses.add(register.address)
-                    _LOGGER.warning(f"[{register.name} | {register.address}] Register not implemented by this device, skipping it from now on.")
-                    continue
-                _LOGGER.error(f"[{register.name} | {register.address}] Modbus error while reading register: {result}")
-                raise UpdateFailed(f"[{register.name} | {register.address}] Modbus error while reading register")
+                self._record_register_failure(register, parsed_data, failed_addresses, f"Modbus error while reading register: {result}")
+                continue
 
             # check for invalid results
             if not hasattr(result, "registers") or not result.registers:
-                _LOGGER.error(f"[{register.name} | {register.address}] Invalid Modbus response: {result}")
-                raise UpdateFailed(f"[{register.name} | {register.address}] Invalid Modbus response")
+                self._record_register_failure(register, parsed_data, failed_addresses, f"Invalid Modbus response: {result}")
+                continue
 
             if len(result.registers) < register.count:
-                _LOGGER.error(f"[{register.name} | {register.address}] Short block read: expected {register.count} registers, got {len(result.registers)}")
-                raise UpdateFailed(f"[{register.name} | {register.address}] Short block read")
+                self._record_register_failure(
+                    register,
+                    parsed_data,
+                    failed_addresses,
+                    f"Short block read: expected {register.count} registers, got {len(result.registers)}",
+                )
+                continue
 
             # conversion
             try:
@@ -211,6 +206,7 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
                         _LOGGER.debug(f"[{register.name} | {register.address}] Block of {len(words)} words: {words}")
                         parsed_data[register.name] = tuple(words)
 
+                    self._record_register_success(register.address, failed_addresses)
                     continue
 
                 data_from_register = self.modbus.convert_from_registers(registers=result.registers, data_type=self.modbus.DATATYPE.INT16, word_order="big")
@@ -225,10 +221,38 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
                 parsed_data[register.name] = abs(value) if register.absolute_value else value
 
             except (struct.error, ValueError) as err:
-                _LOGGER.error(f"[{register.name} | {register.address}] Data conversion error: {err}")
-                parsed_data[register.name] = -300
-                raise UpdateFailed(f"[{register.name} | {register.address}] Data conversion error") from err
+                self._record_register_failure(register, parsed_data, failed_addresses, f"Data conversion error: {err}")
+                continue
+
+            self._record_register_success(register.address, failed_addresses)
 
         _LOGGER.debug(f"Returned data: {parsed_data}")
 
         return parsed_data
+
+    def is_register_available(self, address: int) -> bool:
+        """Return whether an address is below the consecutive-failure threshold."""
+        return self._register_failures.get(address, 0) < REGISTER_FAILURE_THRESHOLD
+
+    def _record_register_failure(self, register, parsed_data: dict, failed_addresses: set[int], message: str) -> None:
+        """Record one failed attempt without failing the whole poll cycle."""
+        first_failure_for_address_this_cycle = register.address not in failed_addresses
+        if first_failure_for_address_this_cycle:
+            self._register_failures[register.address] = self._register_failures.get(register.address, 0) + 1
+            failed_addresses.add(register.address)
+        failures = self._register_failures[register.address]
+        emit_failure = _LOGGER.warning if failures == 1 and first_failure_for_address_this_cycle else _LOGGER.debug
+        emit_failure(
+            "[%s | %s] %s; skipping register for this cycle (consecutive failures: %s)",
+            register.name,
+            register.address,
+            message,
+            failures,
+        )
+        if failures >= REGISTER_FAILURE_THRESHOLD:
+            parsed_data[register.name] = None
+
+    def _record_register_success(self, address: int, failed_addresses: set[int]) -> None:
+        """Reset an address after any successful read in the current cycle."""
+        self._register_failures.pop(address, None)
+        failed_addresses.discard(address)

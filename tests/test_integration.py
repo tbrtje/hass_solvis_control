@@ -1,5 +1,6 @@
 """Integration-level seam for the SolvisLeo 180 installation."""
 
+import logging
 from pathlib import Path
 from unittest.mock import patch
 
@@ -32,7 +33,6 @@ from custom_components.solvis_control.const import (
     POLL_RATE_SLOW,
 )
 from tests.modbus import AddressableModbusClient
-
 
 ROOT = Path(__file__).parents[1]
 
@@ -129,8 +129,8 @@ EXPECTED_ENTITY_IDS = {
 }
 
 
-@pytest.mark.asyncio
-async def test_setup_exposes_the_recorded_anlage(hass) -> None:
+async def setup_recorded_anlage(hass):
+    """Set up the integration against the recorded SolvisLeo 180 responses."""
     client = AddressableModbusClient.from_inventory(
         ROOT / "inventory" / "solvisleo_180_sc3.json",
         ROOT / "tests" / "fixtures" / "solvisleo_180_sc3_parameters.json",
@@ -169,17 +169,19 @@ async def test_setup_exposes_the_recorded_anlage(hass) -> None:
         assert await hass.config_entries.async_setup(entry.entry_id)
         await hass.async_block_till_done()
 
-        coordinator = hass.data[DOMAIN][entry.entry_id][DATA_COORDINATOR]
-        await coordinator.async_refresh()
-        await coordinator.async_refresh()
-        await hass.async_block_till_done()
+    coordinator = hass.data[DOMAIN][entry.entry_id][DATA_COORDINATOR]
+    return client, entry, coordinator
+
+
+@pytest.mark.asyncio
+async def test_setup_exposes_the_recorded_anlage(hass) -> None:
+    _, entry, coordinator = await setup_recorded_anlage(hass)
+    await coordinator.async_refresh()
+    await coordinator.async_refresh()
+    await hass.async_block_till_done()
 
     registry = er.async_get(hass)
-    actual_entity_ids = {
-        entity.entity_id
-        for entity in registry.entities.values()
-        if entity.config_entry_id == entry.entry_id
-    }
+    actual_entity_ids = {entity.entity_id for entity in registry.entities.values() if entity.config_entry_id == entry.entry_id}
 
     assert actual_entity_ids == EXPECTED_ENTITY_IDS
     assert hass.states.get("sensor.solvisleo_180_hot_water_buffer_temperature_s1").state == "49.5"
@@ -188,3 +190,73 @@ async def test_setup_exposes_the_recorded_anlage(hass) -> None:
     assert hass.states.get("switch.solvisleo_180_warm_water_reheat_start").state == "off"
     assert hass.states.get("binary_sensor.solvisleo_180_heat_pump_charging_pump_a2").state == "on"
     assert hass.states.get("update.solvisleo_180_firmware_sc").state == "unknown"
+
+
+@pytest.mark.asyncio
+async def test_register_failure_is_isolated_and_recovers(hass, caplog) -> None:
+    client, _, coordinator = await setup_recorded_anlage(hass)
+    failed_entity_id = "sensor.solvisleo_180_heat_generator_2_thermal_output"
+    healthy_entity_id = "sensor.solvisleo_180_hot_water_power"
+    await coordinator.async_refresh()
+    await hass.async_block_till_done()
+    assert hass.states.get(failed_entity_id).state == "0.0"
+
+    caplog.clear()
+    healthy_reads_before_failure = client.request_count("input", 33549)
+    client.fail("input", 33546)
+    with caplog.at_level(logging.DEBUG, logger="custom_components.solvis_control.coordinator"):
+        for attempt in range(1, 4):
+            await coordinator.async_refresh()
+            await hass.async_block_till_done()
+
+            assert coordinator.last_update_success
+            assert hass.states.get(healthy_entity_id).state != "unavailable"
+            assert client.request_count("input", 33549) == healthy_reads_before_failure + attempt
+            expected_state = "unavailable" if attempt == 3 else "0.0"
+            assert hass.states.get(failed_entity_id).state == expected_state
+
+    failure_logs = [record for record in caplog.records if "heat_generator_2_power_thermal | 33546" in record.getMessage() and "Exception during read" in record.getMessage()]
+    assert [record.levelno for record in failure_logs] == [
+        logging.WARNING,
+        logging.DEBUG,
+        logging.DEBUG,
+    ]
+    failure_warnings = [record for record in caplog.records if record.levelno >= logging.WARNING and "heat_generator_2_power_thermal" in record.getMessage()]
+    assert failure_warnings == [failure_logs[0]]
+
+    client.restore("input", 33546)
+    await coordinator.async_refresh()
+    await hass.async_block_till_done()
+    assert hass.states.get(failed_entity_id).state == "0.0"
+
+    client.fail("input", 33546)
+    for _ in range(2):
+        await coordinator.async_refresh()
+        await hass.async_block_till_done()
+    assert hass.states.get(failed_entity_id).state == "0.0"
+
+    client.restore("input", 33546)
+    await coordinator.async_refresh()
+    await hass.async_block_till_done()
+
+    requests_before_rejection = client.request_count("input", 33546)
+    client.reject("input", 33546)
+    await coordinator.async_refresh()
+    client.restore("input", 33546)
+    await coordinator.async_refresh()
+    await hass.async_block_till_done()
+
+    assert client.request_count("input", 33546) == requests_before_rejection + 2
+    assert hass.states.get(failed_entity_id).state == "0.0"
+
+
+@pytest.mark.asyncio
+async def test_connection_loss_fails_the_whole_update(hass) -> None:
+    client, _, coordinator = await setup_recorded_anlage(hass)
+    client.lose_connection("input", 33549)
+    await coordinator.async_refresh()
+    await hass.async_block_till_done()
+
+    assert not coordinator.last_update_success
+    assert hass.states.get("sensor.solvisleo_180_hot_water_power").state == "unavailable"
+    assert hass.states.get("sensor.solvisleo_180_heat_generator_2_thermal_output").state == "unavailable"

@@ -2030,6 +2030,8 @@ REGISTERS = [
     ),
 ]
 
+REGISTER_ADDRESSES_BY_NAME = {register.name: register.address for register in REGISTERS}
+
 DERIVATIVE_SENSORS: dict[str, dict] = {
     "stored_energy_12": {
         "source_keys": ["warm_water_buffer_temp_s1", "heating_buffer_upper_temp_s4", "heating_buffer_lower_temp_s9", "storage_reference_temp_s3"],

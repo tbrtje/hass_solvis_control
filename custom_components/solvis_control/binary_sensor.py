@@ -13,7 +13,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_point_in_time
 from homeassistant.util import dt as dt_util
 
-from .const import CONF_HOST, CONF_NAME, DATA_COORDINATOR, DOMAIN, SCHEDULES
+from .const import CONF_HOST, CONF_NAME, DATA_COORDINATOR, DOMAIN, REGISTER_ADDRESSES_BY_NAME, SCHEDULES
 from .coordinator import SolvisModbusCoordinator
 from .utils.helpers import async_setup_solvis_entities, conf_options_map, generate_device_info
 from .utils.schedule import decode_schedule, is_active, next_switch
@@ -54,6 +54,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
                 host=host,
                 name=f"{key}_active",
                 source_key=key,
+                modbus_address=REGISTER_ADDRESSES_BY_NAME[key],
             )
         )
 
@@ -75,13 +76,14 @@ class SolvisScheduleBinarySensor(SolvisEntity, BinarySensorEntity):
         host: str,
         name: str,
         source_key: str,
+        modbus_address: int,
     ) -> None:
         super().__init__(
             coordinator,
             device_info,
             host,
             name,
-            modbus_address=None,
+            modbus_address=modbus_address,
             supported_version=coordinator.supported_version,
             enabled_by_default=False,
             data_processing=0,
