@@ -20,15 +20,13 @@
 			},
 			"device":{
 				"title": "Systemregelung & Abfrageintervalle",
-				"description": "Bitte wählen Sie die Version der Systemregelung und die Zeitintervalle aus, in denen die Daten abfragt werden sollen.",
+				"description": "Bitte wählen Sie die Zeitintervalle aus, in denen die Daten abgefragt werden sollen.",
 				"data_description": {
-					"device_version": "Version der zentralen Regelung des Heizsystems.",
 					"poll_rate_default": "Muss ein Vielfaches des hohen Abfrageintervalls sein.",
 					"poll_rate_slow": "Muss ein Vielfaches des Standard-Abfrageintervalls sein.",
 					"poll_rate_high": "Muss mindestens 2 Sekunden betragen."
 				},
 				"data":{
-					"device_version": "Systemregelung",
 					"poll_rate_default": "Standard-Abfrageintervall (in s)",
 					"poll_rate_slow": "Niedriges Abfrageintervall (in s)",
 					"poll_rate_high": "Hohes Abfrageintervall (in s)"
@@ -123,15 +121,13 @@
 			},
 			"device":{
 				"title": "Systemregelung & Abfrageintervalle",
-				"description": "Bitte wählen Sie die Version der Systemregelung und die Zeitintervalle aus, in denen die Daten abgefragt werden sollen.",
+				"description": "Bitte wählen Sie die Zeitintervalle aus, in denen die Daten abgefragt werden sollen.",
 				"data_description": {
-					"device_version": "Version der zentralen Regelung des Heizsystems.",
 					"poll_rate_default": "Muss ein Vielfaches des hohen Abfrageintervalls sein.",
 					"poll_rate_slow": "Muss ein Vielfaches des Standard-Abfrageintervalls sein.",
 					"poll_rate_high": "Muss mindestens 2 Sekunden betragen."
 				},
 				"data":{
-					"device_version": "Systemregelung",
 					"poll_rate_default": "Standard-Abfrageintervall (in s)",
 					"poll_rate_slow": "Niedriges Abfrageintervall (in s)",
 					"poll_rate_high": "Hohes Abfrageintervall (in s)"

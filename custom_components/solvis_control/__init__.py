@@ -20,7 +20,6 @@ from .const import (
     CONF_PORT,
     DATA_COORDINATOR,
     DOMAIN,
-    DEVICE_VERSION,
     CONF_OPTION_1,
     CONF_OPTION_2,
     CONF_OPTION_3,
@@ -84,11 +83,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data[DOMAIN][entry.entry_id] = hass_data
 
     # Create modbus client
-    version = int(entry.data.get(DEVICE_VERSION, 0))
     client = create_modbus_client(
         host=conf_host,
         port=conf_port,
-        device_version=version,
     )
     entry.runtime_data = {"modbus": client}
 
@@ -158,8 +155,6 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
             new_data[CONF_OPTION_3] = False
         if CONF_OPTION_4 not in new_data:
             new_data[CONF_OPTION_4] = False
-        if DEVICE_VERSION not in new_data:
-            new_data[DEVICE_VERSION] = "SC3"
         current_minor_version = 3
 
     if current_version == 1 and current_minor_version < 4:

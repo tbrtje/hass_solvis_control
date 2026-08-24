@@ -25,7 +25,6 @@ from custom_components.solvis_control.const import (
     DOMAIN,
     MANUFACTURER,
     DATA_COORDINATOR,
-    DEVICE_VERSION,
     CONF_OPTION_1,
     CONF_OPTION_2,
     CONF_OPTION_3,
@@ -79,22 +78,11 @@ def generate_device_info(entry: ConfigEntry, host: str, name: str) -> DeviceInfo
     _LOGGER.debug(f"Generating device info for {host}")
     _LOGGER.debug(f"Entry data: {entry.data}")
 
-    device_version_str = entry.data.get(DEVICE_VERSION, "")
-    try:
-        device_version = int(device_version_str)
-    except (ValueError, TypeError):
-        device_version = None
-
-    model = {
-        1: "Solvis Control 3",
-        2: "Solvis Control 2",
-    }.get(device_version, "Solvis Control (unbekannt)")
-
     info = {
         "identifiers": {(DOMAIN, host)},
         "name": name,
         "manufacturer": MANUFACTURER,
-        "model": model,
+        "model": "Solvis Control 3",
     }
 
     if "VERSIONSC" in entry.data:
@@ -110,7 +98,6 @@ async def fetch_modbus_value(
     register_type,
     host: str,
     port: int,
-    device_version: int = 0,
     datatype="INT16",
     order="big",
 ) -> int | list[int] | None:
@@ -132,7 +119,6 @@ async def fetch_modbus_value(
     async with create_modbus_client(
         host=host,
         port=port,
-        device_version=device_version,
     ) as client:
 
         for reg in registers:
@@ -337,22 +323,6 @@ def should_skip_register(entry_data: dict, register) -> bool:
             _LOGGER.debug(f"[{register.name} | {register.address}] Skipping register because conf_option {register.conf_option} is not enabled.")
             return True
 
-    # check supported version
-    device_version_str = entry_data.get(DEVICE_VERSION, "")
-    _LOGGER.debug(f"[{register.name} | {register.address}] Register version: {register.supported_version} / Device version: {device_version_str}")
-    try:
-        device_version = int(device_version_str)
-    except (ValueError, TypeError):
-        device_version = None
-
-    if device_version == 1 and int(register.supported_version) == 2:
-        _LOGGER.debug(f"[{register.name} | {register.address}] Skipping SC2 entity for SC3 device.")
-        return True
-
-    if device_version == 2 and int(register.supported_version) == 1:
-        _LOGGER.debug(f"[{register.name} | {register.address}] Skipping SC3 entity for SC2 device.")
-        return True
-
     return False
 
 
@@ -461,21 +431,12 @@ async def ensure_connected(client) -> bool:
 def create_modbus_client(
     host: str,
     port: int,
-    device_version: int = None,
     timeout: float = 2.0,
     retries: int = 1,
     reconnect_delay: float = 0.5,
     reconnect_delay_max: float = 5.0,
 ) -> AsyncModbusTcpClient:
-    """Create AsyncModbusTcpClient; for SC2 devices (device_version==2) use slower, more stable defaults."""
-
-    # adjust for SC2
-    if device_version == 2:
-        timeout = 6.0
-        retries = 3
-        reconnect_delay = 1.0
-        reconnect_delay_max = 5.0
-
+    """Create the Modbus client with settings suitable for the SC3 controller."""
     return AsyncModbusTcpClient(
         host=host,
         port=port,

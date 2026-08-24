@@ -29,7 +29,6 @@ from custom_components.solvis_control.const import (
     DOMAIN,
     MANUFACTURER,
     DATA_COORDINATOR,
-    DEVICE_VERSION,
     CONF_OPTION_1,
     CONF_OPTION_2,
     CONF_OPTION_3,
@@ -194,7 +193,7 @@ def mock_modbus(mocker, request):
         self.option_room_temperature_sensor = entry.data.get(CONF_OPTION_6, False)
         self.option_write_temperature_sensor = entry.data.get(CONF_OPTION_7, False)
         self.option_pv2heat = entry.data.get(CONF_OPTION_8, False)
-        self.supported_version = entry.data.get(DEVICE_VERSION, 1)
+        self.supported_version = 1
         self.poll_rate_default = entry.data.get(POLL_RATE_DEFAULT, 10)
         self.poll_rate_slow = entry.data.get(POLL_RATE_SLOW, 30)
         self.poll_rate_high = entry.data.get(POLL_RATE_HIGH, 5)
@@ -227,7 +226,6 @@ def mock_config_entry():
     entry.data = {
         CONF_HOST: "127.0.0.1",
         CONF_NAME: "TestDevice",
-        DEVICE_VERSION: 1,
         POLL_RATE_DEFAULT: 10,
         POLL_RATE_SLOW: 30,
     }
@@ -270,7 +268,6 @@ def dummy_config_entry():
         CONF_NAME: "TestDevice",
         CONF_HOST: "127.0.0.1",
         CONF_PORT: 502,
-        DEVICE_VERSION: 1,
         POLL_RATE_DEFAULT: 30,
         POLL_RATE_SLOW: 300,
         POLL_RATE_HIGH: 10,

@@ -40,8 +40,6 @@ from custom_components.solvis_control.const import (
     CONF_OPTION_11,
     CONF_OPTION_12,
     CONF_OPTION_13,
-    DEVICE_VERSION,
-    SolvisDeviceVersion,
     STORAGE_TYPE_CONFIG,
     CONF_HKR1_NAME,
     CONF_HKR2_NAME,
@@ -72,7 +70,6 @@ def extended_config_entry(mock_config_entry) -> ConfigEntry:
         {
             CONF_HOST: "127.0.0.1",
             CONF_PORT: 502,
-            DEVICE_VERSION: 1,  # SC3
             POLL_RATE_DEFAULT: 30,
             POLL_RATE_SLOW: 300,
             POLL_RATE_HIGH: 10,
@@ -103,7 +100,7 @@ async def test_async_setup_entry(hass, extended_config_entry, monkeypatch):
 
     fake_client = AsyncMock()
     fake_client.connect.return_value = True
-    monkeypatch.setattr("custom_components.solvis_control.create_modbus_client", lambda host, port, device_version: fake_client)
+    monkeypatch.setattr("custom_components.solvis_control.create_modbus_client", lambda host, port: fake_client)
 
     async def dummy_first_refresh(self):
         return
@@ -164,7 +161,7 @@ async def test_setup_entry_connect_returns_false_raises_not_ready(hass, extended
     fake_client.connect.return_value = False
     monkeypatch.setattr(
         "custom_components.solvis_control.create_modbus_client",
-        lambda host, port, device_version: fake_client,
+        lambda host, port: fake_client,
     )
     with pytest.raises(ConfigEntryNotReady):
         await async_setup_entry(hass, extended_config_entry)
@@ -181,7 +178,7 @@ async def test_setup_entry_connect_exception_raises_not_ready(hass, extended_con
     fake_client.connect.side_effect = Exception("Connection error")
     monkeypatch.setattr(
         "custom_components.solvis_control.create_modbus_client",
-        lambda host, port, device_version: fake_client,
+        lambda host, port: fake_client,
     )
     with pytest.raises(ConfigEntryNotReady):
         await async_setup_entry(hass, extended_config_entry)
@@ -287,7 +284,7 @@ async def test_migrate_branch_1(hass, extended_config_entry, monkeypatch):
     extended_config_entry.version = 1
     extended_config_entry.minor_version = 1  # < 3
 
-    for key in [CONF_OPTION_1, CONF_OPTION_2, CONF_OPTION_3, CONF_OPTION_4, DEVICE_VERSION]:
+    for key in [CONF_OPTION_1, CONF_OPTION_2, CONF_OPTION_3, CONF_OPTION_4]:
         extended_config_entry.data.pop(key, None)
 
     monkeypatch.setattr(hass.config_entries, "async_update_entry", dummy_update_entry)
@@ -296,7 +293,6 @@ async def test_migrate_branch_1(hass, extended_config_entry, monkeypatch):
     assert result is True
     assert extended_config_entry.version == 2
     assert extended_config_entry.minor_version == 6
-    assert extended_config_entry.data.get(DEVICE_VERSION) == "SC3"
     for key in [CONF_OPTION_1, CONF_OPTION_2, CONF_OPTION_3, CONF_OPTION_4]:
         assert key in extended_config_entry.data
 
@@ -412,7 +408,6 @@ async def test_migrate_all_missing_to_defaults(hass, extended_config_entry, monk
     assert extended_config_entry.data.get(CONF_OPTION_11) is False
     assert extended_config_entry.data.get(CONF_OPTION_12) is False
     assert extended_config_entry.data.get(CONF_OPTION_13) is None
-    assert extended_config_entry.data.get(DEVICE_VERSION) == "SC3"
 
 
 @pytest.mark.asyncio
@@ -489,7 +484,6 @@ async def test_migrate_only_one_present(hass, extended_config_entry, monkeypatch
         POLL_RATE_DEFAULT: 30,
         POLL_RATE_SLOW: 300,
         POLL_RATE_HIGH: 10,
-        DEVICE_VERSION: "SC3",
     }
 
     custom_value = not DEFAULTS[present_option]

@@ -20,15 +20,13 @@
 			},
 			"device":{
 				"title": "Systeeminstellingen & poll intervallen",
-				"description": "Gelieve de versie van de systeeminstellingen en de tijdsintervallen te selecteren waarin de gegevens moeten worden opgevraagd.",
+				"description": "Selecteer de tijdsintervallen waarin de gegevens moeten worden opgevraagd.",
 				"data_description": {
-					"device_version": "Versie van de centrale regeling van het verwarmingssysteem.",
 					"poll_rate_default": "Moet een veelvoud zijn van het hoge opvraaginterval.",
 					"poll_rate_slow": "Moet een veelvoud zijn van het standaard opvraaginterval.",
 					"poll_rate_high": "Moet minimaal 2 seconden zijn."
 				},
 				"data":{
-					"device_version": "Systeeminstelling",
 					"poll_rate_default": "Standaard opvraaginterval (in seconden)",
 					"poll_rate_slow": "Laag opvraaginterval (in seconden)",
 					"poll_rate_high": "Hoge opvraaginterval (in seconden)"
@@ -123,15 +121,13 @@
 			},
 			"device":{
 				"title": "Systeeminstellingen & poll intervallen",
-				"description": "Kies de versie van de systeemregeling en de tijdsintervallen waarin de gegevens opgevraagd moeten worden.",
+				"description": "Kies de tijdsintervallen waarin de gegevens opgevraagd moeten worden.",
 				"data_description": {
-					"device_version": "Versie van de centrale regeling van het verwarmingssysteem.",
 					"poll_rate_default": "Moet een veelvoud zijn van het hoge opvraaginterval.",
 					"poll_rate_slow": "Moet een veelvoud zijn van het standaard opvraaginterval.",
 					"poll_rate_high": "Moet minimaal 2 seconden zijn."
 				},
 				"data":{
-					"device_version": "Systeeminstelling",
 					"poll_rate_default": "Standaard opvraaginterval (in seconden)",
 					"poll_rate_slow": "Laag opvraaginterval (in seconden)",
 					"poll_rate_high": "Hoge opvraaginterval (in seconden)"

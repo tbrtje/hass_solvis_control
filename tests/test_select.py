@@ -11,7 +11,7 @@ from unittest.mock import AsyncMock, patch, MagicMock
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from custom_components.solvis_control.select import SolvisSelect, async_setup_entry, _LOGGER
-from custom_components.solvis_control.const import CONF_HOST, CONF_NAME, DATA_COORDINATOR, DOMAIN, DEVICE_VERSION, POLL_RATE_DEFAULT, POLL_RATE_SLOW, ModbusFieldConfig
+from custom_components.solvis_control.const import CONF_HOST, CONF_NAME, DATA_COORDINATOR, DOMAIN, POLL_RATE_DEFAULT, POLL_RATE_SLOW, ModbusFieldConfig
 from pymodbus.exceptions import ConnectionException
 from homeassistant.helpers import entity_registry as er
 
@@ -237,8 +237,8 @@ def test_select_unique_id_special_chars(dummy_solvisselect_entity):
 
 def test_select_unique_id_all_special_chars(dummy_solvisselect_entity):
     """Test unique_id with name having only special chars."""
-    entity = dummy_solvisselect_entity(name="!@#$%^&*()", supported_version=2)
-    assert entity.unique_id == "1_2"
+    entity = dummy_solvisselect_entity(name="!@#$%^&*()", supported_version=1)
+    assert entity.unique_id == "1_1"
 
 
 # # # Tests for setup_entry
@@ -268,26 +268,6 @@ async def test_select_async_setup_entry_no_host(hass, mock_config_entry):
         hass.data = {DOMAIN: {mock_config_entry.entry_id: {DATA_COORDINATOR: AsyncMock()}}}
         await async_setup_entry(hass, mock_config_entry, AsyncMock())
         mock_logger.assert_called_with("Device has no address")
-
-
-@pytest.mark.asyncio
-async def test_select_async_setup_entry_skips_sc2_entity_on_sc3_device(hass, mock_config_entry):
-    """Test if SC2 entities are skipped on SC3 device."""
-    hass.data = {DOMAIN: {mock_config_entry.entry_id: {DATA_COORDINATOR: AsyncMock()}}}
-    mock_config_entry.data[DEVICE_VERSION] = "1"  # SC3
-    mock_register = ModbusFieldConfig(
-        name="test_entity_sc2",
-        unit=None,
-        device_class=None,
-        state_class=None,
-        address=123,
-        input_type=1,
-        supported_version=2,  # SC2
-    )
-    with patch("custom_components.solvis_control.utils.helpers.REGISTERS", [mock_register]):
-        with patch("custom_components.solvis_control.utils.helpers._LOGGER.debug") as mock_logger:
-            await async_setup_entry(hass, mock_config_entry, MagicMock())
-            mock_logger.assert_any_call("[test_entity_sc2 | 123] Skipping SC2 entity for SC3 device.")
 
 
 @pytest.mark.asyncio

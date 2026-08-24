@@ -17,9 +17,7 @@ Solvis GmbH is a German manufacturer of innovative and energy-efficient heating 
 
 ## Supported Devices
 
-This integration provides full support for [SolvisControl 3 (SC3)](https://www.solvis.de/solviscontrol/) devices with an enabled Modbus interface, offering seamless integration with Home Assistant.  
-
-[SolvisControl 2 (SC2)](https://www.solvis.de/solvisremote-ben-max/) devices are supported with limitations. SC2 requires a [SolvisRemote](https://www.solvis.de/solvisremote-ben-max/) module for Modbus communication, and functionality is available only from firmware version MA205.  
+This integration supports a SolvisLeo 180 with a [SolvisControl 3 (SC3)](https://www.solvis.de/solviscontrol/) and an enabled Modbus interface.
 
 Older Solvis control units (e.g., SC1) and devices without Modbus support are not compatible.
 
@@ -34,13 +32,6 @@ Other versions (3.5.1 and earlier) may also be compatible, but have **not been t
 **Warning:** Version 3.20.16 is not compatible with SolvisTom 9 kW. For systems with SolvisTom 9 kW and SolvisPia, continue using 3.20.05. See [Bedienungsanleitung SolvisMax für Installateure, BAL-SBSX-3-I, 32432-2h](https://solvis-files.s3.eu-central-1.amazonaws.com/downloads-fk/solvismax7/32432_BAL-SBSX-3-I.pdf)
 
 The version of the network board should not be critical for the functionality of the integration. No issues have been observed so far with any of the currently used versions 3.0.1, 3.1.0, or 3.2.1.
-
-## Supported Firmware SC2
-
-Some features may depend on the firmware version installed on SC2. As there are some known deviations from documentation and actual firmware implementation, staying on the latest version is recommended, as the integartion is set to deal with these deviations.
-
-The following firmware versions are confirmed to be **fully supported**: 205.08 (latest)<br>
-Other versions may also be compatible, but have **not been tested**.
 
 If you have information about the compatibility of an unlisted version, or encounter issues with a listed version, feedback is welcome.
 
@@ -109,44 +100,6 @@ To use this integration, the Solvis device must have Modbus enabled.
 
 </details>
 
-## Configuring the Solvis SC2 Device
-SC2 devices require a Solvis Remote device for Modbus communication.
-To use this integration, the Solvis device must have Modbus enabled along the following steps:
-
-<details>
-   <summary>Follow these steps</summary>
-   
-   <br>
-   
-- Navigate to **Sonstig.** → **Nutzerwechsel** → **Installateur** and enter the default code **0064**.
-
-<div align="center">
-<img src="https://github.com/user-attachments/assets/887a0425-aacd-4810-9079-ea6b0589b1be" width="400"> <br>
-</div>
-
-(Sonstiges)<br>
-
-<div align="center">
-<img src="https://github.com/user-attachments/assets/b332ce3c-cb95-49bd-a10d-3304a2ba4dd4" width="400"> <br>
-</div>
-
-(Remote) <br>
-<div align="center">
-<img src="https://github.com/user-attachments/assets/de81be36-1b5d-43c8-a18d-c26db6e72f23" width="400"> <br>
-</div>
-(Datenprotokoll "Remote")<br>
-(next screen)<br>
-<div align="center">
-<img src="https://github.com/user-attachments/assets/7c6c4563-c85d-4d52-b979-9eede3bdf0cd" width="400"> <br>
-</div>
-("schreiben") -> to enable remote control via integration <br><br>
-
-> **Notes:**
-> - Screenshots are from Solvis SC2 (Ver. MA205.08 N300), and Solvis Remote V2.20.06
-> - Selecting "read" mode only allows data monitoring, but not active control.
-
-</details>
-
 # Device Configuration
 Once the integration is installed and Modbus access is enabled, add the device in Home Assistant:
 
@@ -154,9 +107,9 @@ Once the integration is installed and Modbus access is enabled, add the device i
 2. Click **Add Integration** and search for **Solvis Control**. Click on it.
 3. Configure the integration:
    - Assign a **device name** (optional).
-   - Enter the **IP address** of the Solvis Remote Device (found in your router's DHCP list).
+   - Enter the **IP address** of the SC3 controller (found in your router's DHCP list).
    - Keep the **port** unchanged.
-4. Select your **Solvis Control version** and set the **low, standard and high polling intervals**.
+4. Set the **low, standard and high polling intervals**.
 5. Use the checkboxes to select which **assemblies and system components** (second and/or third heating circuit, heat pump, solar collector, heat meter, PV2Heat) are connected to the heating system.
 6. Next, for each available heating circuit (as defined in the previous step), you can configure the presence and behavior of the **room temperature sensor**. Select 'disabled' if no sensor is installed, 'read' to only read the value (default), or 'write' if the value should be writable.
 7. Choose your model of the **stratified storage**.
@@ -171,7 +124,6 @@ After setup, the integration polls an initial set of parameters and completes th
 >    - The **standard polling interval** defaults to 30 seconds, with a minimum of 2 seconds. It must be a multiple of the high interval and is used for regularly changing values (e.g., room temperature).
 >    - The **low polling interval** defaults to 300 seconds, must be greater than 10 seconds, and must be a multiple of the standard interval. It is used for rarely changing values (e.g., firmware version).
 > - For an overview of which values are retrieved at which interval, please refer to [the polling groups list](https://github.com/LarsK1/hass_solvis_control/blob/main/polling-groups.md)
-> - The SC2 Processor and Modbus implementation seems to be rather slow in processing requests. As a result, the web interface responds rather sluggish with the integration running. If that poses a problem, increasing the polling intervals might reduce the issue.
 > - The selected stratified storage model and configuration determine the amount of energy stored and reported by the integration. Three types of stratified storage tanks are available: SolvisBen (single size), SolvisMax (available in 457, 757, and 957 sizes) and SolvisLeo (180). Both models can be deployed in solo mode (without a heat generator), with a heat pump, or in hybrid mode (gas/oil burner and heat pump). The SolvisMax 957 offers three sensor-position configurations — 82/34/796, 212/34/663, and 301/34/574 — where the first number indicates the domestic hot water volume (OK-S4), the second the heating buffer volume (S4-S9), and the third the solar buffer volume (S4-UK). The SolvisLeo 180 is a two-zone tank instead: 80 litres in the upper zone (S1-S4) and 100 litres in the lower zone (S4-S9), 180 litres in total.
 
 
@@ -182,9 +134,7 @@ For a detailed list of supported entities, check [the supported entities list](h
 
 > **Notes:**
 > - For more information on the Solvis Modbus interface, refer to:
->    - [SolvisRemote Modbus Spezifikationen Version 1.0 (01/2019) for SC2](https://solvis-files.s3.eu-central-1.amazonaws.com/seiten/produkte/solvisremote/Download/SolvisRemote+Modbus+Spezifikationen+201906.pdf)
 >    - [SolvisControl 3 Modbus Spezifikationen Version 1.0 (09/2021) for SC3](https://solvis-files.s3.eu-central-1.amazonaws.com/downloads-fk/regelung/sc-3/SC-3_ModBus_Schnittstellenbeschreibung.pdf) 
-> - Official Modbus specifications are partially outdated and contain incorrect information (example for SC2 - flow meters do not provide the flow in l/sec as described, but the impulse duration of the flow meter)
 > - A revised SC3 Modbus specification is expected in 2025 (unofficial information from Solvis, December 2024).
 > - Sometimes useful for debugging: [Anlagenschema SolvisMax - ALS-MAX7 Ver. 27350-2n](https://solvis-files.s3.eu-central-1.amazonaws.com/downloads-fk/solvismax7/27350_ALS-MAX-7.pdf)
 

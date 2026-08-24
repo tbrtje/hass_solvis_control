@@ -8,7 +8,7 @@ import pytest
 from unittest.mock import AsyncMock, patch, MagicMock
 from homeassistant.core import HomeAssistant
 from custom_components.solvis_control.binary_sensor import SolvisBinarySensor, async_setup_entry, _LOGGER
-from custom_components.solvis_control.const import CONF_HOST, CONF_NAME, DATA_COORDINATOR, DOMAIN, DEVICE_VERSION, POLL_RATE_DEFAULT, POLL_RATE_SLOW, ModbusFieldConfig
+from custom_components.solvis_control.const import CONF_HOST, CONF_NAME, DATA_COORDINATOR, DOMAIN, POLL_RATE_DEFAULT, POLL_RATE_SLOW, ModbusFieldConfig
 from homeassistant.helpers.device_registry import DeviceInfo
 
 

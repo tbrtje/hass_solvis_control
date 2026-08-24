@@ -3,7 +3,6 @@ Definition of constants for the Solvis Control integration.
 """
 
 from dataclasses import dataclass
-from enum import IntEnum
 from homeassistant.components.sensor import SensorStateClass
 
 DOMAIN = "solvis_control"
@@ -13,7 +12,6 @@ CONF_HOST = "host"
 CONF_PORT = "port"
 MAC = "mac"
 
-DEVICE_VERSION = "device_version"
 POLL_RATE_DEFAULT = "poll_rate_default"
 POLL_RATE_SLOW = "poll_rate_slow"
 POLL_RATE_HIGH = "poll_rate_high"
@@ -43,13 +41,6 @@ CONF_HKR3_NAME = "hkr3_name"
 DATA_COORDINATOR = "coordinator"
 MANUFACTURER = "Solvis"
 PORT = 502
-
-
-class SolvisDeviceVersion(IntEnum):
-    """Enum for device versions."""
-
-    SC2 = 2
-    SC3 = 1
 
 
 @dataclass
@@ -95,13 +86,10 @@ class ModbusFieldConfig:
     # Option to further process data
     # 0: no processing
     # 1: version string split for version sc & version nbg, registers 32770 & 32771
-    # 2: special conversion for S18 on SC2, register 33041
-    # 3: special conversion for S17 on SC2, register 33040
     # 4: special conversion for digin_error, register 33045
 
     supported_version: int = 0
-    # Supported Version
-    # 0: SC2 & SC3, 1: SC3, 2: SC2
+    # Retained until issue #12 simplifies entity identifiers.
 
     poll_rate: int = 0
     # 0: default, 1: slow, 2: high
@@ -520,19 +508,7 @@ REGISTERS = [
         conf_option=3,
         poll_time=0,
         suggested_precision=0,
-        supported_version=1,  # SC3
-    ),
-    ModbusFieldConfig(  # S17
-        name="solar_volume_flow_s17",
-        address=33040,
-        unit="l/min",
-        device_class=None,
-        state_class=SensorStateClass.MEASUREMENT,
-        multiplier=1,
-        conf_option=3,
-        poll_time=0,
-        data_processing=3,
-        supported_version=2,  # SC2
+        supported_version=1,
     ),
     ModbusFieldConfig(  # Volumenstrom Warmwasser S18
         name="warm_water_volume_flow_s18",
@@ -540,18 +516,7 @@ REGISTERS = [
         unit="l/min",
         device_class=None,
         state_class=SensorStateClass.MEASUREMENT,
-        supported_version=1,  # SC3
-        poll_time=0,
-    ),
-    ModbusFieldConfig(  # Volumenstrom Warmwasser S18
-        name="warm_water_volume_flow_s18",
-        address=33041,
-        unit="l/min",
-        device_class=None,
-        state_class=SensorStateClass.MEASUREMENT,
-        supported_version=2,  # SC2
-        data_processing=2,
-        multiplier=1,
+        supported_version=1,
         poll_time=0,
     ),
     ModbusFieldConfig(
@@ -704,17 +669,6 @@ REGISTERS = [
         poll_time=0,
         input_type=4,
         supported_version=1,
-    ),
-    ModbusFieldConfig(  # A12 Brennerstatus
-        name="burner_status_a12",  # maybe also valve for remote heat, depending on config
-        address=33291,
-        unit=None,
-        multiplier=1,
-        device_class=None,
-        state_class=SensorStateClass.MEASUREMENT,
-        poll_time=0,
-        input_type=4,
-        supported_version=2,
     ),
     ModbusFieldConfig(  # A13 Heizstab Stufe 2 & 3
         name="heatpump_heating_rod_level_2_3_a13",

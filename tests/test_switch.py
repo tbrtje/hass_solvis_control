@@ -7,7 +7,7 @@ Version: v2.1.0
 import pytest
 from unittest.mock import AsyncMock, patch, MagicMock
 from custom_components.solvis_control.switch import SolvisSwitch, async_setup_entry, _LOGGER
-from custom_components.solvis_control.const import CONF_HOST, DATA_COORDINATOR, DOMAIN, DEVICE_VERSION, ModbusFieldConfig
+from custom_components.solvis_control.const import CONF_HOST, DATA_COORDINATOR, DOMAIN, ModbusFieldConfig
 from homeassistant.helpers.device_registry import DeviceInfo
 
 

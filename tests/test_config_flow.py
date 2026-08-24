@@ -41,8 +41,6 @@ from custom_components.solvis_control.const import (
     CONF_OPTION_11,
     CONF_OPTION_12,
     CONF_OPTION_13,
-    DEVICE_VERSION,
-    SolvisDeviceVersion,
     STORAGE_TYPE_CONFIG,
     CONF_HKR1_NAME,
     CONF_HKR2_NAME,
@@ -59,7 +57,6 @@ async def create_test_config_entry(hass) -> ConfigEntry:
         CONF_HOST: "10.0.0.131",
         CONF_PORT: 502,
         MAC: "40:33:be:13:b5:98",
-        DEVICE_VERSION: str(SolvisDeviceVersion.SC3),
         POLL_RATE_HIGH: 10,
         POLL_RATE_DEFAULT: 30,
         POLL_RATE_SLOW: 300,
@@ -134,7 +131,6 @@ async def test_config_flow_full(hass, mock_get_mac, mock_modbus) -> None:
 
     # user input step device
     device_input = {
-        DEVICE_VERSION: str(SolvisDeviceVersion.SC3),
         POLL_RATE_HIGH: 10,
         POLL_RATE_DEFAULT: 30,
         POLL_RATE_SLOW: 300,
@@ -319,7 +315,7 @@ async def test_config_flow_step_device_invalid_poll_rate_high(hass, mock_modbus,
     result = await hass.config_entries.flow.async_configure(result["flow_id"], user_input)
 
     # user input step device - invalid poll rate high / default
-    device_input = {DEVICE_VERSION: str(SolvisDeviceVersion.SC3), POLL_RATE_HIGH: 15, POLL_RATE_DEFAULT: 10, POLL_RATE_SLOW: 30}
+    device_input = {POLL_RATE_HIGH: 15, POLL_RATE_DEFAULT: 10, POLL_RATE_SLOW: 30}
     result = await hass.config_entries.flow.async_configure(result["flow_id"], device_input)
 
     # check
@@ -340,7 +336,7 @@ async def test_config_flow_step_device_invalid_poll_rate_slow(hass, mock_modbus,
     result = await hass.config_entries.flow.async_configure(result["flow_id"], user_input)
 
     # user input step device - invalid poll rate slow / default
-    device_input = {DEVICE_VERSION: str(SolvisDeviceVersion.SC3), POLL_RATE_HIGH: 5, POLL_RATE_DEFAULT: 10, POLL_RATE_SLOW: 12}
+    device_input = {POLL_RATE_HIGH: 5, POLL_RATE_DEFAULT: 10, POLL_RATE_SLOW: 12}
     result = await hass.config_entries.flow.async_configure(result["flow_id"], device_input)
 
     # check
@@ -372,7 +368,7 @@ async def test_config_flow_step_features_hkr_presets(hass, mock_modbus, mock_get
     result = await hass.config_entries.flow.async_configure(flow_id, user_input)
 
     # user input step device
-    device_input = {DEVICE_VERSION: str(SolvisDeviceVersion.SC3), POLL_RATE_HIGH: 10, POLL_RATE_DEFAULT: 30, POLL_RATE_SLOW: 300}
+    device_input = {POLL_RATE_HIGH: 10, POLL_RATE_DEFAULT: 30, POLL_RATE_SLOW: 300}
     result = await hass.config_entries.flow.async_configure(flow_id, device_input)
 
     assert "type" in result
@@ -401,7 +397,6 @@ async def test_config_flow_step_features_exception(monkeypatch, hass, mock_get_m
     await flow.async_step_user({CONF_NAME: "X", CONF_HOST: "h", CONF_PORT: 502})
     await flow.async_step_device(
         {
-            DEVICE_VERSION: "1",
             POLL_RATE_HIGH: 5,
             POLL_RATE_DEFAULT: 10,
             POLL_RATE_SLOW: 30,
@@ -421,7 +416,6 @@ async def test_get_solvis_devices_options_defaults():
     schema = get_solvis_devices_options({})
     validated_data = schema({})
 
-    assert validated_data[DEVICE_VERSION] == str(SolvisDeviceVersion.SC3)
     assert validated_data[POLL_RATE_HIGH] == 10
     assert validated_data[POLL_RATE_DEFAULT] == 30
     assert validated_data[POLL_RATE_SLOW] == 300
@@ -512,7 +506,6 @@ async def test_options_flow_full(hass, mock_get_mac, mock_modbus, conf_option_1,
 
     # Step "device"
     device_input = {
-        DEVICE_VERSION: str(SolvisDeviceVersion.SC3),
         POLL_RATE_HIGH: 10,
         POLL_RATE_DEFAULT: 30,
         POLL_RATE_SLOW: 300,
@@ -656,7 +649,6 @@ async def test_options_flow_step_device_invalid_poll_rate(hass, mock_get_mac, mo
 
     # user input step device - invalid poll rate high / default
     device_input = {
-        DEVICE_VERSION: str(SolvisDeviceVersion.SC3),
         POLL_RATE_HIGH: 15,
         POLL_RATE_DEFAULT: 10,
         POLL_RATE_SLOW: 30,

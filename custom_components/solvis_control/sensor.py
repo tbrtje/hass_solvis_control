@@ -301,21 +301,7 @@ class SolvisSensor(SolvisEntity, SensorEntity):
         self.suggested_display_precision = suggested_precision
 
     def _update_value(self, value, extra_attrs):
-        match self.data_processing:
-            case 2:
-                if value != 0:
-                    self._attr_native_value = (1 / (value / 60)) * 1000 / 2 / 42
-                else:
-                    _LOGGER.debug(f"Division by zero for {self._response_key} with value {value}")
-                    self._attr_native_value = 0
-            case 3:
-                if value != 0:
-                    self._attr_native_value = (1 / (value / 60)) * 1000 / 42
-                else:
-                    _LOGGER.debug(f"Division by zero for {self._response_key} with value {value}")
-                    self._attr_native_value = 0
-            case _:
-                self._attr_native_value = value
+        self._attr_native_value = value
         self._attr_extra_state_attributes = {"unprocessed_value": value}
         _LOGGER.debug(f"[{self._response_key}] Successfully updated native value: {self._attr_native_value} (Raw: {value})")
 

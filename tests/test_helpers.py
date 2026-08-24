@@ -25,7 +25,6 @@ from custom_components.solvis_control.const import (
     DOMAIN,
     MANUFACTURER,
     DATA_COORDINATOR,
-    DEVICE_VERSION,
     CONF_OPTION_1,
     CONF_OPTION_2,
     CONF_OPTION_3,
@@ -63,7 +62,6 @@ class DummyModbusCM:
 
 def test_generate_device_info():
     data = {
-        DEVICE_VERSION: 1,
         "VERSIONSC": "1.0.1",
         "VERSIONNBG": "1.0",
     }
@@ -81,20 +79,6 @@ def test_generate_device_info():
     assert info["hw_version"] == "1.0"
 
 
-def test_generate_device_info_invalid_version():
-    data = {
-        DEVICE_VERSION: "invalid",
-        "VERSIONSC": "1.0.1",
-        "VERSIONNBG": "1.0",
-    }
-    entry = DummyConfigEntry(data)
-    host = "192.168.1.100"
-    name = "TestDevice"
-    info = helpers.generate_device_info(entry, host, name)
-
-    assert info["model"] == "Solvis Control (unbekannt)"
-
-
 # # # Tests for fetch_modbus_value # # #
 
 
@@ -104,7 +88,7 @@ async def test_fetch_modbus_value_success(monkeypatch):
     monkeypatch.setattr(
         helpers,
         "create_modbus_client",
-        lambda host, port, device_version=None: DummyModbusCM(dummy_client),
+        lambda host, port: DummyModbusCM(dummy_client),
     )
     result = await helpers.fetch_modbus_value(register=10, register_type=1, host="127.0.0.1", port=502)
 
@@ -118,7 +102,7 @@ async def test_fetch_modbus_value_invalid_response(monkeypatch):
     monkeypatch.setattr(
         helpers,
         "create_modbus_client",
-        lambda host, port, device_version=None: (_ for _ in ()).throw(ModbusException("Invalid response from Modbus for register 10")),
+        lambda host, port: (_ for _ in ()).throw(ModbusException("Invalid response from Modbus for register 10")),
     )
     with pytest.raises(ModbusException):
         await helpers.fetch_modbus_value(register=10, register_type=1, host="127.0.0.1", port=502)
@@ -131,7 +115,7 @@ async def test_fetch_modbus_value_connection_exception(monkeypatch):
     monkeypatch.setattr(
         helpers,
         "create_modbus_client",
-        lambda host, port, device_version=None: (_ for _ in ()).throw(ConnectionException(f"Failed to connect to Modbus device at {host}:{port}")),
+        lambda host, port: (_ for _ in ()).throw(ConnectionException(f"Failed to connect to Modbus device at {host}:{port}")),
     )
     with pytest.raises(ConnectionException):
         await helpers.fetch_modbus_value(register=10, register_type=1, host="127.0.0.1", port=502)
@@ -144,7 +128,7 @@ async def test_fetch_modbus_value_connect_fail(monkeypatch):
     monkeypatch.setattr(
         helpers,
         "create_modbus_client",
-        lambda host, port, device_version=None: (_ for _ in ()).throw(ConnectionException(f"Failed to connect to Modbus device at {host}:{port}")),
+        lambda host, port: (_ for _ in ()).throw(ConnectionException(f"Failed to connect to Modbus device at {host}:{port}")),
     )
     with pytest.raises(ConnectionException) as excinfo:
         await helpers.fetch_modbus_value(register=10, register_type=1, host=host, port=port)
@@ -158,7 +142,7 @@ async def test_fetch_modbus_value_holding_registers(monkeypatch):
     monkeypatch.setattr(
         helpers,
         "create_modbus_client",
-        lambda host, port, device_version=None: DummyModbusCM(dummy),
+        lambda host, port: DummyModbusCM(dummy),
     )
     result = await helpers.fetch_modbus_value(register=20, register_type=0, host="127.0.0.1", port=502)
     assert result == 456
@@ -176,7 +160,7 @@ async def test_fetch_modbus_value_error_response_is_error(monkeypatch):
     monkeypatch.setattr(
         helpers,
         "create_modbus_client",
-        lambda host, port, device_version=None: DummyModbusCM(dummy_client),
+        lambda host, port: DummyModbusCM(dummy_client),
     )
     with pytest.raises(ModbusException) as excinfo:
         await helpers.fetch_modbus_value(register=5, register_type=1, host="127.0.0.1", port=502)
@@ -391,7 +375,7 @@ def test_parse_solvis_version(raw, expected):
 
 def test_should_skip_register_unsupported_on_storage_type():
     """digin_error (33045) does not exist on a SolvisLeo 180 and must never be polled."""
-    entry_data = {DEVICE_VERSION: "1", CONF_OPTION_13: "SolvisLeo 180"}
+    entry_data = {CONF_OPTION_13: "SolvisLeo 180"}
     reg = DummyRegister(name="digin_error", address=33045, conf_option=0, supported_version=0)
 
     assert helpers.should_skip_register(entry_data, reg) is True
@@ -399,7 +383,7 @@ def test_should_skip_register_unsupported_on_storage_type():
 
 def test_should_skip_register_unsupported_only_for_that_storage_type():
     """The same register stays active on a storage type that does implement it."""
-    entry_data = {DEVICE_VERSION: "1", CONF_OPTION_13: "SolvisBen Solo"}
+    entry_data = {CONF_OPTION_13: "SolvisBen Solo"}
     reg = DummyRegister(name="digin_error", address=33045, conf_option=0, supported_version=0)
 
     assert helpers.should_skip_register(entry_data, reg) is False
@@ -408,7 +392,7 @@ def test_should_skip_register_unsupported_only_for_that_storage_type():
 def test_should_skip_register_unknown_storage_type_skips_nothing():
     """An unset or unknown storage type must not start filtering registers."""
     for storage_type in (None, "", "Not A Real Tank"):
-        entry_data = {DEVICE_VERSION: "1", CONF_OPTION_13: storage_type}
+        entry_data = {CONF_OPTION_13: storage_type}
         reg = DummyRegister(name="digin_error", address=33045, conf_option=0, supported_version=0)
 
         assert helpers.should_skip_register(entry_data, reg) is False
@@ -452,66 +436,45 @@ def test_unsupported_registers_exist_in_register_table():
 
 
 def test_should_skip_register_no_conf_option():
-    entry_data = {DEVICE_VERSION: "1", CONF_OPTION_1: False}
+    entry_data = {CONF_OPTION_1: False}
     reg = DummyRegister(name="sensor", address=10, conf_option=0, supported_version=1)
 
     assert helpers.should_skip_register(entry_data, reg) is False
 
 
 def test_should_skip_register_conf_option_disabled():
-    entry_data = {DEVICE_VERSION: "1", CONF_OPTION_1: False}
+    entry_data = {CONF_OPTION_1: False}
     reg = DummyRegister(name="sensor", address=10, conf_option=1, supported_version=1)
 
     assert helpers.should_skip_register(entry_data, reg) is True
 
 
 def test_should_skip_register_tuple_missing_option():
-    entry_data = {DEVICE_VERSION: "1", CONF_OPTION_1: True, CONF_OPTION_2: False}
+    entry_data = {CONF_OPTION_1: True, CONF_OPTION_2: False}
     reg = DummyRegister(name="sensor", address=10, conf_option=(1, 2), supported_version=1)
-
-    assert helpers.should_skip_register(entry_data, reg) is True
-
-
-def test_should_skip_register_version_mismatch():
-    entry_data = {DEVICE_VERSION: "1", CONF_OPTION_1: True}
-    reg = DummyRegister(name="sensor", address=10, conf_option=1, supported_version=2)
 
     assert helpers.should_skip_register(entry_data, reg) is True
 
 
 def test_should_skip_register_ok():
-    entry_data = {DEVICE_VERSION: "2", CONF_OPTION_1: True}
-    reg = DummyRegister(name="sensor", address=10, conf_option=1, supported_version=2)
+    entry_data = {CONF_OPTION_1: True}
+    reg = DummyRegister(name="sensor", address=10, conf_option=1, supported_version=1)
 
     assert helpers.should_skip_register(entry_data, reg) is False
 
 
 def test_should_skip_register_tuple_all_true():
-    entry_data = {DEVICE_VERSION: "1", CONF_OPTION_1: True, CONF_OPTION_2: True}
+    entry_data = {CONF_OPTION_1: True, CONF_OPTION_2: True}
     reg = DummyRegister(name="sensor", address=10, conf_option=(1, 2), supported_version=1)
 
     assert helpers.should_skip_register(entry_data, reg) is False
 
 
 def test_should_skip_register_tuple_missing_option():
-    entry_data = {DEVICE_VERSION: "1", CONF_OPTION_1: True, CONF_OPTION_2: False}
+    entry_data = {CONF_OPTION_1: True, CONF_OPTION_2: False}
     reg = DummyRegister(name="sensor", address=10, conf_option=(1, 2), supported_version=1)
 
     assert helpers.should_skip_register(entry_data, reg) is True
-
-
-def test_should_skip_register_sc3_for_sc2():
-    entry_data = {DEVICE_VERSION: "2", CONF_OPTION_1: True}
-    reg = DummyRegister(name="sensor", address=10, conf_option=1, supported_version=1)
-
-    assert helpers.should_skip_register(entry_data, reg) is True
-
-
-def test_should_skip_register_invalid_device_version():
-    entry_data = {DEVICE_VERSION: "invalid", CONF_OPTION_1: True}
-    reg = DummyRegister("sensor", 10, 0, 2)  # supported_version=2
-
-    assert helpers.should_skip_register(entry_data, reg) is False
 
 
 # # # Tests for async_setup_solvis_entities # # #
@@ -571,7 +534,7 @@ async def test_async_setup_solvis_entities_sensor(monkeypatch):
 # # # Tests for create_modbus_client # # #
 
 
-def test_create_modbus_client_device_version_2(monkeypatch):
+def test_create_modbus_client_uses_sc3_defaults(monkeypatch):
     captured = {}
 
     class DummyClient:
@@ -579,14 +542,14 @@ def test_create_modbus_client_device_version_2(monkeypatch):
             captured.update(kwargs)
 
     monkeypatch.setattr(helpers, "AsyncModbusTcpClient", DummyClient)
-    client = helpers.create_modbus_client("127.0.0.1", 502, device_version=2)
+    client = helpers.create_modbus_client("127.0.0.1", 502)
 
     assert isinstance(client, DummyClient)
     assert captured == {
         "host": "127.0.0.1",
         "port": 502,
-        "timeout": 6.0,
-        "retries": 3,
-        "reconnect_delay": 1.0,
+        "timeout": 2.0,
+        "retries": 1,
+        "reconnect_delay": 0.5,
         "reconnect_delay_max": 5.0,
     }

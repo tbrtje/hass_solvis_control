@@ -4,13 +4,11 @@ Tests for Solvis Modbus Coordinator
 Version: v2.1.0
 """
 
-import asyncio
 import struct
 import pytest
 from unittest.mock import MagicMock
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.update_coordinator import UpdateFailed
-from homeassistant.exceptions import ConfigEntryNotReady
 from custom_components.solvis_control.coordinator import SolvisModbusCoordinator
 from pymodbus.exceptions import ConnectionException, ModbusException, ModbusIOException
 from pymodbus.pdu import ExceptionResponse
@@ -32,8 +30,6 @@ from custom_components.solvis_control.const import (
     CONF_OPTION_6,
     CONF_OPTION_7,
     CONF_OPTION_8,
-    DEVICE_VERSION,
-    SolvisDeviceVersion,
 )
 
 
@@ -418,55 +414,6 @@ async def test_data_conversion_error(dummy_coordinator, monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_sc2_reconnect_success(monkeypatch, dummy_coordinator):
-    # SC2 reconnect: close + connect(True) + kein Fehler
-    dummy_coordinator.supported_version = 2
-    monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [])
-    sleeps = []
-
-    async def fake_sleep(sec):
-        sleeps.append(sec)
-
-    monkeypatch.setattr(asyncio, "sleep", fake_sleep)
-
-    data = await dummy_coordinator._async_update_data()
-
-    assert dummy_coordinator.modbus.called_close is True
-    assert sleeps == [0.1, 0.1]
-    assert data == {}
-
-
-@pytest.mark.asyncio
-async def test_sc2_reconnect_false_raises_runtime(monkeypatch, dummy_coordinator):
-    # SC2 reconnect: connect() -> False → RuntimeError
-    dummy_coordinator.supported_version = 2
-    monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [])
-
-    async def connect_false():
-        return False
-
-    dummy_coordinator.modbus.connect = connect_false
-
-    with pytest.raises(RuntimeError):
-        await dummy_coordinator._async_update_data()
-
-
-@pytest.mark.asyncio
-async def test_sc2_reconnect_exception_raises_configentry(monkeypatch, dummy_coordinator):
-    # SC2 reconnect: ConnectionException → ConfigEntryNotReady
-    dummy_coordinator.supported_version = 2
-    monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [])
-
-    async def connect_fail():
-        raise ConnectionException("fail")
-
-    dummy_coordinator.modbus.connect = connect_fail
-
-    with pytest.raises(ConfigEntryNotReady):
-        await dummy_coordinator._async_update_data()
-
-
-@pytest.mark.asyncio
 async def test_initial_reconnect_failed_raises_updatefailed(monkeypatch, dummy_coordinator):
     # Initial ensure_connected → False → UpdateFailed
     dummy_coordinator.supported_version = 1
@@ -477,7 +424,6 @@ async def test_initial_reconnect_failed_raises_updatefailed(monkeypatch, dummy_c
 
     with pytest.raises(UpdateFailed):
         await dummy_coordinator._async_update_data()
-
 
 @pytest.mark.asyncio
 async def test_lost_connection_fails_update(monkeypatch, dummy_coordinator, patch_registers):
@@ -495,21 +441,3 @@ async def test_lost_connection_fails_update(monkeypatch, dummy_coordinator, patc
 
     with pytest.raises(UpdateFailed):
         await dummy_coordinator._async_update_data()
-
-
-@pytest.mark.asyncio
-async def test_sc2_sleep_after_read(monkeypatch, dummy_coordinator, patch_registers):
-    # SC2: nach read Sleep(0.3)
-    dummy_coordinator.supported_version = 2
-    monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [patch_registers])
-    sleeps = []
-
-    async def fake_sleep(sec):
-        sleeps.append(sec)
-
-    monkeypatch.setattr(asyncio, "sleep", fake_sleep)
-
-    data = await dummy_coordinator._async_update_data()
-
-    assert sleeps == [0.1, 0.1, 0.3]
-    assert patch_registers.name in data

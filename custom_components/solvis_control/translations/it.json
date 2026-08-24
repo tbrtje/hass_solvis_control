@@ -20,15 +20,13 @@
 			},
 			"device":{
 				"title": "controllo del sistema e intervalli di query",
-				"description": "Selezionare la versione del controllo di sistema e gli intervalli di tempo in cui i dati devono essere interrogati.",
+				"description": "Selezionare gli intervalli di tempo in cui i dati devono essere interrogati.",
 				"data_description": {
-					"device_version": "Versione del controllo centralizzato dell'impianto di riscaldamento.",
 					"poll_rate_default": "Deve essere un multiplo dell'intervallo di polling elevato.",
 					"poll_rate_slow": "Deve essere un multiplo dell'intervallo di polling predefinito.",
 					"poll_rate_high": "Deve essere di almeno 2 secondi"
 				},
 				"data":{
-					"device_version": "controllo del sistema",
 					"poll_rate_default": "Intervallo di polling predefinito (in s)",
 					"poll_rate_slow": "Intervallo di polling basso (in s)",
 					"poll_rate_high": "Intervallo di polling elevato (in s)"
@@ -123,15 +121,13 @@
 			},
 			"device":{
 				"title": "controllo del sistema e intervalli di query",
-				"description": "Selezionare la versione del sistema do controllo e gli intervalli di tempo in cui i dati devono essere interrogati.",
+				"description": "Selezionare gli intervalli di tempo in cui i dati devono essere interrogati.",
 				"data_description": {
-					"device_version": "Versione del controllo centralizzato dell'impianto di riscaldamento.",
 					"poll_rate_default": "Deve essere un multiplo dell'intervallo di polling elevato.",
 					"poll_rate_slow": "Deve essere un multiplo dell'intervallo di polling predefinito.",
 					"poll_rate_high": "Deve essere di almeno 2 secondi"
 				},
 				"data":{
-					"device_version": "controllo del sistema",
 					"poll_rate_default": "Intervallo di polling predefinito (in s)",
 					"poll_rate_slow": "Intervallo di polling basso (in s)",
 					"poll_rate_high": "Intervallo di polling elevato (in s)"

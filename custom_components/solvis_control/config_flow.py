@@ -39,11 +39,9 @@ from .const import (
     CONF_OPTION_11,
     CONF_OPTION_12,
     CONF_OPTION_13,
-    DEVICE_VERSION,
     POLL_RATE_DEFAULT,
     POLL_RATE_SLOW,
     POLL_RATE_HIGH,
-    SolvisDeviceVersion,
     STORAGE_TYPE_CONFIG,
     CONF_HKR1_NAME,
     CONF_HKR2_NAME,
@@ -51,20 +49,6 @@ from .const import (
 )
 
 _LOGGER = logging.getLogger(__name__)
-
-
-SolvisVersionSelect = selector.SelectSelector(
-    selector.SelectSelectorConfig(
-        options=[
-            selector.SelectOptionDict(value=str(SolvisDeviceVersion.SC3), label="SolvisControl 3"),
-            selector.SelectOptionDict(
-                value=str(SolvisDeviceVersion.SC2),
-                label="SolvisControl 2 mit SolvisRemote",
-            ),
-        ],
-        mode=selector.SelectSelectorMode.DROPDOWN,
-    )
-)
 
 
 SolvisRoomTempSelect = selector.SelectSelector(
@@ -119,7 +103,6 @@ def get_host_schema_options(data: ConfigType) -> Schema:
 def get_solvis_devices(data: ConfigType) -> Schema:
     return vol.Schema(
         {
-            vol.Required(DEVICE_VERSION, default=str(SolvisDeviceVersion.SC3)): SolvisVersionSelect,
             vol.Required(POLL_RATE_HIGH, default=10): vol.All(vol.Coerce(int), vol.Range(min=2)),
             vol.Required(POLL_RATE_DEFAULT, default=30): vol.All(vol.Coerce(int), vol.Range(min=2)),
             vol.Required(POLL_RATE_SLOW, default=300): vol.All(vol.Coerce(int), vol.Range(min=10)),
@@ -131,7 +114,6 @@ def get_solvis_devices(data: ConfigType) -> Schema:
 def get_solvis_devices_options(data: ConfigType) -> Schema:
     return vol.Schema(
         {
-            vol.Required(DEVICE_VERSION, default=str(SolvisDeviceVersion.SC3)): SolvisVersionSelect,
             vol.Required(POLL_RATE_HIGH, default=data.get(POLL_RATE_HIGH, 10)): vol.All(vol.Coerce(int), vol.Range(min=2)),
             vol.Required(POLL_RATE_DEFAULT, default=data.get(POLL_RATE_DEFAULT, 30)): vol.All(vol.Coerce(int), vol.Range(min=2)),
             vol.Required(POLL_RATE_SLOW, default=data.get(POLL_RATE_SLOW, 300)): vol.All(vol.Coerce(int), vol.Range(min=10)),
@@ -326,7 +308,7 @@ class SolvisConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is None:  # before user inputs anything
 
             try:
-                amount_hkr = await fetch_modbus_value(2, 1, self.data[CONF_HOST], self.data[CONF_PORT], device_version=int(self.data.get(DEVICE_VERSION, 0)))
+                amount_hkr = await fetch_modbus_value(2, 1, self.data[CONF_HOST], self.data[CONF_PORT])
                 _LOGGER.debug(f"[config_flow > async_step_features] Register 2 read from Modbus: {amount_hkr}")
             except Exception as exc:
                 _LOGGER.warning("[config_flow > async_step_features] Got no value for register 2: setting default 1.")

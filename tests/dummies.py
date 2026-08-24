@@ -26,8 +26,6 @@ from custom_components.solvis_control.const import (
     CONF_OPTION_6,
     CONF_OPTION_7,
     CONF_OPTION_8,
-    DEVICE_VERSION,
-    SolvisDeviceVersion,
 )
 
 
@@ -38,7 +36,6 @@ class DummyConfigEntry:
                 CONF_NAME: "TestDevice",
                 CONF_HOST: "127.0.0.1",
                 CONF_PORT: 502,
-                DEVICE_VERSION: 1,
                 POLL_RATE_DEFAULT: 30,
                 POLL_RATE_SLOW: 300,
                 POLL_RATE_HIGH: 10,

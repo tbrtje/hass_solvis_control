@@ -7,7 +7,7 @@ Version: v2.1.0
 import pytest
 from unittest.mock import AsyncMock, patch, MagicMock
 from custom_components.solvis_control.sensor import SolvisSensor, async_setup_entry, _LOGGER, SolvisDerivativeSensor
-from custom_components.solvis_control.const import CONF_HOST, CONF_NAME, DATA_COORDINATOR, DOMAIN, DEVICE_VERSION, ModbusFieldConfig, CONF_OPTION_13, STORAGE_TYPE_CONFIG
+from custom_components.solvis_control.const import CONF_HOST, CONF_NAME, DATA_COORDINATOR, DOMAIN, ModbusFieldConfig, CONF_OPTION_13, STORAGE_TYPE_CONFIG
 from custom_components.solvis_control.coordinator import SolvisModbusCoordinator
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers import issue_registry as ir
@@ -26,58 +26,8 @@ def test_sensor_initialization(mock_solvis_sensor):
 
 
 @pytest.mark.asyncio
-async def test_handle_coordinator_update_case2_nonzero(mock_solvis_sensor):
-    """Test _handle_coordinator_update for case 2 (data_processing == 2) with nonzero value."""
-    mock_solvis_sensor.hass = MagicMock()
-    mock_solvis_sensor.data_processing = 2
-    test_value = 30
-    with patch("custom_components.solvis_control.entity.process_coordinator_data", return_value=(True, test_value, {"raw_value": test_value})):
-        mock_solvis_sensor._handle_coordinator_update()
-    expected = (1 / (test_value / 60)) * 1000 / 2 / 42
-    assert pytest.approx(mock_solvis_sensor._attr_native_value, rel=1e-2) == expected
-
-
-@pytest.mark.asyncio
-async def test_handle_coordinator_update_case2_zero(mock_solvis_sensor):
-    """Test _handle_coordinator_update for case 2 (data_processing == 2) with zero value."""
-    mock_solvis_sensor.hass = MagicMock()
-    mock_solvis_sensor.data_processing = 2
-    test_value = 0
-    with patch("custom_components.solvis_control.sensor._LOGGER.debug") as mock_warning:
-        with patch("custom_components.solvis_control.entity.process_coordinator_data", return_value=(True, test_value, {"raw_value": test_value})):
-            mock_solvis_sensor._handle_coordinator_update()
-            mock_warning.assert_any_call(f"Division by zero for {mock_solvis_sensor._response_key} with value {test_value}")
-    assert mock_solvis_sensor._attr_native_value == test_value
-
-
-@pytest.mark.asyncio
-async def test_handle_coordinator_update_case3_nonzero(mock_solvis_sensor):
-    """Test _handle_coordinator_update for case 3 (data_processing == 3) with nonzero value."""
-    mock_solvis_sensor.hass = MagicMock()
-    mock_solvis_sensor.data_processing = 3
-    test_value = 30
-    with patch("custom_components.solvis_control.entity.process_coordinator_data", return_value=(True, test_value, {"raw_value": test_value})):
-        mock_solvis_sensor._handle_coordinator_update()
-    expected = (1 / (test_value / 60)) * 1000 / 42
-    assert pytest.approx(mock_solvis_sensor._attr_native_value, rel=1e-2) == expected
-
-
-@pytest.mark.asyncio
-async def test_handle_coordinator_update_case3_zero(mock_solvis_sensor):
-    """Test _handle_coordinator_update for case 3 (data_processing == 3) with zero value."""
-    mock_solvis_sensor.hass = MagicMock()
-    mock_solvis_sensor.data_processing = 3
-    test_value = 0
-    with patch("custom_components.solvis_control.sensor._LOGGER.debug") as mock_warning:
-        with patch("custom_components.solvis_control.entity.process_coordinator_data", return_value=(True, test_value, {"raw_value": test_value})):
-            mock_solvis_sensor._handle_coordinator_update()
-            mock_warning.assert_any_call(f"Division by zero for {mock_solvis_sensor._response_key} with value {test_value}")
-    assert mock_solvis_sensor._attr_native_value == test_value
-
-
-@pytest.mark.asyncio
 async def test_handle_coordinator_update_default(mock_solvis_sensor):
-    """Test _handle_coordinator_update default branch when data_processing is not 1,2,3."""
+    """Test _handle_coordinator_update passes through an ordinary sensor value."""
     mock_solvis_sensor.hass = MagicMock()
     mock_solvis_sensor.data_processing = 99
     test_value = 123

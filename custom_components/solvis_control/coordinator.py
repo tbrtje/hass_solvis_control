@@ -5,20 +5,17 @@ Solvis Modbus Data Coordinator
 import logging
 import struct
 from datetime import timedelta
-import asyncio
 
 import pymodbus
 from pymodbus.client import AsyncModbusTcpClient
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.helpers import entity_registry as er
-from homeassistant.exceptions import ConfigEntryNotReady
 from pymodbus.exceptions import ConnectionException, ModbusException, ModbusIOException
 from .utils.helpers import conf_options_map_coordinator, should_skip_register, ensure_connected
 from .const import (
     CONF_HOST,
     CONF_PORT,
     DOMAIN,
-    DEVICE_VERSION,
     CONF_OPTION_1,
     CONF_OPTION_2,
     CONF_OPTION_3,
@@ -70,7 +67,7 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
         self.option_hkr2_write_temperature_sensor = entry.data.get(CONF_OPTION_10)
         self.option_hkr3_room_temperature_sensor = entry.data.get(CONF_OPTION_11)
         self.option_hkr3_write_temperature_sensor = entry.data.get(CONF_OPTION_12)
-        self.supported_version = entry.data.get(DEVICE_VERSION)
+        self.supported_version = 1
         self.poll_rate_default = entry.data.get(POLL_RATE_DEFAULT)
         self.poll_rate_slow = entry.data.get(POLL_RATE_SLOW)
         self.poll_rate_high = entry.data.get(POLL_RATE_HIGH)
@@ -84,25 +81,6 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
         _LOGGER.debug("Polling data...")
         parsed_data = {}
         failed_addresses: set[int] = set()
-
-        # SC2-devices: reconnect
-        if int(self.supported_version) == 2:
-            _LOGGER.debug("SC2-device: Modbus reconnect...")
-
-            try:
-                self.modbus.close()
-                await asyncio.sleep(0.1)
-                connected = await self.modbus.connect()
-                await asyncio.sleep(0.1)
-
-                if not connected:
-                    raise RuntimeError("Modbus (re)connect failed: connect() returned False")
-
-                _LOGGER.debug("SC2-device: Modbus reconnected")
-
-            except (ConnectionException, ModbusIOException, ModbusException) as err:
-                _LOGGER.error("Modbus connect failed: %s", err)
-                raise ConfigEntryNotReady("Solvis Control not reachable. Try again later...") from err
 
         # check connection
         if not await ensure_connected(self.modbus):
@@ -159,11 +137,6 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
                 else:
                     _LOGGER.debug(f"[{register.name} | {register.address}] Reading {register.count} holding register(s)...")
                     result = await self.modbus.read_holding_registers(address=register.address, count=register.count)
-
-                # slow down on SC2-devices
-                if int(self.supported_version) == 2:
-                    _LOGGER.debug(f"[{register.name} | {register.address}] Sleep after read (SC2)")
-                    await asyncio.sleep(0.3)
 
             except (ConnectionException, ModbusIOException, ModbusException) as err:
                 if isinstance(err, ConnectionException) or not self.modbus.connected:
