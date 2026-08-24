@@ -39,8 +39,6 @@ from custom_components.solvis_control.const import (
     CONF_OPTION_10,
     CONF_OPTION_11,
     CONF_OPTION_12,
-    CONF_OPTION_13,
-    STORAGE_TYPE_CONFIG,
     CONF_HKR1_NAME,
     CONF_HKR2_NAME,
     CONF_HKR3_NAME,
@@ -76,7 +74,6 @@ def extended_config_entry(mock_config_entry) -> ConfigEntry:
         }
     )
 
-    mock_config_entry.data[CONF_OPTION_13] = "SolvisBen Solo"
     mock_config_entry.version = 1
     mock_config_entry.minor_version = 2
     mock_config_entry.options = {}
@@ -257,6 +254,8 @@ async def test_unload_entry_close_exception_removes_entry(hass, extended_config_
 async def test_async_migrate_entry(hass, extended_config_entry, monkeypatch):
     """Test async_migrate_entry aktualisiert den ConfigEntry korrekt."""
 
+    extended_config_entry.data["storage_type"] = "SolvisMax 957 Hybrid (82/34/796)"
+
     update_kwargs = {}
 
     def dummy_update_entry(entry, **kwargs):
@@ -271,11 +270,12 @@ async def test_async_migrate_entry(hass, extended_config_entry, monkeypatch):
     assert "version" in update_kwargs
     assert update_kwargs["version"] >= 2
 
-    data = extended_config_entry.data
+    data = update_kwargs["data"]
 
     assert POLL_RATE_DEFAULT in data
     assert POLL_RATE_SLOW in data
     assert POLL_RATE_HIGH in data
+    assert "storage_type" not in data
 
 
 @pytest.mark.asyncio
@@ -407,7 +407,6 @@ async def test_migrate_all_missing_to_defaults(hass, extended_config_entry, monk
     assert extended_config_entry.data.get(CONF_OPTION_10) is False
     assert extended_config_entry.data.get(CONF_OPTION_11) is False
     assert extended_config_entry.data.get(CONF_OPTION_12) is False
-    assert extended_config_entry.data.get(CONF_OPTION_13) is None
 
 
 @pytest.mark.asyncio
@@ -426,7 +425,6 @@ async def test_migrate_all_missing_to_defaults(hass, extended_config_entry, monk
         (CONF_OPTION_10, False),
         (CONF_OPTION_11, False),
         (CONF_OPTION_12, False),
-        (CONF_OPTION_13, None),
     ],
 )
 async def test_migrate_one_missing(hass, extended_config_entry, monkeypatch, option, expected):
@@ -454,7 +452,6 @@ DEFAULTS = {
     CONF_OPTION_10: False,
     CONF_OPTION_11: False,
     CONF_OPTION_12: False,
-    CONF_OPTION_13: None,
 }
 
 
@@ -474,7 +471,6 @@ DEFAULTS = {
         CONF_OPTION_10,
         CONF_OPTION_11,
         CONF_OPTION_12,
-        CONF_OPTION_13,
     ],
 )
 async def test_migrate_only_one_present(hass, extended_config_entry, monkeypatch, present_option):

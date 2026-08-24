@@ -37,7 +37,6 @@ from custom_components.solvis_control.const import (
     CONF_OPTION_10,
     CONF_OPTION_11,
     CONF_OPTION_12,
-    CONF_OPTION_13,
     POLL_RATE_SLOW,
     POLL_RATE_DEFAULT,
     POLL_RATE_HIGH,
@@ -152,7 +151,6 @@ conf_options_map = {
     10: CONF_OPTION_10,
     11: CONF_OPTION_11,
     12: CONF_OPTION_12,
-    13: CONF_OPTION_13,
 }
 
 

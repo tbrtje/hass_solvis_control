@@ -32,8 +32,6 @@ CONF_OPTION_9 = "hkr2_room_temperature_sensor"  # HKR2 room temperature sensor r
 CONF_OPTION_10 = "hkr2_write_room_temperature_sensor"  # HKR2 room temperature sensor write
 CONF_OPTION_11 = "hkr3_room_temperature_sensor"  # HKR3 room temperature sensor read
 CONF_OPTION_12 = "hkr3_write_room_temperature_sensor"  # HKR3 room temperature sensor write
-CONF_OPTION_13 = "storage_type"
-
 CONF_HKR1_NAME = "hkr1_name"
 CONF_HKR2_NAME = "hkr2_name"
 CONF_HKR3_NAME = "hkr3_name"
@@ -1894,9 +1892,17 @@ REGISTERS = [
 
 REGISTER_ADDRESSES_BY_NAME = {register.name: register.address for register in REGISTERS}
 
+STORAGE_REFERENCE_TEMPERATURE = 12.0
+STORAGE_ZONE_VOLUMES = (80, 100)
+STORAGE_ZONE_SENSOR_KEYS = (
+    "warm_water_buffer_temp_s1",
+    "heating_buffer_upper_temp_s4",
+    "heating_buffer_lower_temp_s9",
+)
+
 DERIVATIVE_SENSORS: dict[str, dict] = {
     "stored_energy_12": {
-        "source_keys": ["warm_water_buffer_temp_s1", "heating_buffer_upper_temp_s4", "heating_buffer_lower_temp_s9", "storage_reference_temp_s3"],
+        "source_keys": STORAGE_ZONE_SENSOR_KEYS,
         "unit": "kWh",
         "device_class": "energy",
         "state_class": None,
@@ -1916,51 +1922,4 @@ SCHEDULES: dict[str, dict] = {
     "warm_water_schedule": {"conf_option": 0},
     "circulation_schedule": {"conf_option": 0},
     "eco_schedule": {"conf_option": 0},
-}
-
-STORAGE_TYPE_CONFIG: dict[str, dict] = {
-    "SolvisBen Solo": {
-        "volumes": [133, 56, 51],
-    },
-    "SolvisBen WP": {
-        "volumes": [133, 48, 51],
-    },
-    "SolvisBen Hybrid": {
-        "volumes": [133, 45, 51],
-    },
-    "SolvisMax 457 Solo/WP": {
-        "volumes": [96, 22, 330],
-    },
-    "SolvisMax 457 Hybrid": {
-        "volumes": [96, 22, 330],
-    },
-    "SolvisMax 757 Solo/WP": {
-        "volumes": [171, 34, 478],
-    },
-    "SolvisMax 757 Hybrid": {
-        "volumes": [171, 34, 478],
-    },
-    "SolvisMax 957 Solo/WP (82/34/796)": {
-        "volumes": [82, 34, 762],
-    },
-    "SolvisMax 957 Solo/WP (212/34/663)": {
-        "volumes": [212, 34, 629],
-    },
-    "SolvisMax 957 Solo/WP (301/34/574)": {
-        "volumes": [301, 34, 540],
-    },
-    "SolvisMax 957 Hybrid (82/34/796)": {
-        "volumes": [82, 34, 762],
-    },
-    "SolvisMax 957 Hybrid (212/34/663)": {
-        "volumes": [212, 34, 629],
-    },
-    "SolvisMax 957 Hybrid (301/34/574)": {
-        "volumes": [301, 34, 540],
-    },
-    "SolvisLeo 180": {
-        # two zones only: S1-S4 (top) and S4-S9 (bottom)
-        "volumes": [80, 100],
-        "source_keys": ["warm_water_buffer_temp_s1", "heating_buffer_upper_temp_s4", "heating_buffer_lower_temp_s9"],
-    },
 }

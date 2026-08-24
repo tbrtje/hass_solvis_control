@@ -40,8 +40,6 @@ from custom_components.solvis_control.const import (
     CONF_OPTION_10,
     CONF_OPTION_11,
     CONF_OPTION_12,
-    CONF_OPTION_13,
-    STORAGE_TYPE_CONFIG,
     CONF_HKR1_NAME,
     CONF_HKR2_NAME,
     CONF_HKR3_NAME,
@@ -74,7 +72,6 @@ async def create_test_config_entry(hass) -> ConfigEntry:
         CONF_OPTION_12: False,
         "VERSIONSC": "1.23.45",
         "VERSIONNBG": "5.67.89",
-        CONF_OPTION_13: list(STORAGE_TYPE_CONFIG.keys())[0],
         CONF_HKR1_NAME: None,
         CONF_HKR2_NAME: None,
         CONF_HKR3_NAME: None,
@@ -166,15 +163,6 @@ async def test_config_flow_full(hass, mock_get_mac, mock_modbus) -> None:
 
     # check
     assert result["type"] == FlowResultType.FORM
-    assert result["step_id"] == "storage_type"
-
-    # user input step storage_type
-    storage_input = {CONF_OPTION_13: list(STORAGE_TYPE_CONFIG.keys())[0]}
-
-    result = await hass.config_entries.flow.async_configure(result["flow_id"], storage_input)
-
-    # check
-    assert result["type"] == FlowResultType.FORM
     assert result["step_id"] == "hkr_names"
 
     # user input step hkr_names
@@ -195,7 +183,6 @@ async def test_config_flow_full(hass, mock_get_mac, mock_modbus) -> None:
         **user_input,
         **device_input,
         **feature_input,
-        **storage_input,
         **hkr_names_input,
         "mac": "00:11:22:33:44:55",
         "VERSIONSC": "1.23.45",
@@ -532,14 +519,8 @@ async def test_options_flow_full(hass, mock_get_mac, mock_modbus, conf_option_1,
     # Step "roomtempsensors"
     result = await hass.config_entries.options.async_configure(flow_id, roomtemp_input)
 
-    assert result["type"] == FlowResultType.FORM
-    assert result["step_id"] == "storage_type"
-
-    # step storage_input
-    storage_input = {CONF_OPTION_13: list(STORAGE_TYPE_CONFIG.keys())[0]}
-    result = await hass.config_entries.options.async_configure(flow_id, storage_input)
-
     assert result["type"] == FlowResultType.CREATE_ENTRY
+
     assert result["title"] == "Solvis"
 
     # Build expected data merging all inputs and expected room temperature options
@@ -552,7 +533,6 @@ async def test_options_flow_full(hass, mock_get_mac, mock_modbus, conf_option_1,
         "VERSIONNBG": "5.67.89",
         CONF_NAME: "Solvis",
         **expected_roomtemp_options,
-        CONF_OPTION_13: list(STORAGE_TYPE_CONFIG.keys())[0],
         CONF_HKR1_NAME: None,
         CONF_HKR2_NAME: None,
         CONF_HKR3_NAME: None,

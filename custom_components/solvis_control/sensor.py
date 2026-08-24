@@ -4,7 +4,6 @@ Solvis Sensor Entity.
 
 import logging
 
-from homeassistant.components import persistent_notification
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, SensorStateClass
 from homeassistant.util import dt as dt_util
 from homeassistant.config_entries import ConfigEntry
@@ -15,7 +14,18 @@ from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN, CONF_NAME, CONF_HOST, DATA_COORDINATOR, DERIVATIVE_SENSORS, REGISTER_ADDRESSES_BY_NAME, SCHEDULES, STORAGE_TYPE_CONFIG, CONF_OPTION_13
+from .const import (
+    DOMAIN,
+    CONF_NAME,
+    CONF_HOST,
+    DATA_COORDINATOR,
+    DERIVATIVE_SENSORS,
+    REGISTER_ADDRESSES_BY_NAME,
+    SCHEDULES,
+    STORAGE_REFERENCE_TEMPERATURE,
+    STORAGE_ZONE_SENSOR_KEYS,
+    STORAGE_ZONE_VOLUMES,
+)
 from .coordinator import SolvisModbusCoordinator
 from .utils.helpers import async_setup_solvis_entities, generate_device_info
 from .utils.helpers import conf_options_map
@@ -42,7 +52,6 @@ class SolvisDerivativeSensor(SolvisEntity, SensorEntity):
         entity_category: str | None = None,
         suggested_display_precision: int = 2,
         compute_mode: str | None,
-        config_entry: ConfigEntry,
     ) -> None:
         super().__init__(
             coordinator,
@@ -65,7 +74,6 @@ class SolvisDerivativeSensor(SolvisEntity, SensorEntity):
         self._attr_entity_category = entity_category
         self._attr_suggested_display_precision = suggested_display_precision
         self.compute_mode = compute_mode
-        self.config_entry = config_entry
 
         self._attr_native_value = None
         self._attr_extra_state_attributes = {}
@@ -90,25 +98,19 @@ class SolvisDerivativeSensor(SolvisEntity, SensorEntity):
                 return sum(values)
 
     def _compute_stored_energy_12(self, values: list[float]) -> float:
-
-        storage_type = self.config_entry.data.get(CONF_OPTION_13)
-        _LOGGER.debug(f"storage_type: {storage_type}")
-
-        volumes = STORAGE_TYPE_CONFIG.get(storage_type, {}).get("volumes")
-        _LOGGER.debug(f"volumes from config: {volumes}")
-
-        # each zone is delimited by two sensors, so n zones need n+1 temperatures
-        if not volumes or len(values) != len(volumes) + 1:
-            _LOGGER.debug(f"invalid volumes: return 0")
+        # Each Speicherzone is delimited by two Fühler, so two zones need three
+        # temperatures: S1, S4 and S9.
+        if len(values) != len(STORAGE_ZONE_SENSOR_KEYS):
+            _LOGGER.debug("invalid Fühler count: returning 0")
             return 0.0
 
         rho = 1.0
         c = 4.186
 
         total_energy = 0.0
-        for zone, volume in enumerate(volumes):
+        for zone, volume in enumerate(STORAGE_ZONE_VOLUMES):
             t_zone = (values[zone] + values[zone + 1]) / 2
-            total_energy += volume * rho * c * (t_zone - 12)  # Referenz-Temp 12 °C
+            total_energy += volume * rho * c * (t_zone - STORAGE_REFERENCE_TEMPERATURE)
 
         return total_energy / 3600
 
@@ -195,20 +197,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         input_type=0,  # sensor
     )
 
-    storage_type = entry.data.get(CONF_OPTION_13)
-
-    if storage_type is None:
-        # create persistent notification
-        persistent_notification.create(
-            hass,
-            "Die Integration „Solvis Control“ benötigt in der aktuellen Version zusätzlich die genaue Angabe des vorhandenen Schichtenspeichers. "
-            "Bitte wählen Sie Einstellungen → Integrationen → Solvis Control → Konfigurieren und vervollständigen die Konfiguration.",
-            title="Solvis Control: Speichertyp fehlt",
-            notification_id="solvis_storage_type_missing",
-        )
-        # cancel further setup due to missing config_option
-        return False
-
     # Setup SolvisDerivativeSensor
     coordinator: SolvisModbusCoordinator = hass.data[DOMAIN][entry.entry_id][DATA_COORDINATOR]
     host = entry.data.get(CONF_HOST)
@@ -224,14 +212,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
                 device_info=device_info,
                 host=host,
                 name=key,
-                source_keys=STORAGE_TYPE_CONFIG.get(storage_type, {}).get("source_keys", cfg["source_keys"]),
+                source_keys=cfg["source_keys"],
                 unit=cfg["unit"],
                 device_class=cfg["device_class"],
                 state_class=cfg["state_class"],
                 entity_category=cfg.get("entity_category"),
                 suggested_display_precision=cfg.get("suggested_display_precision", 2),
                 compute_mode=cfg.get("compute_mode", "sum"),
-                config_entry=entry,
             )
         )
 

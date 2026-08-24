@@ -23,7 +23,6 @@ from custom_components.solvis_control.const import (
     CONF_OPTION_10,
     CONF_OPTION_11,
     CONF_OPTION_12,
-    CONF_OPTION_13,
     CONF_PORT,
     DATA_COORDINATOR,
     DOMAIN,
@@ -220,7 +219,6 @@ async def setup_recorded_anlage(hass):
             CONF_OPTION_10: False,
             CONF_OPTION_11: False,
             CONF_OPTION_12: False,
-            CONF_OPTION_13: "SolvisLeo 180",
         },
     )
     entry.add_to_hass(hass)
@@ -245,6 +243,7 @@ async def test_setup_exposes_the_recorded_anlage(hass) -> None:
 
     assert actual_entity_ids == EXPECTED_ENTITY_IDS
     assert hass.states.get("sensor.solvisleo_180_hot_water_buffer_temperature_s1").state == "49.5"
+    assert hass.states.get("sensor.solvisleo_180_stored_energy_of_stratified_storage_reference_12_degc").state == "5.0"
     assert hass.states.get("number.solvisleo_180_warm_water_target_temp").state == "47"
     assert hass.states.get("select.solvisleo_180_hkr_1_operating_mode").state == "5"
     assert hass.states.get("switch.solvisleo_180_warm_water_reheat_start").state == "off"

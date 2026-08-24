@@ -32,7 +32,6 @@ from .const import (
     CONF_OPTION_10,
     CONF_OPTION_11,
     CONF_OPTION_12,
-    CONF_OPTION_13,
     POLL_RATE_SLOW,
     POLL_RATE_DEFAULT,
     POLL_RATE_HIGH,
@@ -143,7 +142,8 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
     current_version = config_entry.version
     current_minor_version = config_entry.minor_version
 
-    new_data = {**config_entry.data}
+    # Drop the legacy tank-selection value. The SolvisLeo 180 geometry is fixed.
+    new_data = {key: value for key, value in config_entry.data.items() if key != "storage_type"}
 
     if current_version == 1 and current_minor_version < 3:
         _LOGGER.info(f"Migrating from version {current_version}_{current_minor_version}")
@@ -216,8 +216,6 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
 
     if current_version == 2 and current_minor_version == 4:
         _LOGGER.info(f"Migrating from version {current_version}_{current_minor_version}")
-        if CONF_OPTION_13 not in new_data:
-            new_data[CONF_OPTION_13] = None
         current_minor_version = 5
 
     if current_version == 2 and current_minor_version == 5:

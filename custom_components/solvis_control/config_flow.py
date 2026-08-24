@@ -38,11 +38,9 @@ from .const import (
     CONF_OPTION_10,
     CONF_OPTION_11,
     CONF_OPTION_12,
-    CONF_OPTION_13,
     POLL_RATE_DEFAULT,
     POLL_RATE_SLOW,
     POLL_RATE_HIGH,
-    STORAGE_TYPE_CONFIG,
     CONF_HKR1_NAME,
     CONF_HKR2_NAME,
     CONF_HKR3_NAME,
@@ -363,24 +361,13 @@ class SolvisConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 self.data[CONF_OPTION_11] = False
                 self.data[CONF_OPTION_12] = False
 
-            return await self.async_step_storage_type()
+            return await self.async_step_hkr_names()
 
         return self.async_show_form(  # show form at first method call: user_input = None
             step_id="roomtempsensors",
             data_schema=get_solvis_roomtempsensors(self.data),
             errors=errors,
         )
-
-    async def async_step_storage_type(self, user_input: ConfigType | None = None) -> FlowResult:
-        if user_input is None:
-            return self.async_show_form(
-                step_id="storage_type",
-                data_schema=vol.Schema({vol.Required(CONF_OPTION_13): vol.In(list(STORAGE_TYPE_CONFIG.keys()))}),
-            )
-
-        self.data.update(user_input)
-
-        return await self.async_step_hkr_names()
 
     async def async_step_hkr_names(self, user_input: ConfigType | None = None) -> FlowResult:
         if user_input is not None:
@@ -535,20 +522,10 @@ class SolvisOptionsFlow(config_entries.OptionsFlow):
                 self.data[CONF_OPTION_11] = False
                 self.data[CONF_OPTION_12] = False
 
-            return await self.async_step_storage_type()
+            return self.async_create_entry(title=self.data[CONF_NAME], data=self.data)
 
         return self.async_show_form(  # show form at first method call: user_input = None
             step_id="roomtempsensors",
             data_schema=get_solvis_roomtempsensors_options(self.data),
             errors=errors,
         )
-
-    async def async_step_storage_type(self, user_input: ConfigType | None = None) -> FlowResult:
-        if user_input is None:
-            current = self.config_entry.options.get(CONF_OPTION_13)
-            return self.async_show_form(
-                step_id="storage_type",
-                data_schema=vol.Schema({vol.Required(CONF_OPTION_13, default=current): vol.In(list(STORAGE_TYPE_CONFIG.keys()))}),
-            )
-        self.data.update(user_input)
-        return self.async_create_entry(title=self.data[CONF_NAME], data=self.data)
