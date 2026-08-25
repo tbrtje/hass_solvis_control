@@ -19,65 +19,11 @@
 					"poll_rate_slow": "Must be a multiple of the standard query interval.",
 					"poll_rate_high": "Must be at least 2 seconds."
 				}
-			},
-			"device":{
-				"title": "System control & polling intervals",
-				"description": "Please select the time intervals at which the data is to be polled.",
-				"data_description": {
-					"poll_rate_default": "Must be a multiple of the high query interval.",
-					"poll_rate_slow": "Must be a multiple of the standard query interval.",
-					"poll_rate_high": "Must be at least 2 seconds."
-				},
-				"data":{
-					"poll_rate_default": "Standard polling interval (in s)",
-					"poll_rate_slow": "Low polling interval (in s)",
-					"poll_rate_high": "High polling interval (in s)"
-				}
-			},
-			"features":{
-				"title": "Selection of system components",
-				"description": "Please select the assemblies and system components of your Solvis heating system.",
-				"data":{
-					"hkr2":"Heating circuit 2",
-					"hkr3":"Heating circuit 3",
-					"solar collector":"Solar thermal",
-					"heat pump":"Heat pump",
-					"heat_meter": "Heat meter",
-					"room_temperature_sensor": "Room temperature sensors (read)",
-					"write_room_temperature_sensor": "Room temperature sensors (write)",
-					"pv2heat": "PV2Heat"
-				},
-				"data_description": {
-					"hkr2": "Automatically recognized. Can be (de)activated manually",
-					"hkr3": "Automatically recognized. Can be (de)activated manually",
-					"solar collector": "Solar collectors SolvisCala Eco, SolvisCala, SolvisFera, SolvisLuna",
-					"heat pump": "Heat pumps SolvisLea, SolvisPia, SolvisMia",
-					"heat_meter": "Heat metering set WME-HKS-BEN, WME-WM",
-					"pv2heat": "PV2Heat solutions SolvisTim and SolvisTom"
-				}
-			},
-			"roomtempsensors":{
-				"title": "Room temperature sensors",
-				"description": "Please select the installed room temperature sensors and their desired behavior.",
-				"data":{
-					"hkr1_room_temp_sensor":"Room temperature sensor heating circuit 1",
-					"hkr2_room_temp_sensor":"Room temperature sensor heating circuit 2",
-					"hkr3_room_temp_sensor":"Room temperature sensor heating circuit 3"
-				},
-				"data_description": {
-					"hkr1_room_temp_sensor": "Select ‘deactivated’ if no sensor is installed, ‘read’ if the value is only to be read out (default) and ‘write’ if the value is to be written.",
-					"hkr2_room_temp_sensor": "Select ‘deactivated’ if no sensor is installed, ‘read’ if the value is only to be read out (default) and ‘write’ if the value is to be written.",
-					"hkr3_room_temp_sensor": "Select ‘deactivated’ if no sensor is installed, ‘read’ if the value is only to be read out (default) and ‘write’ if the value is to be written."
-				}
 			}
 		},
 		"error":{
-			"cannot_connect":"An error occurred while establishing the Modbus connection.",
-			"mac_error": "An error occurred while searching for the MAC address. Please enter it manually.",
 			"poll_rate_invalid_slow": "The low query interval must be a multiple of the standard query interval.",
-			"poll_rate_invalid_high": "The standard query interval must be a multiple of the high query interval.",
-			"poll_rate_invalid_order": "The standard query interval must be smaller than the low query interval and larger than the high query interval.",
-			"only_one_temperature_sensor": "Only one access variant may be selected for the room temperature sensors (read or write)."
+			"poll_rate_invalid_high": "The standard query interval must be a multiple of the high query interval."
 		}
 	},
 	"options":{
@@ -100,66 +46,11 @@
 					"poll_rate_slow": "Must be a multiple of the standard query interval.",
 					"poll_rate_high": "Must be at least 2 seconds."
 				}
-			},
-			"device":{
-				"title": "System control & polling intervals",
-				"description": "Please select the time intervals at which the data is to be polled.",
-				"data_description": {
-					"poll_rate_default": "Must be a multiple of the high query interval.",
-					"poll_rate_slow": "Must be a multiple of the standard query interval.",
-					"poll_rate_high": "Must be at least 2 seconds."
-				},
-				"data":{
-					"poll_rate_default": "Standard polling interval (in s)",
-					"poll_rate_slow": "Low polling interval (in s)",
-					"poll_rate_high": "High polling interval (in s)"
-				}
-			},
-			"features":{
-				"title": "Selection of system components",
-				"description": "Please select the assemblies and system components of your Solvis heating system.",
-				"data":{
-					"hkr2":"Heating circuit 2",
-					"hkr3":"Heating circuit 3",
-					"solar collector":"Solar thermal",
-					"heat pump":"Heat pump",
-					"heat_meter": "Heat meter",
-					"room_temperature_sensor": "Room temperature sensors (read)",
-					"write_room_temperature_sensor": "Room temperature sensors (write)",
-					"pv2heat": "PV2Heat"
-				},
-				"data_description": {
-					"hkr2": "Automatically recognized. Can be (de)activated manually",
-					"hkr3": "Automatically recognized. Can be (de)activated manually",
-					"solar collector": "Solar collectors SolvisCala Eco, SolvisCala, SolvisFera, SolvisLuna",
-					"heat pump": "Heat pumps SolvisLea, SolvisPia, SolvisMia",
-					"heat_meter": "Heat metering set WME-HKS-BEN, WME-WM",
-					"room_temperature_sensor": "Select if the value of the room temperature sensors should only be read out (default)",
-					"write_room_temperature_sensor": "Select if the value of the room temperature sensors is to be written.",
-					"pv2heat": "PV2Heat solutions SolvisTim and SolvisTom"
-				}
-			},
-			"roomtempsensors":{
-				"title": "Room temperature sensors",
-				"description": "Please select the installed room temperature sensors and their desired behavior.",
-				"data":{
-					"hkr1_room_temp_sensor":"Room temperature sensor heating circuit 1",
-					"hkr2_room_temp_sensor":"Room temperature sensor heating circuit 2",
-					"hkr3_room_temp_sensor":"Room temperature sensor heating circuit 3"
-				},
-				"data_description": {
-					"hkr1_room_temp_sensor": "Select ‘deactivated’ if no sensor is installed, ‘read’ if the value is only to be read out (default) and ‘write’ if the value is to be written.",
-					"hkr2_room_temp_sensor": "Select ‘deactivated’ if no sensor is installed, ‘read’ if the value is only to be read out (default) and ‘write’ if the value is to be written.",
-					"hkr3_room_temp_sensor": "Select ‘deactivated’ if no sensor is installed, ‘read’ if the value is only to be read out (default) and ‘write’ if the value is to be written."
-				}
 			}
 		},
 		"error":{
-			"cannot_connect":"An error occurred while establishing the Modbus connection.",
 			"poll_rate_invalid_slow": "The low query interval must be a multiple of the standard query interval.",
-			"poll_rate_invalid_high": "The standard query interval must be a multiple of the high query interval.",
-			"poll_rate_invalid_order": "The standard query interval must be smaller than the low query interval and larger than the high query interval.",
-			"only_one_temperature_sensor": "Only one access variant may be selected for the room temperature sensors (read or write)."
+			"poll_rate_invalid_high": "The standard query interval must be a multiple of the high query interval."
 		}
 	},
 	"entity":{

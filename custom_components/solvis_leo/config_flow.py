@@ -13,6 +13,8 @@ from .const import (
     CONF_HOST,
     CONF_NAME,
     CONF_PORT,
+    CONFIG_ENTRY_MINOR_VERSION,
+    CONFIG_ENTRY_VERSION,
     DOMAIN,
     POLL_RATE_DEFAULT,
     POLL_RATE_HIGH,
@@ -45,8 +47,8 @@ def get_connection_schema(data: ConfigType) -> Schema:
 class SolvisConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Configure a controller connection and its three polling intervals."""
 
-    VERSION = 2
-    MINOR_VERSION = 7
+    VERSION = CONFIG_ENTRY_VERSION
+    MINOR_VERSION = CONFIG_ENTRY_MINOR_VERSION
 
     async def async_step_user(self, user_input: ConfigType | None = None) -> FlowResult:
         """Handle the single setup step."""
@@ -80,8 +82,8 @@ class SolvisConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 class SolvisOptionsFlow(config_entries.OptionsFlow):
     """Allow the controller address and polling intervals to be changed."""
 
-    VERSION = 2
-    MINOR_VERSION = 7
+    VERSION = CONFIG_ENTRY_VERSION
+    MINOR_VERSION = CONFIG_ENTRY_MINOR_VERSION
 
     def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
         """Seed the one options form with the saved configuration."""

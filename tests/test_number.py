@@ -132,18 +132,3 @@ async def test_async_setup_entry_no_host_number(hass, mock_config_entry):
         hass.data = {DOMAIN: {mock_config_entry.entry_id: {DATA_COORDINATOR: AsyncMock()}}}
         await async_setup_entry(hass, mock_config_entry, AsyncMock())
         mock_logger.assert_called_with("Device has no address")
-
-
-@pytest.mark.asyncio
-async def test_async_setup_entry_entity_removal_exception_number(hass, mock_config_entry):
-    """Test exception handling during removal of old number entities."""
-    hass.data = {DOMAIN: {mock_config_entry.entry_id: {DATA_COORDINATOR: AsyncMock()}}}
-    with (
-        patch("custom_components.solvis_leo.utils.helpers.remove_old_entities", side_effect=Exception("Test Exception")),
-        patch("custom_components.solvis_leo.utils.helpers.generate_device_info"),
-        patch("custom_components.solvis_leo.utils.helpers.REGISTERS", []),
-        patch("custom_components.solvis_leo.utils.helpers._LOGGER.error") as mock_logger,
-    ):
-        mock_add_entities = MagicMock()
-        await async_setup_entry(hass, mock_config_entry, mock_add_entities)
-        mock_logger.assert_called_with("Error removing old entities: Test Exception", exc_info=True)

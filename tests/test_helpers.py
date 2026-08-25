@@ -25,14 +25,6 @@ from custom_components.solvis_leo.const import (
     DOMAIN,
     MANUFACTURER,
     DATA_COORDINATOR,
-    CONF_OPTION_1,
-    CONF_OPTION_2,
-    CONF_OPTION_3,
-    CONF_OPTION_4,
-    CONF_OPTION_5,
-    CONF_OPTION_6,
-    CONF_OPTION_7,
-    CONF_OPTION_8,
     REGISTERS,
     SCHEDULES,
     POLL_RATE_SLOW,
@@ -220,12 +212,20 @@ def test_remove_old_entities(monkeypatch):
 
     monkeypatch.setattr(helpers, "er", type("DummyER", (), {"async_get": lambda hass: registry}))
 
-    monkeypatch.setattr(helpers, "async_resolve_entity_id", lambda reg, unique_id: next((entity.entity_id for entity in reg.entities.values() if entity.unique_id == unique_id), None))
-
     asyncio.run(helpers.remove_old_entities(hass=None, config_entry_id="dummy_entry", active_entity_ids={"unique_1"}))
 
     assert "entity.one" in registry.entities
     assert "entity.two" not in registry.entities
+
+
+def test_active_entity_unique_ids_cover_the_complete_anlage():
+    active_ids = helpers.active_entity_unique_ids()
+
+    assert len(active_ids) == 153
+    assert "33024_stored_energy_12" in active_ids
+    assert "34090_hkr2_schedule" in active_ids
+    assert "34090_hkr2_schedule_active" in active_ids
+    assert "33045_digin_error" not in active_ids
 
 
 # # # Tests for generate_unique_id # # #
@@ -366,10 +366,6 @@ def test_process_coordinator_data_valid():
 )
 def test_parse_solvis_version(raw, expected):
     assert helpers.parse_solvis_version(raw) == expected
-
-
-def test_register_definitions_do_not_gate_polling_by_configuration():
-    assert all(not hasattr(register, "conf_option") for register in REGISTERS)
 
 
 @pytest.mark.parametrize("lang", ["en", "de", "it", "nl"])

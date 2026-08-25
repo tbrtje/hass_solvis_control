@@ -29,14 +29,6 @@ from custom_components.solvis_leo.const import (
     DOMAIN,
     MANUFACTURER,
     DATA_COORDINATOR,
-    CONF_OPTION_1,
-    CONF_OPTION_2,
-    CONF_OPTION_3,
-    CONF_OPTION_4,
-    CONF_OPTION_5,
-    CONF_OPTION_6,
-    CONF_OPTION_7,
-    CONF_OPTION_8,
     POLL_RATE_SLOW,
     POLL_RATE_DEFAULT,
     POLL_RATE_HIGH,
@@ -181,18 +173,12 @@ def mock_modbus(mocker, request):
             update_interval=timedelta(seconds=entry.data.get(POLL_RATE_HIGH)),
         )
         self.config_entry = entry
+        self._poll_remaining = {}
+        self._register_failures = {}
         self.hass = hass
         self.modbus = mock_modbus_instance
         self.host = entry.data.get(CONF_HOST, "127.0.0.1")
         self.port = entry.data.get(CONF_PORT, 502)
-        self.option_hkr2 = entry.data.get(CONF_OPTION_1, False)
-        self.option_hkr3 = entry.data.get(CONF_OPTION_2, False)
-        self.option_solar = entry.data.get(CONF_OPTION_3, False)
-        self.option_heatpump = entry.data.get(CONF_OPTION_4, False)
-        self.option_heatmeter = entry.data.get(CONF_OPTION_5, False)
-        self.option_room_temperature_sensor = entry.data.get(CONF_OPTION_6, False)
-        self.option_write_temperature_sensor = entry.data.get(CONF_OPTION_7, False)
-        self.option_pv2heat = entry.data.get(CONF_OPTION_8, False)
         self.poll_rate_default = entry.data.get(POLL_RATE_DEFAULT, 10)
         self.poll_rate_slow = entry.data.get(POLL_RATE_SLOW, 30)
         self.poll_rate_high = entry.data.get(POLL_RATE_HIGH, 5)
@@ -269,14 +255,6 @@ def dummy_config_entry():
         POLL_RATE_DEFAULT: 30,
         POLL_RATE_SLOW: 300,
         POLL_RATE_HIGH: 10,
-        CONF_OPTION_1: False,
-        CONF_OPTION_2: False,
-        CONF_OPTION_3: False,
-        CONF_OPTION_4: False,
-        CONF_OPTION_5: False,
-        CONF_OPTION_6: False,
-        CONF_OPTION_7: False,
-        CONF_OPTION_8: False,
         "VERSIONSC": "1.23.45",
         "VERSIONNBG": "5.67.89",
     }

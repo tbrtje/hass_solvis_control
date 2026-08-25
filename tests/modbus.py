@@ -36,6 +36,7 @@ class AddressableModbusClient:
         self._communication_errors: set[tuple[str, int]] = set()
         self._connection_losses: set[tuple[str, int]] = set()
         self._malformed_responses: set[tuple[str, int]] = set()
+        self._timeouts: set[tuple[str, int]] = set()
         self._request_counts: dict[tuple[str, int], int] = {}
         self.connected = False
         self.DATATYPE = type("DATATYPE", (), {"INT16": "int16"})
@@ -76,6 +77,7 @@ class AddressableModbusClient:
         self._connection_losses.discard(key)
         self._illegal_addresses.discard(key)
         self._malformed_responses.discard(key)
+        self._timeouts.discard(key)
 
     def lose_connection(self, register_type: str, address: int) -> None:
         """Drop the connection while reading one function-code/address pair."""
@@ -93,6 +95,10 @@ class AddressableModbusClient:
         """Make one function-code/address pair return a malformed response."""
         self._malformed_responses.add((register_type, address))
 
+    def timeout(self, register_type: str, address: int) -> None:
+        """Make one function-code/address pair exceed its response timeout."""
+        self._timeouts.add((register_type, address))
+
     def _read(self, register_type: str, address: int, count: int) -> FakeModbusResponse | MalformedModbusResponse:
         key = (register_type, address)
         self._request_counts[key] = self._request_counts.get(key, 0) + 1
@@ -101,6 +107,8 @@ class AddressableModbusClient:
             raise ConnectionException(f"Connection lost at {register_type} register {address}")
         if (register_type, address) in self._communication_errors:
             raise ModbusIOException(f"Communication error at {register_type} register {address}")
+        if key in self._timeouts:
+            raise TimeoutError(f"Timeout at {register_type} register {address}")
         if (register_type, address) in self._malformed_responses:
             return MalformedModbusResponse()
         if (register_type, address) in self._illegal_addresses:

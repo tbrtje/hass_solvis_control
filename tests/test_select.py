@@ -11,7 +11,7 @@ from unittest.mock import AsyncMock, patch, MagicMock
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from custom_components.solvis_leo.select import SolvisSelect, async_setup_entry, _LOGGER
-from custom_components.solvis_leo.const import CONF_HOST, CONF_NAME, DATA_COORDINATOR, DOMAIN, POLL_RATE_DEFAULT, POLL_RATE_SLOW, ModbusFieldConfig
+from custom_components.solvis_leo.const import CONF_HOST, CONF_NAME, DATA_COORDINATOR, DOMAIN, POLL_RATE_DEFAULT, POLL_RATE_SLOW
 from pymodbus.exceptions import ConnectionException
 from homeassistant.helpers import entity_registry as er
 
@@ -244,22 +244,6 @@ def test_select_unique_id_all_special_chars(dummy_solvisselect_entity):
 
 
 @pytest.mark.asyncio
-async def test_select_async_setup_entry_entity_removal_exception(hass, mock_config_entry):
-    """Test exception handling during entity removal."""
-    hass.data = {DOMAIN: {mock_config_entry.entry_id: {DATA_COORDINATOR: AsyncMock()}}}
-    with (
-        patch("homeassistant.helpers.entity_registry.async_get", side_effect=Exception("Test Exception")),
-        patch("custom_components.solvis_leo.utils.helpers.generate_device_info"),
-        patch("custom_components.solvis_leo.utils.helpers.REGISTERS", []),
-        patch("custom_components.solvis_leo.utils.helpers._LOGGER.error") as mock_log_error,
-    ):
-        mock_add_entities = MagicMock()
-        await async_setup_entry(hass, mock_config_entry, mock_add_entities)
-        mock_log_error.assert_called_with("Error removing old entities: Test Exception", exc_info=True)
-        mock_add_entities.assert_called()
-
-
-@pytest.mark.asyncio
 async def test_select_async_setup_entry_no_host(hass, mock_config_entry):
     """Test setup entry when no host is provided."""
     mock_config_entry.data.pop(CONF_HOST, None)
@@ -267,43 +251,3 @@ async def test_select_async_setup_entry_no_host(hass, mock_config_entry):
         hass.data = {DOMAIN: {mock_config_entry.entry_id: {DATA_COORDINATOR: AsyncMock()}}}
         await async_setup_entry(hass, mock_config_entry, AsyncMock())
         mock_logger.assert_called_with("Device has no address")
-
-
-@pytest.mark.asyncio
-async def test_select_async_setup_entry_existing_entities_handling(hass, mock_config_entry):
-    """Test removal of existing entities during setup."""
-    hass.data = {DOMAIN: {mock_config_entry.entry_id: {DATA_COORDINATOR: AsyncMock()}}}
-    mock_entity_registry = MagicMock()
-    mock_entity_registry.entities = {
-        "entity_1": MagicMock(unique_id="old_1", entity_id="entity_1", config_entry_id=mock_config_entry.entry_id),
-        "entity_2": MagicMock(unique_id="old_2", entity_id="entity_2", config_entry_id=mock_config_entry.entry_id),
-    }
-    mock_entity_registry.async_remove = MagicMock()
-    mock_register1 = ModbusFieldConfig(
-        name="new 1",
-        address=100,
-        unit=None,
-        device_class=None,
-        state_class=None,
-        input_type=1,
-    )
-    mock_register2 = ModbusFieldConfig(
-        name="new 2",
-        address=200,
-        unit=None,
-        device_class=None,
-        state_class=None,
-        input_type=1,
-    )
-    with patch("homeassistant.helpers.entity_registry.async_get", return_value=mock_entity_registry):
-        with patch("custom_components.solvis_leo.utils.helpers.REGISTERS", [mock_register1, mock_register2]):
-            with patch("custom_components.solvis_leo.utils.helpers.async_resolve_entity_id") as mock_resolve:
-                with patch("custom_components.solvis_leo.utils.helpers._LOGGER.debug") as mock_log_debug:
-                    # Mock async_resolve_entity_id()
-                    mock_resolve.side_effect = lambda reg, uid: f"entity_{uid[-1]}"
-                    await async_setup_entry(hass, mock_config_entry, MagicMock())
-                    mock_entity_registry.async_remove.assert_any_call("entity_1")
-                    mock_entity_registry.async_remove.assert_any_call("entity_2")
-                    assert mock_entity_registry.async_remove.call_count == 2
-                    mock_log_debug.assert_any_call("Removed old entity: old_1 (entity_id: entity_1)")
-                    mock_log_debug.assert_any_call("Removed old entity: old_2 (entity_id: entity_2)")

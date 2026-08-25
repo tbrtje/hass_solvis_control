@@ -8,7 +8,7 @@ import pytest
 from unittest.mock import AsyncMock, patch, MagicMock
 from homeassistant.core import HomeAssistant
 from custom_components.solvis_leo.binary_sensor import SolvisBinarySensor, async_setup_entry, _LOGGER
-from custom_components.solvis_leo.const import CONF_HOST, CONF_NAME, DATA_COORDINATOR, DOMAIN, POLL_RATE_DEFAULT, POLL_RATE_SLOW, ModbusFieldConfig
+from custom_components.solvis_leo.const import CONF_HOST, CONF_NAME, DATA_COORDINATOR, DOMAIN, POLL_RATE_DEFAULT, POLL_RATE_SLOW
 from homeassistant.helpers.device_registry import DeviceInfo
 
 
@@ -104,61 +104,3 @@ async def test_async_setup_entry_no_host_binary_sensor(hass, mock_config_entry):
         hass.data = {DOMAIN: {mock_config_entry.entry_id: {DATA_COORDINATOR: _coordinator_mock()}}}
         await async_setup_entry(hass, mock_config_entry, AsyncMock())
         mock_logger.assert_called_with("Device has no address")
-
-
-@pytest.mark.asyncio
-async def test_async_setup_entry_binary_sensor_entity_removal_exception(hass, mock_config_entry):
-    """Test exception handling during entity removal for binary sensor."""
-    hass.data = {DOMAIN: {mock_config_entry.entry_id: {DATA_COORDINATOR: _coordinator_mock()}}}
-    with (
-        patch("homeassistant.helpers.entity_registry.async_get", side_effect=Exception("Test Exception")),
-        patch("custom_components.solvis_leo.utils.helpers.generate_device_info"),
-        patch("custom_components.solvis_leo.utils.helpers.REGISTERS", []),
-        patch("custom_components.solvis_leo.utils.helpers._LOGGER.error") as mock_log_error,
-    ):
-        mock_add_entities = MagicMock()
-        await async_setup_entry(hass, mock_config_entry, mock_add_entities)
-        mock_log_error.assert_called_with("Error removing old entities: Test Exception", exc_info=True)
-        mock_add_entities.assert_called()
-
-
-@pytest.mark.asyncio
-async def test_async_setup_entry_binary_sensor_existing_entities_handling(hass, mock_config_entry):
-    """Test removal of existing binary sensor entities during setup."""
-    hass.data = {DOMAIN: {mock_config_entry.entry_id: {DATA_COORDINATOR: _coordinator_mock()}}}
-    mock_entity_registry = MagicMock()
-    mock_entity_registry.entities = {
-        "sensor_1": MagicMock(unique_id="old_1", entity_id="sensor_1", config_entry_id=mock_config_entry.entry_id),
-        "sensor_2": MagicMock(unique_id="old_2", entity_id="sensor_2", config_entry_id=mock_config_entry.entry_id),
-    }
-    mock_entity_registry.async_remove = MagicMock()
-
-    register1 = ModbusFieldConfig(
-        name="new_sensor_1",
-        address=100,
-        unit=None,
-        device_class=None,
-        state_class=None,
-        input_type=4,
-    )
-    register2 = ModbusFieldConfig(
-        name="new_sensor_2",
-        address=200,
-        unit=None,
-        device_class=None,
-        state_class=None,
-        input_type=4,
-    )
-
-    with patch("homeassistant.helpers.entity_registry.async_get", return_value=mock_entity_registry):
-        with patch("custom_components.solvis_leo.utils.helpers.REGISTERS", [register1, register2]):
-            with patch("custom_components.solvis_leo.utils.helpers.async_resolve_entity_id") as mock_resolve:
-                with patch("custom_components.solvis_leo.utils.helpers._LOGGER.debug") as mock_log_debug:
-                    # Mock async_resolve_entity_id()
-                    mock_resolve.side_effect = lambda reg, uid: f"sensor_{uid[-1]}"
-                    await async_setup_entry(hass, mock_config_entry, MagicMock())
-                    mock_entity_registry.async_remove.assert_any_call("sensor_1")
-                    mock_entity_registry.async_remove.assert_any_call("sensor_2")
-                    assert mock_entity_registry.async_remove.call_count == 2
-                    mock_log_debug.assert_any_call("Removed old entity: old_1 (entity_id: sensor_1)")
-                    mock_log_debug.assert_any_call("Removed old entity: old_2 (entity_id: sensor_2)")

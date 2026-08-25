@@ -42,6 +42,8 @@ EXPECTED_ENTITY_IDS = {
     "binary_sensor.solvisleo_180_hkr1_mixer_heating_circuit_open_a8",
     "binary_sensor.solvisleo_180_hkr1_pump_a3",
     "binary_sensor.solvisleo_180_hkr1_schedule_active",
+    "binary_sensor.solvisleo_180_hkr2_schedule_active",
+    "binary_sensor.solvisleo_180_hkr3_schedule_active",
     "binary_sensor.solvisleo_180_hot_water_schedule_active",
     "number.solvisleo_180_hkr1_fix_flow_day_temperature",
     "number.solvisleo_180_hkr1_fix_flow_set_back_temperature",
@@ -108,6 +110,8 @@ EXPECTED_ENTITY_IDS = {
     "sensor.solvisleo_180_hkr1_room_temp",
     "sensor.solvisleo_180_hkr1_schedule",
     "sensor.solvisleo_180_hkr1_supply_temperature_s12",
+    "sensor.solvisleo_180_hkr2_schedule",
+    "sensor.solvisleo_180_hkr3_schedule",
     "sensor.solvisleo_180_heating_circuit_power",
     "sensor.solvisleo_180_heating_circuit_return_temperature",
     "sensor.solvisleo_180_heating_circuit_spread",
@@ -177,7 +181,13 @@ EXPECTED_ENTITY_IDS = {
 }
 
 
-async def setup_recorded_anlage(hass):
+async def setup_recorded_anlage(
+    hass,
+    *,
+    poll_rate_high: int = 10,
+    poll_rate_default: int = 10,
+    poll_rate_slow: int = 10,
+):
     """Set up the integration against the recorded SolvisLeo 180 responses."""
     client = AddressableModbusClient.from_inventory(
         ROOT / "inventory" / "solvisleo_180_sc3.json",
@@ -192,9 +202,9 @@ async def setup_recorded_anlage(hass):
             CONF_NAME: "SolvisLeo 180",
             CONF_HOST: "172.16.0.73",
             CONF_PORT: 502,
-            POLL_RATE_HIGH: 10,
-            POLL_RATE_DEFAULT: 10,
-            POLL_RATE_SLOW: 10,
+            POLL_RATE_HIGH: poll_rate_high,
+            POLL_RATE_DEFAULT: poll_rate_default,
+            POLL_RATE_SLOW: poll_rate_slow,
             "hkr1_name": "Ground floor",
             "hkr2_name": "Upper floor",
             "hkr3_name": "Attic",
@@ -234,6 +244,34 @@ async def test_setup_exposes_the_recorded_anlage(hass) -> None:
     assert hass.states.get("switch.solvisleo_180_warm_water_reheat_start").state == "off"
     assert hass.states.get("binary_sensor.solvisleo_180_heat_pump_charging_pump_a2").state == "on"
     assert hass.states.get("update.solvisleo_180_firmware_sc").state == "unknown"
+
+
+@pytest.mark.asyncio
+async def test_reload_keeps_every_recorded_entity(hass) -> None:
+    """Platform setup must not remove entities owned by sibling platforms."""
+    client, entry, _ = await setup_recorded_anlage(hass)
+    registry = er.async_get(hass)
+    customized_entity_id = "sensor.solvisleo_180_hot_water_buffer_temperature_s1"
+    registry.async_update_entity(
+        customized_entity_id,
+        disabled_by=er.RegistryEntryDisabler.USER,
+    )
+    registry.async_get_or_create(
+        domain="sensor",
+        platform=DOMAIN,
+        unique_id="33045_digin_error",
+        config_entry=entry,
+    )
+
+    with patch("custom_components.solvis_leo.create_modbus_client", return_value=client):
+        assert await hass.config_entries.async_reload(entry.entry_id)
+        await hass.async_block_till_done()
+
+    actual_entity_ids = {entity.entity_id for entity in registry.entities.values() if entity.config_entry_id == entry.entry_id}
+
+    assert actual_entity_ids == EXPECTED_ENTITY_IDS
+    assert registry.entities[customized_entity_id].disabled_by is er.RegistryEntryDisabler.USER
+    assert all(entity.unique_id != "33045_digin_error" for entity in registry.entities.values())
 
 
 @pytest.mark.asyncio
@@ -292,6 +330,52 @@ async def test_register_failure_is_isolated_and_recovers(hass, caplog) -> None:
 
     assert client.request_count("input", 33546) == requests_before_rejection + 2
     assert hass.states.get(failed_entity_id).state == "0.0"
+
+
+@pytest.mark.asyncio
+async def test_register_timeout_is_isolated_and_recovers(hass) -> None:
+    """A slow response costs one register and is retried on the next cycle."""
+    client, _, coordinator = await setup_recorded_anlage(hass)
+    failed_entity_id = "sensor.solvisleo_180_heizstab_thermal_power"
+    healthy_address = 33549
+    healthy_reads = client.request_count("input", healthy_address)
+
+    client.timeout("input", 33546)
+    await coordinator.async_refresh()
+    await hass.async_block_till_done()
+
+    assert coordinator.last_update_success
+    assert client.request_count("input", healthy_address) == healthy_reads + 1
+    assert hass.states.get(failed_entity_id).state == "0.0"
+
+    client.restore("input", 33546)
+    await coordinator.async_refresh()
+    await hass.async_block_till_done()
+
+    assert hass.states.get(failed_entity_id).state == "0.0"
+
+
+@pytest.mark.asyncio
+async def test_slow_polled_value_stays_current_between_reads(hass) -> None:
+    """A slow value remains published while its next Modbus read is not due."""
+    client, _, coordinator = await setup_recorded_anlage(
+        hass,
+        poll_rate_high=10,
+        poll_rate_default=30,
+        poll_rate_slow=300,
+    )
+    entity_id = "sensor.solvisleo_180_heizstab_thermal_energy"
+    slow_address = 33538
+    reads_after_initial_poll = client.request_count("input", slow_address)
+
+    assert reads_after_initial_poll == 1
+    assert hass.states.get(entity_id).state == "0"
+
+    await coordinator.async_refresh()
+    await hass.async_block_till_done()
+
+    assert client.request_count("input", slow_address) == reads_after_initial_poll
+    assert hass.states.get(entity_id).state == "0"
 
 
 @pytest.mark.asyncio

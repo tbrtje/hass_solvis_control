@@ -15,7 +15,7 @@ from homeassistant.util import dt as dt_util
 
 from .const import CONF_HOST, CONF_NAME, DATA_COORDINATOR, DOMAIN, REGISTER_ADDRESSES_BY_NAME, SCHEDULES
 from .coordinator import SolvisModbusCoordinator
-from .utils.helpers import async_setup_solvis_entities, conf_options_map, generate_device_info
+from .utils.helpers import async_setup_solvis_entities, generate_device_info
 from .utils.schedule import decode_schedule, is_active, next_switch
 from .entity import SolvisEntity
 
@@ -42,11 +42,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     device_info = generate_device_info(entry, host, entry.data.get(CONF_NAME))
 
     schedule_entities: list[SolvisScheduleBinarySensor] = []
-    for key, cfg in SCHEDULES.items():
-        option = cfg.get("conf_option", 0)
-        if option and not entry.data.get(conf_options_map.get(option)):
-            _LOGGER.debug(f"[{key}] Skipping schedule binary sensor: conf_option {option} not enabled.")
-            continue
+    for key in SCHEDULES:
         schedule_entities.append(
             SolvisScheduleBinarySensor(
                 coordinator=coordinator,

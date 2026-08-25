@@ -28,7 +28,6 @@ from .const import (
 )
 from .coordinator import SolvisModbusCoordinator
 from .utils.helpers import async_setup_solvis_entities, generate_device_info
-from .utils.helpers import conf_options_map
 from .utils.schedule import decode_schedule, next_switch, schedule_as_attributes
 from .entity import SolvisEntity
 
@@ -220,12 +219,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
             )
         )
 
-    # Setup SolvisScheduleSensor: one per weekly schedule the configuration enables
-    for key, cfg in SCHEDULES.items():
-        option = cfg.get("conf_option", 0)
-        if option and not entry.data.get(conf_options_map.get(option)):
-            _LOGGER.debug(f"[{key}] Skipping schedule sensor: conf_option {option} not enabled.")
-            continue
+    # Setup one SolvisScheduleSensor for every retained Wochenplan.
+    for key in SCHEDULES:
         sdc_instances.append(
             SolvisScheduleSensor(
                 coordinator=coordinator,

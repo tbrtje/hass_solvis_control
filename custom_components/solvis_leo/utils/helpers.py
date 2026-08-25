@@ -11,7 +11,6 @@ from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers import entity_registry as er
-from homeassistant.helpers.entity_registry import async_resolve_entity_id
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from scapy.all import ARP, Ether, srp
 from pymodbus.exceptions import ConnectionException, ModbusException
@@ -25,22 +24,13 @@ from custom_components.solvis_leo.const import (
     DOMAIN,
     MANUFACTURER,
     DATA_COORDINATOR,
-    CONF_OPTION_1,
-    CONF_OPTION_2,
-    CONF_OPTION_3,
-    CONF_OPTION_4,
-    CONF_OPTION_5,
-    CONF_OPTION_6,
-    CONF_OPTION_7,
-    CONF_OPTION_8,
-    CONF_OPTION_9,
-    CONF_OPTION_10,
-    CONF_OPTION_11,
-    CONF_OPTION_12,
+    DERIVATIVE_SENSORS,
     POLL_RATE_SLOW,
     POLL_RATE_DEFAULT,
     POLL_RATE_HIGH,
+    REGISTER_ADDRESSES_BY_NAME,
     REGISTERS,
+    SCHEDULES,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -135,22 +125,6 @@ async def fetch_modbus_value(
         return results[0] if single else results
 
 
-conf_options_map = {
-    1: CONF_OPTION_1,
-    2: CONF_OPTION_2,
-    3: CONF_OPTION_3,
-    4: CONF_OPTION_4,
-    5: CONF_OPTION_5,
-    6: CONF_OPTION_6,
-    7: CONF_OPTION_7,
-    8: CONF_OPTION_8,
-    9: CONF_OPTION_9,
-    10: CONF_OPTION_10,
-    11: CONF_OPTION_11,
-    12: CONF_OPTION_12,
-}
-
-
 def get_mac(ip):
     arp_request = ARP(pdst=ip)
     ether = Ether(dst="ff:ff:ff:ff:ff:ff")  # Broadcast-Adresse
@@ -173,22 +147,33 @@ async def remove_old_entities(hass: HomeAssistant, config_entry_id: str, active_
 
     entity_registry = er.async_get(hass)
 
-    existing_entity_ids = {entity_entry.unique_id for entity_entry in entity_registry.entities.values() if entity_entry.config_entry_id == config_entry_id}
-
-    entities_to_remove = existing_entity_ids - active_entity_ids
+    existing_entities = [entity_entry for entity_entry in entity_registry.entities.values() if entity_entry.config_entry_id == config_entry_id]
+    existing_entity_ids = {entity_entry.unique_id for entity_entry in existing_entities}
+    entities_to_remove = [entity_entry for entity_entry in existing_entities if entity_entry.unique_id not in active_entity_ids]
 
     _LOGGER.debug(f"Existing unique_ids: {existing_entity_ids}")
     _LOGGER.debug(f"Active unique_ids: {active_entity_ids}")
-    _LOGGER.debug(f"Existing but not active unique_ids to remove: {entities_to_remove}")
+    _LOGGER.debug(f"Existing but not active unique_ids to remove: {[entity.unique_id for entity in entities_to_remove]}")
 
-    for unique_id in entities_to_remove:
-        # entities_to_remove contains unique_id's and not entity_id's,
-        # but we need entity-id's here to get the entity_entries
-        entity_id = async_resolve_entity_id(entity_registry, unique_id)  # resolve unique_id to entity_id
-        entity_entry = entity_registry.entities.get(entity_id)  # get the entity_entry by entity_id
-        if entity_entry:  # check if the entity_entry exists
-            entity_registry.async_remove(entity_entry.entity_id)  # remove by entity_id
-            _LOGGER.debug(f"Removed old entity: {unique_id} (entity_id: {entity_entry.entity_id})")
+    for entity_entry in entities_to_remove:
+        entity_registry.async_remove(entity_entry.entity_id)
+        _LOGGER.debug(f"Removed old entity: {entity_entry.unique_id} (entity_id: {entity_entry.entity_id})")
+
+
+def active_entity_unique_ids() -> set[str]:
+    """Return the complete entity set owned by this fixed Anlage model."""
+    active_ids = {generate_unique_id(register.address, register.name) for register in REGISTERS if 0 <= register.input_type <= 5}
+
+    for name, config in DERIVATIVE_SENSORS.items():
+        source_address = REGISTER_ADDRESSES_BY_NAME[config["source_keys"][0]]
+        active_ids.add(generate_unique_id(source_address, name))
+
+    for schedule in SCHEDULES:
+        address = REGISTER_ADDRESSES_BY_NAME[schedule]
+        active_ids.add(generate_unique_id(address, schedule))
+        active_ids.add(generate_unique_id(address, f"{schedule}_active"))
+
+    return active_ids
 
 
 def generate_unique_id(modbus_address: int, name: str) -> str:
@@ -291,8 +276,6 @@ async def async_setup_solvis_entities(
     device_info = generate_device_info(entry, host, name)
 
     entities = []
-    active_entity_ids = set()
-
     for register in REGISTERS:
         if register.input_type != input_type:
             continue
@@ -333,13 +316,7 @@ async def async_setup_solvis_entities(
 
         entity = entity_cls(**kwargs)
         entities.append(entity)
-        active_entity_ids.add(entity.unique_id)
         _LOGGER.debug(f"Erstellte unique_id: {entity.unique_id}")
-
-    try:
-        await remove_old_entities(hass, entry.entry_id, active_entity_ids)
-    except Exception as e:
-        _LOGGER.error(f"Error removing old entities: {e}", exc_info=True)
 
     async_add_entities(entities)
     _LOGGER.info(f"Successfully added {len(entities)} entities")

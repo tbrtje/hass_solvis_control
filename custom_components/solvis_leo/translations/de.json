@@ -19,65 +19,11 @@
 					"poll_rate_slow": "Muss ein Vielfaches des Standard-Abfrageintervalls sein.",
 					"poll_rate_high": "Muss mindestens 2 Sekunden betragen."
 				}
-			},
-			"device":{
-				"title": "Systemregelung & Abfrageintervalle",
-				"description": "Bitte wählen Sie die Zeitintervalle aus, in denen die Daten abgefragt werden sollen.",
-				"data_description": {
-					"poll_rate_default": "Muss ein Vielfaches des hohen Abfrageintervalls sein.",
-					"poll_rate_slow": "Muss ein Vielfaches des Standard-Abfrageintervalls sein.",
-					"poll_rate_high": "Muss mindestens 2 Sekunden betragen."
-				},
-				"data":{
-					"poll_rate_default": "Standard-Abfrageintervall (in s)",
-					"poll_rate_slow": "Niedriges Abfrageintervall (in s)",
-					"poll_rate_high": "Hohes Abfrageintervall (in s)"
-				}
-			},
-			"features":{
-				"title": "Auswahl der Systemkomponenten",
-				"description": "Wählen Sie bitte die Baugruppen und Systemkomponenten Ihres Solvis Heizsystems aus.",
-				"data":{
-					"hkr2":"Heizkreis 2",
-					"hkr3":"Heizkreis 3",
-					"solar collector":"Solarthermie",
-					"heat pump":"Wärmepumpe",
-					"heat_meter": "Wärmemengenzähler",
-					"room_temperature_sensor": "Raumtemperatursensoren (lesen)",
-					"write_room_temperature_sensor": "Raumtemperatursensoren (schreiben)",
-					"pv2heat": "PV2Heat"
-				},
-				"data_description": {
-					"hkr2": "Automatisch erkannt. Kann manuell (de)aktiviert werden",
-					"hkr3": "Automatisch erkannt. Kann manuell (de)aktiviert werden",
-					"solar collector": "Solarkollektoren SolvisCala Eco, SolvisCala, SolvisFera, SolvisLuna",
-					"heat pump": "Wärmepumpen SolvisLea, SolvisPia, SolvisMia",
-					"heat_meter": "Wärmemengen-Erfassungsset WME-HKS-BEN, WME-WM",
-					"pv2heat": "PV2Heat-Lösungen SolvisTim und SolvisTom"
-				}
-			},
-			"roomtempsensors":{
-				"title": "Raumtemperatursensoren",
-				"description": "Bitte wählen Sie die installierten Raumtemperatursensoren sowie deren gewünschtes Verhalten aus.",
-				"data":{
-					"hkr1_room_temp_sensor":"Raumtemperatursensor Heizkreis 1",
-					"hkr2_room_temp_sensor":"Raumtemperatursensor Heizkreis 2",
-					"hkr3_room_temp_sensor":"Raumtemperatursensor Heizkreis 3"
-				},
-				"data_description": {
-					"hkr1_room_temp_sensor": "Wählen Sie 'deaktiviert', falls kein Sensor installiert ist, 'lesen', falls der Wert nur ausgelesen werden soll (Standard) und 'schreiben', falls der Wert geschrieben werden soll.",
-					"hkr2_room_temp_sensor": "Wählen Sie 'deaktiviert', falls kein Sensor installiert ist, 'lesen', falls der Wert nur ausgelesen werden soll (Standard) und 'schreiben', falls der Wert geschrieben werden soll.",
-					"hkr3_room_temp_sensor": "Wählen Sie 'deaktiviert', falls kein Sensor installiert ist, 'lesen', falls der Wert nur ausgelesen werden soll (Standard) und 'schreiben', falls der Wert geschrieben werden soll."
-				}
 			}
 		},
 		"error":{
-			"cannot_connect":"Bei der Herstellung der Modbus-Verbindung ist ein Fehler aufgetreten.",
-			"mac_error": "Bei der Suche nach der MAC-Adresse ist ein Fehler aufgetreten. Bitte geben Sie diese manuell ein.",
 			"poll_rate_invalid_slow": "Das niedrige Abfrageintervall muss ein Vielfaches des Standard-Abfrageintervalls sein.",
-			"poll_rate_invalid_high": "Das Standard-Abfrageintervall muss ein Vielfaches des hohen Abfrageintervalls sein.",
-			"poll_rate_invalid_order": "Das Standard-Abfrageintervall muss kleiner als das niedrige und größer als das hohe Abfrageintervall sein.",
-			"only_one_temperature_sensor": "Es darf nur eine Zugriffsvariante für die Raumtemperatursensoren ausgewählt sein (lesen oder schreiben)."
+			"poll_rate_invalid_high": "Das Standard-Abfrageintervall muss ein Vielfaches des hohen Abfrageintervalls sein."
 		}
 	},
 	"options":{
@@ -100,66 +46,11 @@
 					"poll_rate_slow": "Muss ein Vielfaches des Standard-Abfrageintervalls sein.",
 					"poll_rate_high": "Muss mindestens 2 Sekunden betragen."
 				}
-			},
-			"device":{
-				"title": "Systemregelung & Abfrageintervalle",
-				"description": "Bitte wählen Sie die Zeitintervalle aus, in denen die Daten abgefragt werden sollen.",
-				"data_description": {
-					"poll_rate_default": "Muss ein Vielfaches des hohen Abfrageintervalls sein.",
-					"poll_rate_slow": "Muss ein Vielfaches des Standard-Abfrageintervalls sein.",
-					"poll_rate_high": "Muss mindestens 2 Sekunden betragen."
-				},
-				"data":{
-					"poll_rate_default": "Standard-Abfrageintervall (in s)",
-					"poll_rate_slow": "Niedriges Abfrageintervall (in s)",
-					"poll_rate_high": "Hohes Abfrageintervall (in s)"
-				}
-			},
-			"features":{
-				"title": "Auswahl der Systemkomponenten",
-				"description": "Wählen Sie bitte die Baugruppen und Systemkomponenten Ihres Solvis Heizsystems aus.",
-				"data":{
-					"hkr2":"Heizkreis 2",
-					"hkr3":"Heizkreis 3",
-					"solar collector":"Solarthermie",
-					"heat pump":"Wärmepumpe",
-					"heat_meter": "Wärmemengenzähler",
-					"room_temperature_sensor": "Raumtemperatursensoren (lesen)",
-					"write_room_temperature_sensor": "Raumtemperatursensoren (schreiben)",
-					"pv2heat": "PV2Heat"
-				},
-				"data_description": {
-					"hkr2": "Automatisch erkannt. Kann manuell (de)aktiviert werden",
-					"hkr3": "Automatisch erkannt. Kann manuell (de)aktiviert werden",
-					"solar collector": "Solarkollektoren SolvisCala Eco, SolvisCala, SolvisFera, SolvisLuna",
-					"heat pump": "Wärmepumpen SolvisLea, SolvisPia, SolvisMia",
-					"heat_meter": "Wärmemengen-Erfassungsset WME-HKS-BEN, WME-WM",
-					"room_temperature_sensor": "Auswählen, falls der Wert der Raumtemperatursensoren nur ausgelesen werden soll (Standard)",
-					"write_room_temperature_sensor": "Auswählen, falls der Wert der Raumtemperatursensoren geschrieben werden soll.",
-					"pv2heat": "PV2Heat-Lösungen SolvisTim und SolvisTom"
-				}
-			},
-			"roomtempsensors":{
-				"title": "Raumtemperatursensoren",
-				"description": "Bitte wählen Sie die installierten Raumtemperatursensoren sowie deren gewünschtes Verhalten aus.",
-				"data":{
-					"hkr1_room_temp_sensor":"Raumtemperatursensor Heizkreis 1",
-					"hkr2_room_temp_sensor":"Raumtemperatursensor Heizkreis 2",
-					"hkr3_room_temp_sensor":"Raumtemperatursensor Heizkreis 3"
-				},
-				"data_description": {
-					"hkr1_room_temp_sensor": "Wählen Sie 'deaktiviert', falls kein Sensor installiert ist, 'lesen', falls der Wert nur ausgelesen werden soll (Standard) und 'schreiben', falls der Wert geschrieben werden soll.",
-					"hkr2_room_temp_sensor": "Wählen Sie 'deaktiviert', falls kein Sensor installiert ist, 'lesen', falls der Wert nur ausgelesen werden soll (Standard) und 'schreiben', falls der Wert geschrieben werden soll.",
-					"hkr3_room_temp_sensor": "Wählen Sie 'deaktiviert', falls kein Sensor installiert ist, 'lesen', falls der Wert nur ausgelesen werden soll (Standard) und 'schreiben', falls der Wert geschrieben werden soll."
-				}
 			}
 		},
 		"error":{
-			"cannot_connect":"Bei der Herstellung der Modbus-Verbindung ist ein Fehler aufgetreten.",
 			"poll_rate_invalid_slow": "Das niedrige Abfrageintervall muss ein Vielfaches des Standard-Abfrageintervalls sein.",
-			"poll_rate_invalid_high": "Das Standard-Abfrageintervall muss ein Vielfaches des hohen Abfrageintervalls sein.",
-			"poll_rate_invalid_order": "Das Standard-Abfrageintervall muss kleiner als das niedrige und größer als das hohe Abfrageintervall sein.",
-			"only_one_temperature_sensor": "Es darf nur eine Zugriffsvariante für die Raumtemperatursensoren ausgewählt sein (lesen oder schreiben)."
+			"poll_rate_invalid_high": "Das Standard-Abfrageintervall muss ein Vielfaches des hohen Abfrageintervalls sein."
 		}
 	},
 	"entity":{

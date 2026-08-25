@@ -19,65 +19,11 @@
 					"poll_rate_slow": "Moet een veelvoud zijn van het standaard opvraaginterval.",
 					"poll_rate_high": "Moet minimaal 2 seconden zijn."
 				}
-			},
-			"device":{
-				"title": "Systeeminstellingen & poll intervallen",
-				"description": "Selecteer de tijdsintervallen waarin de gegevens moeten worden opgevraagd.",
-				"data_description": {
-					"poll_rate_default": "Moet een veelvoud zijn van het hoge opvraaginterval.",
-					"poll_rate_slow": "Moet een veelvoud zijn van het standaard opvraaginterval.",
-					"poll_rate_high": "Moet minimaal 2 seconden zijn."
-				},
-				"data":{
-					"poll_rate_default": "Standaard opvraaginterval (in seconden)",
-					"poll_rate_slow": "Laag opvraaginterval (in seconden)",
-					"poll_rate_high": "Hoge opvraaginterval (in seconden)"
-				}
-			},
-			"features":{
-				"title": "Selectie van de systeemcomponenten",
-				"description": "Kies alstublieft de modules en systeemcomponenten van uw Solvis-verwarmingssysteem.",
-				"data":{
-					"hkr2":"Verwarmingskring 2",
-					"hkr3":"Verwarmingskring 3",
-					"solar collector":"Zonnethermie",
-					"heat pump":"Warmtepomp",
-					"heat_meter": "Warmtemengregelaar",
-					"room_temperature_sensor": "Ruimtetemperatuur sensoren (lezen)",
-					"write_room_temperature_sensor": "Ruimtetemperatuur sensoren (schrijven)",
-					"pv2heat": "PV2Heat"
-				},
-				"data_description": {
-					"hkr2": "Automatisch herkend. Kan handmatig (de)geactiveerd worden.",
-					"hkr3": "Automatisch herkend. Kan handmatig (de)geactiveerd worden.",
-					"solar collector": "Zonnecollectoren SolvisCala Eco, SolvisCala, SolvisFera, SolvisLuna",
-					"heat pump": "Warmtepomp SolvisLea, SolvisPia, SolvisMia",
-					"heat_meter": "Warmtemeterregistratieset WME-HKS-BEN, WME-WM",
-					"pv2heat": "PV2Heat-oplossingen SolvisTim en SolvisTom"
-				}
-			},
-			"roomtempsensors":{
-				"title": "Ruimtetemperatuur sensoren",
-				"description": "Selecteer de geïnstalleerde kamertemperatuursensoren en hun gewenste gedrag.",
-				"data":{
-					"hkr1_room_temp_sensor":"Ruimtetemperatuursensor verwarmingscircuit 1",
-					"hkr2_room_temp_sensor":"Ruimtetemperatuursensor verwarmingscircuit 2",
-					"hkr3_room_temp_sensor":"Ruimtetemperatuursensor verwarmingscircuit 3"
-				},
-				"data_description": {
-					"hkr1_room_temp_sensor": "Selecteer ‘gedeactiveerd’ als er geen sensor is geïnstalleerd, ‘lezen’ als de waarde alleen moet worden uitgelezen (standaard) en ‘schrijven’ als de waarde moet worden geschreven.",
-					"hkr2_room_temp_sensor": "Selecteer ‘gedeactiveerd’ als er geen sensor is geïnstalleerd, ‘lezen’ als de waarde alleen moet worden uitgelezen (standaard) en ‘schrijven’ als de waarde moet worden geschreven.",
-					"hkr3_room_temp_sensor": "Selecteer ‘gedeactiveerd’ als er geen sensor is geïnstalleerd, ‘lezen’ als de waarde alleen moet worden uitgelezen (standaard) en ‘schrijven’ als de waarde moet worden geschreven."
-				}
 			}
 		},
 		"error":{
-			"cannot_connect":"Er is een fout opgetreden bij het maken van de Modbus-verbinding.",
-			"mac_error": "Bei der Suche nach der MAC-Adresse ist ein Fehler aufgetreten. Bitte geben Sie diese manuell ein.",
 			"poll_rate_invalid_slow": "Het lage opvraaginterval moet een veelvoud zijn van het standaard opvraaginterval.",
-			"poll_rate_invalid_high": "Het standaard opvraaginterval moet een veelvoud zijn van het hoge opvraaginterval.",
-			"poll_rate_invalid_order": "Het standaard opvraaginterval moet kleiner zijn dan het lage opvraaginterval en groter dan het hoge opvraaginterval.",
-			"only_one_temperature_sensor": "Er mag slechts één toegangsmethode voor de ruimte temperatuursensoren worden geselecteerd (lezen of schrijven)."
+			"poll_rate_invalid_high": "Het standaard opvraaginterval moet een veelvoud zijn van het hoge opvraaginterval."
 		}
 	},
 	"options":{
@@ -100,66 +46,11 @@
 					"poll_rate_slow": "Moet een veelvoud zijn van het standaard opvraaginterval.",
 					"poll_rate_high": "Moet minimaal 2 seconden zijn."
 				}
-			},
-			"device":{
-				"title": "Systeeminstellingen & poll intervallen",
-				"description": "Kies de tijdsintervallen waarin de gegevens opgevraagd moeten worden.",
-				"data_description": {
-					"poll_rate_default": "Moet een veelvoud zijn van het hoge opvraaginterval.",
-					"poll_rate_slow": "Moet een veelvoud zijn van het standaard opvraaginterval.",
-					"poll_rate_high": "Moet minimaal 2 seconden zijn."
-				},
-				"data":{
-					"poll_rate_default": "Standaard opvraaginterval (in seconden)",
-					"poll_rate_slow": "Laag opvraaginterval (in seconden)",
-					"poll_rate_high": "Hoge opvraaginterval (in seconden)"
-				}
-			},
-			"features":{
-				"title": "Selectie van de systeemcomponenten",
-				"description": "Kies alstublieft de modules en systeemcomponenten van uw Solvis-verwarmingssysteem.",
-				"data":{
-					"hkr2":"Verwarmingsgroep 2",
-					"hkr3":"Verwarmingsgroep 3",
-					"solar collector":"Zonnethermie",
-					"heat pump":"Warmtepomp",
-					"heat_meter": "Warmtemengregelaar",
-					"room_temperature_sensor": "Ruimtetemperatuur sensoren (lezen)",
-					"write_room_temperature_sensor": "Ruimtetemperatuur sensoren (schrijven)",
-					"pv2heat": "PV2Heat"
-				},
-				"data_description": {
-					"hkr2": "Automatisch herkend. Kan handmatig (de)geactiveerd worden.",
-					"hkr3": "Automatisch herkend. Kan handmatig (de)geactiveerd worden.",
-					"solar collector": "Zonnecollectoren SolvisCala Eco, SolvisCala, SolvisFera, SolvisLuna",
-					"heat pump": "Warmtepomp SolvisLea, SolvisPia, SolvisMia",
-					"heat_meter": "Warmtemeterregistratieset WME-HKS-BEN, WME-WM",
-					"room_temperature_sensor": "Kies deze optie als de waarde van de ruimte temperatuur sensoren alleen gelezen moet worden (standaard).",
-					"write_room_temperature_sensor": "Kies deze optie als de waarde van de ruimte temperatuur sensoren alleen geschreven moet worden.",
-					"pv2heat": "PV2Heat-oplossingen SolvisTim en SolvisTom"
-				}
-			},
-			"roomtempsensors":{
-				"title": "Ruimtetemperatuur sensoren",
-				"description": "Selecteer de geïnstalleerde kamertemperatuursensoren en hun gewenste gedrag.",
-				"data":{
-					"hkr1_room_temp_sensor":"Ruimtetemperatuursensor verwarmingscircuit 1",
-					"hkr2_room_temp_sensor":"Ruimtetemperatuursensor verwarmingscircuit 2",
-					"hkr3_room_temp_sensor":"Ruimtetemperatuursensor verwarmingscircuit 3"
-				},
-				"data_description": {
-					"hkr1_room_temp_sensor": "Selecteer ‘gedeactiveerd’ als er geen sensor is geïnstalleerd, ‘lezen’ als de waarde alleen moet worden uitgelezen (standaard) en ‘schrijven’ als de waarde moet worden geschreven.",
-					"hkr2_room_temp_sensor": "Selecteer ‘gedeactiveerd’ als er geen sensor is geïnstalleerd, ‘lezen’ als de waarde alleen moet worden uitgelezen (standaard) en ‘schrijven’ als de waarde moet worden geschreven.",
-					"hkr3_room_temp_sensor": "Selecteer ‘gedeactiveerd’ als er geen sensor is geïnstalleerd, ‘lezen’ als de waarde alleen moet worden uitgelezen (standaard) en ‘schrijven’ als de waarde moet worden geschreven."
-				}
 			}
 		},
 		"error":{
-			"cannot_connect":"Er is een fout opgetreden bij het maken van de Modbus-verbinding.",
 			"poll_rate_invalid_slow": "Het lage opvraaginterval moet een veelvoud zijn van het standaard opvraaginterval.",
-			"poll_rate_invalid_high": "Het standaard opvraaginterval moet een veelvoud zijn van het hoge opvraaginterval.",
-			"poll_rate_invalid_order": "Het standaard opvraaginterval moet kleiner zijn dan het lage opvraaginterval en groter dan het hoge opvraaginterval.",
-			"only_one_temperature_sensor": "Er mag slechts één toegangsmethode voor de ruimte temperatuursensoren worden geselecteerd (lezen of schrijven)."
+			"poll_rate_invalid_high": "Het standaard opvraaginterval moet een veelvoud zijn van het hoge opvraaginterval."
 		}
 	},
 	"entity":{

@@ -15,7 +15,6 @@ from custom_components.solvis_leo.const import (
     POLL_RATE_SLOW,
 )
 
-
 POLLING_INTERVALS = {
     POLL_RATE_HIGH: 10,
     POLL_RATE_DEFAULT: 30,
@@ -50,6 +49,7 @@ async def add_config_entry(hass) -> ConfigEntry:
 @pytest.fixture
 def skip_integration_setup(hass, monkeypatch) -> None:
     """Keep config-flow tests focused on the Home Assistant flow seam."""
+
     async def skip(*_args, **_kwargs) -> bool:
         return True
 
@@ -135,7 +135,7 @@ async def test_options_flow_rejects_incompatible_polling_intervals(hass, skip_in
             POLL_RATE_HIGH: 15,
             POLL_RATE_DEFAULT: 10,
             POLL_RATE_SLOW: 60,
-        }
+        },
     )
 
     assert result["type"] is FlowResultType.FORM

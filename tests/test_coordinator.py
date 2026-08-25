@@ -22,14 +22,6 @@ from custom_components.solvis_leo.const import (
     POLL_RATE_DEFAULT,
     POLL_RATE_HIGH,
     POLL_RATE_SLOW,
-    CONF_OPTION_1,
-    CONF_OPTION_2,
-    CONF_OPTION_3,
-    CONF_OPTION_4,
-    CONF_OPTION_5,
-    CONF_OPTION_6,
-    CONF_OPTION_7,
-    CONF_OPTION_8,
 )
 
 
@@ -71,10 +63,11 @@ async def test_async_update_data_skip_poll_rate(dummy_coordinator, monkeypatch):
     )
     monkeypatch.setattr("custom_components.solvis_leo.coordinator.REGISTERS", [dummy_register])
     dummy_coordinator.poll_rate_high = 2
+    dummy_coordinator._poll_remaining["slow_sensor"] = 5
     data = await dummy_coordinator._async_update_data()
 
     assert "slow_sensor" not in data
-    assert dummy_register.poll_time == 3
+    assert dummy_coordinator._poll_remaining["slow_sensor"] == 3
 
 
 @pytest.mark.asyncio
@@ -301,7 +294,7 @@ async def test_poll_rate_slow_reset(dummy_coordinator, monkeypatch):
     monkeypatch.setattr("custom_components.solvis_leo.coordinator.REGISTERS", [dummy_register])
     data = await dummy_coordinator._async_update_data()
     assert "slow_sensor_reset" in data
-    assert dummy_register.poll_time == dummy_coordinator.poll_rate_slow
+    assert dummy_coordinator._poll_remaining["slow_sensor_reset"] == dummy_coordinator.poll_rate_slow
 
 
 @pytest.mark.asyncio
@@ -319,7 +312,36 @@ async def test_poll_rate_default_reset(dummy_coordinator, monkeypatch):
     monkeypatch.setattr("custom_components.solvis_leo.coordinator.REGISTERS", [dummy_register])
     data = await dummy_coordinator._async_update_data()
     assert "default_sensor_reset" in data
-    assert dummy_register.poll_time == dummy_coordinator.poll_rate_default
+    assert dummy_coordinator._poll_remaining["default_sensor_reset"] == dummy_coordinator.poll_rate_default
+
+
+def test_poll_countdowns_are_coordinator_local(dummy_coordinator):
+    another_coordinator = SolvisModbusCoordinator(
+        dummy_coordinator.hass,
+        dummy_coordinator.config_entry,
+    )
+
+    dummy_coordinator._poll_remaining["slow_sensor"] = 300
+
+    assert another_coordinator._poll_remaining == {}
+
+
+@pytest.mark.asyncio
+async def test_poll_reads_at_the_exact_interval_boundary(dummy_coordinator, monkeypatch):
+    register = DummyRegister(
+        name="default_sensor",
+        address=350,
+        poll_rate=0,
+        reg=1,
+        multiplier=1.0,
+    )
+    monkeypatch.setattr("custom_components.solvis_leo.coordinator.REGISTERS", [register])
+    dummy_coordinator._poll_remaining[register.name] = dummy_coordinator.poll_rate_high
+
+    data = await dummy_coordinator._async_update_data()
+
+    assert data[register.name] == 123
+    assert dummy_coordinator._poll_remaining[register.name] == dummy_coordinator.poll_rate_default
 
 
 @pytest.mark.asyncio
@@ -405,6 +427,7 @@ async def test_initial_reconnect_failed_raises_updatefailed(monkeypatch, dummy_c
 
     with pytest.raises(UpdateFailed):
         await dummy_coordinator._async_update_data()
+
 
 @pytest.mark.asyncio
 async def test_lost_connection_fails_update(monkeypatch, dummy_coordinator, patch_registers):

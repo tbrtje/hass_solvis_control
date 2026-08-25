@@ -18,14 +18,6 @@ from custom_components.solvis_leo.const import (
     POLL_RATE_DEFAULT,
     POLL_RATE_HIGH,
     POLL_RATE_SLOW,
-    CONF_OPTION_1,
-    CONF_OPTION_2,
-    CONF_OPTION_3,
-    CONF_OPTION_4,
-    CONF_OPTION_5,
-    CONF_OPTION_6,
-    CONF_OPTION_7,
-    CONF_OPTION_8,
 )
 
 
@@ -39,14 +31,6 @@ class DummyConfigEntry:
                 POLL_RATE_DEFAULT: 30,
                 POLL_RATE_SLOW: 300,
                 POLL_RATE_HIGH: 10,
-                CONF_OPTION_1: True,
-                CONF_OPTION_2: True,
-                CONF_OPTION_3: True,
-                CONF_OPTION_4: True,
-                CONF_OPTION_5: True,
-                CONF_OPTION_6: True,
-                CONF_OPTION_7: True,
-                CONF_OPTION_8: True,
             }
         else:
             self.data = data

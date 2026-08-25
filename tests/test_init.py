@@ -27,18 +27,8 @@ from custom_components.solvis_leo.const import (
     POLL_RATE_DEFAULT,
     POLL_RATE_HIGH,
     POLL_RATE_SLOW,
-    CONF_OPTION_1,
-    CONF_OPTION_2,
-    CONF_OPTION_3,
-    CONF_OPTION_4,
-    CONF_OPTION_5,
-    CONF_OPTION_6,
-    CONF_OPTION_7,
-    CONF_OPTION_8,
-    CONF_OPTION_9,
-    CONF_OPTION_10,
-    CONF_OPTION_11,
-    CONF_OPTION_12,
+    CONFIG_ENTRY_MINOR_VERSION,
+    CONFIG_ENTRY_VERSION,
 )
 
 
@@ -48,14 +38,6 @@ def dummy_update_entry(entry, **kwargs):
     for key, value in kwargs.items():
         setattr(entry, key, value)
     return True
-
-
-async def fake_migrate(hass, entry):
-    return True
-
-
-async def fake_migrate_fail(hass, entry):
-    return False
 
 
 @pytest.fixture
@@ -114,7 +96,6 @@ async def test_setup_entry_missing_host(hass, extended_config_entry, monkeypatch
 
     monkeypatch.setattr(hass.config_entries, "async_forward_entry_setups", lambda *args, **kwargs: True)
     monkeypatch.setattr(hass.config_entries, "async_update_entry", dummy_update_entry)
-    monkeypatch.setattr("custom_components.solvis_leo.async_migrate_entry", fake_migrate)
 
     result = await async_setup_entry(hass, extended_config_entry)
 
@@ -128,17 +109,7 @@ async def test_setup_entry_missing_port(hass, extended_config_entry, monkeypatch
 
     monkeypatch.setattr(hass.config_entries, "async_forward_entry_setups", lambda *args, **kwargs: True)
     monkeypatch.setattr(hass.config_entries, "async_update_entry", dummy_update_entry)
-    monkeypatch.setattr("custom_components.solvis_leo.async_migrate_entry", fake_migrate)
 
-    result = await async_setup_entry(hass, extended_config_entry)
-
-    assert result is False
-
-
-@pytest.mark.asyncio
-async def test_setup_entry_migration_failure(hass, extended_config_entry, monkeypatch):
-    """Test async_setup_entry returns False if async_migrate_entry fails."""
-    monkeypatch.setattr("custom_components.solvis_leo.async_migrate_entry", fake_migrate_fail)
     result = await async_setup_entry(hass, extended_config_entry)
 
     assert result is False
@@ -147,10 +118,6 @@ async def test_setup_entry_migration_failure(hass, extended_config_entry, monkey
 @pytest.mark.asyncio
 async def test_setup_entry_connect_returns_false_raises_not_ready(hass, extended_config_entry, monkeypatch):
     """Test Modbus connect returns False triggers ConfigEntryNotReady."""
-    monkeypatch.setattr(
-        "custom_components.solvis_leo.async_migrate_entry",
-        lambda hass, entry: asyncio.sleep(0, result=True),
-    )
     fake_client = AsyncMock()
     fake_client.connect.return_value = False
     monkeypatch.setattr(
@@ -164,10 +131,6 @@ async def test_setup_entry_connect_returns_false_raises_not_ready(hass, extended
 @pytest.mark.asyncio
 async def test_setup_entry_connect_exception_raises_not_ready(hass, extended_config_entry, monkeypatch):
     """Test Modbus connect exception triggers ConfigEntryNotReady."""
-    monkeypatch.setattr(
-        "custom_components.solvis_leo.async_migrate_entry",
-        lambda hass, entry: asyncio.sleep(0, result=True),
-    )
     fake_client = AsyncMock()
     fake_client.connect.side_effect = Exception("Connection error")
     monkeypatch.setattr(
@@ -248,289 +211,36 @@ async def test_unload_entry_close_exception_removes_entry(hass, extended_config_
 
 
 @pytest.mark.asyncio
-async def test_async_migrate_entry(hass, extended_config_entry, monkeypatch):
-    """Test async_migrate_entry aktualisiert den ConfigEntry korrekt."""
-
-    extended_config_entry.data["storage_type"] = "SolvisMax 957 Hybrid (82/34/796)"
-
-    update_kwargs = {}
-
-    def dummy_update_entry(entry, **kwargs):
-        update_kwargs.update(kwargs)
-        return True
-
-    monkeypatch.setattr(hass.config_entries, "async_update_entry", dummy_update_entry)
-
-    result = await async_migrate_entry(hass, extended_config_entry)
-
-    assert result is True
-    assert "version" in update_kwargs
-    assert update_kwargs["version"] >= 2
-
-    data = update_kwargs["data"]
-
-    assert POLL_RATE_DEFAULT in data
-    assert POLL_RATE_SLOW in data
-    assert POLL_RATE_HIGH in data
-    assert "storage_type" not in data
-
-
-@pytest.mark.asyncio
-async def test_migrate_branch_1(hass, extended_config_entry, monkeypatch):
-    """Test migration for version 1 with minor_version < 3."""
-    extended_config_entry.version = 1
-    extended_config_entry.minor_version = 1  # < 3
-
-    for key in [CONF_OPTION_1, CONF_OPTION_2, CONF_OPTION_3, CONF_OPTION_4]:
-        extended_config_entry.data.pop(key, None)
-
-    monkeypatch.setattr(hass.config_entries, "async_update_entry", dummy_update_entry)
-    result = await async_migrate_entry(hass, extended_config_entry)
-
-    assert result is True
-    assert extended_config_entry.version == 2
-    assert extended_config_entry.minor_version == 7
-    for key in [CONF_OPTION_1, CONF_OPTION_2, CONF_OPTION_3, CONF_OPTION_4]:
-        assert key in extended_config_entry.data
-
-
-@pytest.mark.asyncio
-async def test_migrate_branch_2(hass, extended_config_entry, monkeypatch):
-    """Test migration for version 1 with minor_version between 3 and 4."""
-    extended_config_entry.version = 1
-    extended_config_entry.minor_version = 3  # < 4
-
-    for key in [POLL_RATE_DEFAULT, POLL_RATE_SLOW]:
-        extended_config_entry.data.pop(key, None)
-
-    monkeypatch.setattr(hass.config_entries, "async_update_entry", dummy_update_entry)
-    result = await async_migrate_entry(hass, extended_config_entry)
-
-    assert result is True
-    assert extended_config_entry.version == 2
-    assert extended_config_entry.minor_version == 7
-    assert extended_config_entry.data.get(POLL_RATE_DEFAULT) == 30
-    assert extended_config_entry.data.get(POLL_RATE_SLOW) == 300
-
-
-@pytest.mark.asyncio
-async def test_migrate_branch_3(hass, extended_config_entry, monkeypatch):
-    """Test migration for version 1 with minor_version == 4 (migrate to version 2, minor 0)."""
-    extended_config_entry.version = 1
-    extended_config_entry.minor_version = 4
-
-    monkeypatch.setattr(hass.config_entries, "async_update_entry", dummy_update_entry)
-    result = await async_migrate_entry(hass, extended_config_entry)
-
-    assert result is True
-    assert extended_config_entry.version == 2
-    assert extended_config_entry.minor_version == 7
-
-
-@pytest.mark.asyncio
-async def test_migrate_branch_4(hass, extended_config_entry, monkeypatch):
-    """Test migration for version 2 with minor_version == 0 (set to 1 and add CONF_OPTION_5)."""
-    extended_config_entry.version = 2
-    extended_config_entry.minor_version = 0
-    extended_config_entry.data.pop(CONF_OPTION_5, None)
-
-    monkeypatch.setattr(hass.config_entries, "async_update_entry", dummy_update_entry)
-    result = await async_migrate_entry(hass, extended_config_entry)
-
-    assert result is True
-    assert extended_config_entry.minor_version == 7
-    assert CONF_OPTION_5 in extended_config_entry.data
-
-
-@pytest.mark.asyncio
-async def test_migrate_branch_5(hass, extended_config_entry, monkeypatch):
-    """Test migration for version 2 with minor_version == 1 (set to 2 and add CONF_OPTION_6, CONF_OPTION_7, POLL_RATE_HIGH)."""
-    extended_config_entry.version = 2
-    extended_config_entry.minor_version = 1
-
-    for key in [CONF_OPTION_6, CONF_OPTION_7, POLL_RATE_HIGH]:
-        extended_config_entry.data.pop(key, None)
-
-    monkeypatch.setattr(hass.config_entries, "async_update_entry", dummy_update_entry)
-    result = await async_migrate_entry(hass, extended_config_entry)
-
-    assert result is True
-    assert extended_config_entry.minor_version == 7
-    for key in [CONF_OPTION_6, CONF_OPTION_7]:
-        assert key in extended_config_entry.data
-    assert extended_config_entry.data.get(POLL_RATE_HIGH) == 10
-
-
-@pytest.mark.asyncio
-async def test_migrate_branch_6(hass, extended_config_entry, monkeypatch):
-    """Test migration for version 2 with minor_version == 2 (set to 3 and add CONF_OPTION_8)."""
-    extended_config_entry.version = 2
-    extended_config_entry.minor_version = 2
-    extended_config_entry.data.pop(CONF_OPTION_8, None)
-
-    monkeypatch.setattr(hass.config_entries, "async_update_entry", dummy_update_entry)
-    result = await async_migrate_entry(hass, extended_config_entry)
-
-    assert result is True
-    assert extended_config_entry.minor_version == 7
-    assert CONF_OPTION_8 in extended_config_entry.data
-
-
-@pytest.mark.asyncio
-async def test_migrate_removes_obsolete_heizkreis_names(hass, extended_config_entry, monkeypatch):
-    """Discard per-Heizkreis display names from existing configuration entries."""
-    extended_config_entry.version = 2
-    extended_config_entry.minor_version = 6
+async def test_migrate_keeps_only_connection_and_polling_settings(hass, extended_config_entry, monkeypatch):
+    """Discard every setting that does not belong to the reduced setup surface."""
     extended_config_entry.data.update(
         {
-            "hkr1_name": "Ground floor",
-            "hkr2_name": "Upper floor",
+            "storage_type": "SolvisMax 957 Hybrid (82/34/796)",
+            "hkr2": True,
             "hkr3_name": "Attic",
+            "solar collector": True,
         }
     )
-
-    monkeypatch.setattr(hass.config_entries, "async_update_entry", dummy_update_entry)
-    result = await async_migrate_entry(hass, extended_config_entry)
-
-    assert result is True
-    assert extended_config_entry.minor_version == 7
-    assert not {"hkr1_name", "hkr2_name", "hkr3_name"} & extended_config_entry.data.keys()
-
-
-@pytest.mark.asyncio
-async def test_migrate_all_missing_to_defaults(hass, extended_config_entry, monkeypatch):
-    """Test that missing option keys are set to defaults in migration."""
-
-    extended_config_entry.data.clear()
-
-    extended_config_entry.version = 1
-    extended_config_entry.minor_version = 1
-
-    monkeypatch.setattr(hass.config_entries, "async_update_entry", dummy_update_entry)
-    result = await async_migrate_entry(hass, extended_config_entry)
-
-    assert result is True
-    assert extended_config_entry.version == 2
-    assert extended_config_entry.minor_version == 7
-
-    assert extended_config_entry.data.get(CONF_OPTION_1) is False
-    assert extended_config_entry.data.get(CONF_OPTION_2) is False
-    assert extended_config_entry.data.get(CONF_OPTION_3) is False
-    assert extended_config_entry.data.get(CONF_OPTION_4) is False
-    assert extended_config_entry.data.get(CONF_OPTION_5) is False
-    assert extended_config_entry.data.get(CONF_OPTION_6) is False
-    assert extended_config_entry.data.get(CONF_OPTION_7) is False
-    assert extended_config_entry.data.get(CONF_OPTION_8) is False
-    assert extended_config_entry.data.get(CONF_OPTION_9) is False
-    assert extended_config_entry.data.get(CONF_OPTION_10) is False
-    assert extended_config_entry.data.get(CONF_OPTION_11) is False
-    assert extended_config_entry.data.get(CONF_OPTION_12) is False
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize(
-    "option,expected",
-    [
-        (CONF_OPTION_1, False),
-        (CONF_OPTION_2, False),
-        (CONF_OPTION_3, False),
-        (CONF_OPTION_4, False),
-        (CONF_OPTION_5, False),
-        (CONF_OPTION_6, False),
-        (CONF_OPTION_7, False),
-        (CONF_OPTION_8, False),
-        (CONF_OPTION_9, False),
-        (CONF_OPTION_10, False),
-        (CONF_OPTION_11, False),
-        (CONF_OPTION_12, False),
-    ],
-)
-async def test_migrate_one_missing(hass, extended_config_entry, monkeypatch, option, expected):
-    """Test that if a given option is missing in new_data, the migration sets it to its default value."""
-    extended_config_entry.data = dict(extended_config_entry.data)
-    extended_config_entry.data.pop(option, None)
-
-    monkeypatch.setattr(hass.config_entries, "async_unload_platforms", lambda entry, platforms: True)
-    monkeypatch.setattr(hass.config_entries, "async_update_entry", dummy_update_entry)
-
-    await async_migrate_entry(hass, extended_config_entry)
-    assert extended_config_entry.data.get(option) == expected
-
-
-DEFAULTS = {
-    CONF_OPTION_1: False,
-    CONF_OPTION_2: False,
-    CONF_OPTION_3: False,
-    CONF_OPTION_4: False,
-    CONF_OPTION_5: False,
-    CONF_OPTION_6: False,
-    CONF_OPTION_7: False,
-    CONF_OPTION_8: False,
-    CONF_OPTION_9: False,
-    CONF_OPTION_10: False,
-    CONF_OPTION_11: False,
-    CONF_OPTION_12: False,
-}
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize(
-    "present_option",
-    [
-        CONF_OPTION_1,
-        CONF_OPTION_2,
-        CONF_OPTION_3,
-        CONF_OPTION_4,
-        CONF_OPTION_5,
-        CONF_OPTION_6,
-        CONF_OPTION_7,
-        CONF_OPTION_8,
-        CONF_OPTION_9,
-        CONF_OPTION_10,
-        CONF_OPTION_11,
-        CONF_OPTION_12,
-    ],
-)
-async def test_migrate_only_one_present(hass, extended_config_entry, monkeypatch, present_option):
-    new_data = {
-        CONF_HOST: "127.0.0.1",
-        CONF_NAME: "TestDevice",
-        POLL_RATE_DEFAULT: 30,
-        POLL_RATE_SLOW: 300,
-        POLL_RATE_HIGH: 10,
+    extended_config_entry.options = {
+        CONF_HOST: "192.0.2.10",
+        "heat pump": False,
     }
 
-    custom_value = not DEFAULTS[present_option]
-    new_data[present_option] = custom_value
-    extended_config_entry.data = new_data
+    monkeypatch.setattr(hass.config_entries, "async_update_entry", dummy_update_entry)
 
-    captured_data = {}
+    assert await async_migrate_entry(hass, extended_config_entry)
 
-    def capture_update_entry(entry, **kwargs):
-        nonlocal captured_data
-        if "data" in kwargs:
-            captured_data = kwargs["data"]
-            entry.data = kwargs["data"]
-        return True
-
-    monkeypatch.setattr(hass.config_entries, "async_unload_platforms", lambda entry, platforms: True)
-    monkeypatch.setattr(hass.config_entries, "async_update_entry", capture_update_entry)
-
-    await async_migrate_entry(hass, extended_config_entry)
-
-    for option, default in DEFAULTS.items():
-        if present_option in {CONF_OPTION_9, CONF_OPTION_10, CONF_OPTION_11, CONF_OPTION_12}:
-            expected = default
-        else:
-            if present_option == CONF_OPTION_6 and option in {CONF_OPTION_9, CONF_OPTION_11}:
-                expected = custom_value
-            elif present_option == CONF_OPTION_7 and option in {CONF_OPTION_10, CONF_OPTION_12}:
-                expected = custom_value
-            elif option == present_option:
-                expected = custom_value
-            else:
-                expected = default
-        assert captured_data.get(option) == expected, f"For option {option}: expected {expected}, got {captured_data.get(option)}"
+    assert extended_config_entry.version == CONFIG_ENTRY_VERSION
+    assert extended_config_entry.minor_version == CONFIG_ENTRY_MINOR_VERSION
+    assert extended_config_entry.data == {
+        CONF_NAME: "TestDevice",
+        CONF_HOST: "192.0.2.10",
+        CONF_PORT: 502,
+        POLL_RATE_HIGH: 10,
+        POLL_RATE_DEFAULT: 30,
+        POLL_RATE_SLOW: 300,
+    }
+    assert extended_config_entry.options == {}
 
 
 # # # Tests for options_update_listener # # #
@@ -567,8 +277,14 @@ async def test_options_update_listener(hass, extended_config_entry, monkeypatch)
     extended_config_entry.setup_lock = asyncio.Lock()
 
     hass.config_entries._entries = FakeEntries({extended_config_entry.entry_id: extended_config_entry})
+    extended_config_entry.options = {
+        CONF_HOST: "192.0.2.20",
+        POLL_RATE_HIGH: 5,
+        "hkr2": True,
+    }
 
     monkeypatch.setattr(event, "async_track_time_interval", lambda hass, action, interval: lambda: None)
+    monkeypatch.setattr(hass.config_entries, "async_update_entry", dummy_update_entry)
 
     unloaded = False
 
@@ -600,3 +316,7 @@ async def test_options_update_listener(hass, extended_config_entry, monkeypatch)
     assert unloaded is True
     assert forward_called is True
     fake_coordinator.async_refresh.assert_called_once()
+    assert extended_config_entry.data[CONF_HOST] == "192.0.2.20"
+    assert extended_config_entry.data[POLL_RATE_HIGH] == 5
+    assert "hkr2" not in extended_config_entry.data
+    assert extended_config_entry.options == {}

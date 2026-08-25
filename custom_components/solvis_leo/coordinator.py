@@ -39,6 +39,7 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
             update_interval=timedelta(seconds=entry.data.get(POLL_RATE_HIGH)),
         )
         self.config_entry = entry  # !
+        self._poll_remaining: dict[str, int] = {}
         self._register_failures: dict[int, int] = {}
         self.host = entry.data.get(CONF_HOST)
         self.port = entry.data.get(CONF_PORT)
@@ -53,7 +54,9 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
         """Fetches and processes data from the Solvis device."""
 
         _LOGGER.debug("Polling data...")
-        parsed_data = {}
+        # A coordinator update is a complete current snapshot, even though each
+        # poll cycle reads only the registers whose cadence is due.
+        parsed_data = dict(self.data or {})
         failed_addresses: set[int] = set()
 
         # check connection
@@ -64,22 +67,23 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
         for register in REGISTERS:
             _LOGGER.debug(f"[{register.name} | {register.address}] Checking...")
 
-            # Calculation for passing entites, which are in SLOW_POLL_GROUP or STANDARD_POLL_GROUP
+            # Each coordinator owns its cadence; register definitions are immutable
+            # metadata shared by every setup and reload.
+            poll_remaining = self._poll_remaining.get(register.name, 0)
+
             if register.poll_rate == 1:  # SLOW_POLL_GROUP
-                if register.poll_time > 0:
-                    register.poll_time -= self.poll_rate_high  # formerly: self.poll_rate_default
-                    _LOGGER.debug(f"[{register.name} | {register.address}] Skipping entity due to slow poll rate. Remaining time: {register.poll_time}s")
+                if poll_remaining > self.poll_rate_high:
+                    self._poll_remaining[register.name] = poll_remaining - self.poll_rate_high
+                    _LOGGER.debug(f"[{register.name} | {register.address}] Skipping entity due to slow poll rate. Remaining time: {self._poll_remaining[register.name]}s")
                     continue
-                else:  # register.poll_time <= 0:
-                    register.poll_time = self.poll_rate_slow
+                self._poll_remaining[register.name] = self.poll_rate_slow
 
             elif register.poll_rate == 0:  # DEFAULT_POLL_GROUP
-                if register.poll_time > 0:
-                    register.poll_time -= self.poll_rate_high
-                    _LOGGER.debug(f"[{register.name} | {register.address}] Skipping entity due to standard poll rate. Remaining time: {register.poll_time}s")
+                if poll_remaining > self.poll_rate_high:
+                    self._poll_remaining[register.name] = poll_remaining - self.poll_rate_high
+                    _LOGGER.debug(f"[{register.name} | {register.address}] Skipping entity due to standard poll rate. Remaining time: {self._poll_remaining[register.name]}s")
                     continue
-                else:  # if register.poll_time <= 0:
-                    register.poll_time = self.poll_rate_default
+                self._poll_remaining[register.name] = self.poll_rate_default
 
             entity_id = f"{DOMAIN}.{register.name}"
             entity_registry = er.async_get(self.hass)
@@ -107,7 +111,7 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
                     _LOGGER.debug(f"[{register.name} | {register.address}] Reading {register.count} holding register(s)...")
                     result = await self.modbus.read_holding_registers(address=register.address, count=register.count)
 
-            except (ConnectionException, ModbusIOException, ModbusException) as err:
+            except (ConnectionException, ModbusIOException, ModbusException, TimeoutError) as err:
                 if isinstance(err, ConnectionException) or not self.modbus.connected:
                     _LOGGER.error(f"[{register.name} | {register.address}] Connection lost during read: {err}")
                     raise UpdateFailed(f"[{register.name} | {register.address}] Connection lost during read") from err

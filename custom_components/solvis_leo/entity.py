@@ -42,6 +42,12 @@ class SolvisEntity(CoordinatorEntity):
         self.data_processing = data_processing
         self.poll_rate = poll_rate
         self._attr_available = False
+
+    async def async_added_to_hass(self) -> None:
+        """Publish the coordinator's first snapshot as soon as the entity is added."""
+        await super().async_added_to_hass()
+        self._handle_coordinator_update()
+
     @callback
     def _handle_coordinator_update(self) -> None:
         available, value, extra_attrs = process_coordinator_data(self.coordinator.data, self._response_key)

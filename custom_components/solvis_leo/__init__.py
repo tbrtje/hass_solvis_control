@@ -12,26 +12,18 @@ from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from pymodbus.client import AsyncModbusTcpClient
 from homeassistant.config_entries import ConfigEntryNotReady
-from .utils.helpers import create_modbus_client
+from .utils.helpers import active_entity_unique_ids, create_modbus_client, remove_old_entities
 from .coordinator import SolvisModbusCoordinator
 
 from .const import (
     CONF_HOST,
     CONF_PORT,
+    CONF_NAME,
+    CONFIG_ENTRY_DATA_KEYS,
+    CONFIG_ENTRY_MINOR_VERSION,
+    CONFIG_ENTRY_VERSION,
     DATA_COORDINATOR,
     DOMAIN,
-    CONF_OPTION_1,
-    CONF_OPTION_2,
-    CONF_OPTION_3,
-    CONF_OPTION_4,
-    CONF_OPTION_5,
-    CONF_OPTION_6,
-    CONF_OPTION_7,
-    CONF_OPTION_8,
-    CONF_OPTION_9,
-    CONF_OPTION_10,
-    CONF_OPTION_11,
-    CONF_OPTION_12,
     POLL_RATE_SLOW,
     POLL_RATE_DEFAULT,
     POLL_RATE_HIGH,
@@ -54,11 +46,23 @@ manifest = json.load(open(os.path.join(os.path.dirname(__file__), "manifest.json
 VERSION = manifest.get("version", "unbekannt")
 
 
+def _normalized_config_data(*sources: dict) -> dict:
+    """Merge saved settings and keep only the supported configuration surface."""
+    combined = {}
+    for source in sources:
+        combined.update(source)
+
+    data = {key: combined[key] for key in CONFIG_ENTRY_DATA_KEYS if key in combined}
+    data.setdefault(CONF_NAME, "SolvisLeo 180")
+    data.setdefault(CONF_PORT, 502)
+    data.setdefault(POLL_RATE_HIGH, 10)
+    data.setdefault(POLL_RATE_DEFAULT, 30)
+    data.setdefault(POLL_RATE_SLOW, 300)
+    return data
+
+
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Solvis device from a config entry."""
-
-    if not await async_migrate_entry(hass, entry):
-        return False
 
     conf_host = entry.data.get(CONF_HOST)
     conf_port = entry.data.get(CONF_PORT)
@@ -99,6 +103,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await coordinator.async_config_entry_first_refresh()
     hass.data[DOMAIN][entry.entry_id].setdefault(DATA_COORDINATOR, coordinator)
 
+    try:
+        await remove_old_entities(hass, entry.entry_id, active_entity_unique_ids())
+    except Exception as err:
+        _LOGGER.error("Error removing old entities: %s", err, exc_info=True)
+
     # Setup platforms
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
@@ -124,114 +133,30 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def options_update_listener(hass: HomeAssistant, config_entry: ConfigEntry):
     """Handle options update."""
-    # Merge options into data so that new conf_options are used.
-    new_data = {**config_entry.data, **config_entry.options}
-    hass.config_entries.async_update_entry(config_entry, data=new_data)
+    # Persist connection and polling changes before reloading the entry.
+    new_data = _normalized_config_data(config_entry.data, config_entry.options)
+    hass.config_entries.async_update_entry(config_entry, data=new_data, options={})
 
     # Trigger a full reload of the config entry. This unloads and then sets up the integration again.
     await hass.config_entries.async_reload(config_entry.entry_id)
 
 
 async def async_migrate_entry(hass, config_entry: ConfigEntry):
-    """Migrate old entry."""
-    _LOGGER.debug(f"Migrating configuration from version {config_entry.version}.{config_entry.minor_version}")
-
-    current_version = config_entry.version
-    current_minor_version = config_entry.minor_version
-
-    # Drop the legacy tank-selection value. The SolvisLeo 180 geometry is fixed.
-    new_data = {key: value for key, value in config_entry.data.items() if key != "storage_type"}
-
-    if current_version == 1 and current_minor_version < 3:
-        _LOGGER.info(f"Migrating from version {current_version}_{current_minor_version}")
-        if CONF_OPTION_1 not in new_data:
-            new_data[CONF_OPTION_1] = False
-        if CONF_OPTION_2 not in new_data:
-            new_data[CONF_OPTION_2] = False
-        if CONF_OPTION_3 not in new_data:
-            new_data[CONF_OPTION_3] = False
-        if CONF_OPTION_4 not in new_data:
-            new_data[CONF_OPTION_4] = False
-        current_minor_version = 3
-
-    if current_version == 1 and current_minor_version < 4:
-        _LOGGER.info(f"Migrating from version {current_version}_{current_minor_version}")
-        if POLL_RATE_DEFAULT not in new_data:
-            new_data[POLL_RATE_DEFAULT] = 30
-        if POLL_RATE_SLOW not in new_data:
-            new_data[POLL_RATE_SLOW] = 300
-        current_minor_version = 4
-
-    if current_version == 1 and current_minor_version == 4:
-        _LOGGER.info(f"Migrating from version {current_version}_{current_minor_version}")
-        current_version = 2
-        current_minor_version = 0
-
-    if current_version == 2 and current_minor_version == 0:
-        _LOGGER.info(f"Migrating from version {current_version}_{current_minor_version}")
-        if CONF_OPTION_5 not in new_data:
-            new_data[CONF_OPTION_5] = False
-        current_minor_version = 1
-
-    if current_version == 2 and current_minor_version == 1:
-        _LOGGER.info(f"Migrating from version {current_version}_{current_minor_version}")
-        if CONF_OPTION_6 not in new_data:
-            new_data[CONF_OPTION_6] = False
-        if CONF_OPTION_7 not in new_data:
-            new_data[CONF_OPTION_7] = False
-        if POLL_RATE_HIGH not in new_data:
-            new_data[POLL_RATE_HIGH] = 10
-        current_minor_version = 2
-
-    if current_version == 2 and current_minor_version == 2:
-        _LOGGER.info(f"Migrating from version {current_version}_{current_minor_version}")
-        if CONF_OPTION_8 not in new_data:
-            new_data[CONF_OPTION_8] = False
-        current_minor_version = 3
-
-    if current_version == 2 and current_minor_version == 3:
-        _LOGGER.info(f"Migrating from version {current_version}_{current_minor_version}")
-        if CONF_OPTION_6 not in new_data:
-            new_data[CONF_OPTION_6] = False
-        else:  # keep read-setting for all sensors, if read was set
-            new_data[CONF_OPTION_9] = new_data[CONF_OPTION_6]
-            new_data[CONF_OPTION_11] = new_data[CONF_OPTION_6]
-        if CONF_OPTION_7 not in new_data:
-            new_data[CONF_OPTION_7] = False
-        else:  # keep write-setting for all sensors, if write was set
-            new_data[CONF_OPTION_10] = new_data[CONF_OPTION_7]
-            new_data[CONF_OPTION_12] = new_data[CONF_OPTION_7]
-        if CONF_OPTION_9 not in new_data:
-            new_data[CONF_OPTION_9] = False
-        if CONF_OPTION_10 not in new_data:
-            new_data[CONF_OPTION_10] = False
-        if CONF_OPTION_11 not in new_data:
-            new_data[CONF_OPTION_11] = False
-        if CONF_OPTION_12 not in new_data:
-            new_data[CONF_OPTION_12] = False
-        current_minor_version = 4
-
-    if current_version == 2 and current_minor_version == 4:
-        _LOGGER.info(f"Migrating from version {current_version}_{current_minor_version}")
-        current_minor_version = 5
-
-    if current_version == 2 and current_minor_version == 5:
-        _LOGGER.info(f"Migrating from version {current_version}_{current_minor_version}")
-        current_minor_version = 6
-
-    if current_version == 2 and current_minor_version == 6:
-        _LOGGER.info(f"Migrating from version {current_version}_{current_minor_version}")
-        for key in ("hkr1_name", "hkr2_name", "hkr3_name"):
-            new_data.pop(key, None)
-        current_minor_version = 7
+    """Keep only the connection and polling settings supported by this fork."""
+    new_data = _normalized_config_data(config_entry.data, config_entry.options)
 
     hass.config_entries.async_update_entry(
         config_entry,
         data=new_data,
-        minor_version=current_minor_version,
-        version=current_version,
+        options={},
+        minor_version=CONFIG_ENTRY_MINOR_VERSION,
+        version=CONFIG_ENTRY_VERSION,
     )
 
-    _LOGGER.info(f"Migration to version {current_version}_{current_minor_version} successful")
+    _LOGGER.info(
+        "Migration to version %s_%s successful",
+        CONFIG_ENTRY_VERSION,
+        CONFIG_ENTRY_MINOR_VERSION,
+    )
 
     return True

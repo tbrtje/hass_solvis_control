@@ -1,7 +1,7 @@
 {
     "domain": "solvis_leo",
     "name": "SolvisLeo 180 Control",
-    "codeowners": ["@LarsK1"],
+    "codeowners": ["@tbrtje"],
 	"config_flow": true,
 	"dependencies": [],
 	"documentation": "https://github.com/tbrtje/hass_solvis_control/",

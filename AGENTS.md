@@ -1,7 +1,7 @@
 # hass_solvis_control
 
-Home Assistant custom integration for Solvis heating systems, talking Modbus TCP to
-SC2 and SC3 controllers.
+Home Assistant custom integration for one SolvisLeo 180 Anlage, talking Modbus TCP
+to its SC3 controller.
 
 ## Agent skills
 
