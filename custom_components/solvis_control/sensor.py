@@ -52,20 +52,19 @@ class SolvisDerivativeSensor(SolvisEntity, SensorEntity):
         entity_category: str | None = None,
         suggested_display_precision: int = 2,
         compute_mode: str | None,
+        modbus_address: int | None = None,
     ) -> None:
         super().__init__(
             coordinator,
             device_info,
             host,
             name,
-            modbus_address=None,
-            supported_version=coordinator.supported_version,
+            modbus_address=modbus_address,
             enabled_by_default=True,
             data_processing=0,
             poll_rate=False,
         )
 
-        self._attr_unique_id = f"{host}_{name}"
         self.source_keys = source_keys
 
         self._attr_native_unit_of_measurement = unit
@@ -154,13 +153,11 @@ class SolvisScheduleSensor(SolvisEntity, SensorEntity):
             host,
             name,
             modbus_address=modbus_address,
-            supported_version=coordinator.supported_version,
             enabled_by_default=False,
             data_processing=0,
             poll_rate=False,
         )
 
-        self._attr_unique_id = f"{host}_{name}"
         self._attr_device_class = SensorDeviceClass.TIMESTAMP
         self._attr_native_value = None
         self._attr_extra_state_attributes = {}
@@ -219,6 +216,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
                 entity_category=cfg.get("entity_category"),
                 suggested_display_precision=cfg.get("suggested_display_precision", 2),
                 compute_mode=cfg.get("compute_mode", "sum"),
+                modbus_address=REGISTER_ADDRESSES_BY_NAME[cfg["source_keys"][0]],
             )
         )
 
@@ -257,7 +255,6 @@ class SolvisSensor(SolvisEntity, SensorEntity):
         enabled_by_default: bool = True,
         data_processing: int = 0,
         poll_rate: bool = False,
-        supported_version: int = 1,
         modbus_address: int | None = None,
         suggested_precision: int | None = 1,
     ) -> None:
@@ -268,7 +265,6 @@ class SolvisSensor(SolvisEntity, SensorEntity):
             host,
             name,
             modbus_address,
-            supported_version,
             enabled_by_default,
             data_processing,
             poll_rate,

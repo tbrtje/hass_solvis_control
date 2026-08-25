@@ -26,7 +26,6 @@ def mock_solvis_binary_sensor(mock_coordinator, mock_device_info):
         enabled_by_default=True,
         data_processing=0,
         poll_rate=False,
-        supported_version=1,
         modbus_address=1,
     )
     return sensor
@@ -39,8 +38,7 @@ def test_sensor_initialization(mock_solvis_binary_sensor):
     assert mock_solvis_binary_sensor._response_key == "Test Binary Sensor"
     assert mock_solvis_binary_sensor.entity_registry_enabled_default is True
     assert mock_solvis_binary_sensor.device_info is not None
-    assert mock_solvis_binary_sensor.supported_version == 1
-    assert mock_solvis_binary_sensor.unique_id == "1_1_Test_Binary_Sensor"
+    assert mock_solvis_binary_sensor.unique_id == "1_Test_Binary_Sensor"
 
 
 @pytest.mark.asyncio
@@ -142,7 +140,6 @@ async def test_async_setup_entry_binary_sensor_existing_entities_handling(hass, 
         device_class=None,
         state_class=None,
         input_type=4,
-        supported_version=0,
     )
     register2 = ModbusFieldConfig(
         name="new_sensor_2",
@@ -151,7 +148,6 @@ async def test_async_setup_entry_binary_sensor_existing_entities_handling(hass, 
         device_class=None,
         state_class=None,
         input_type=4,
-        supported_version=0,
     )
 
     with patch("homeassistant.helpers.entity_registry.async_get", return_value=mock_entity_registry):

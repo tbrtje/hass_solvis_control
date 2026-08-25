@@ -133,7 +133,6 @@ def _entity_deps():
     from homeassistant.helpers.entity import DeviceInfo
 
     coordinator = MagicMock()
-    coordinator.supported_version = 1
     coordinator.async_add_listener = MagicMock()
     coordinator.data = {}
     coordinator.last_update_success = True

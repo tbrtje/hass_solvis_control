@@ -42,7 +42,6 @@ class SolvisSwitch(SolvisEntity, SwitchEntity):
         modbus_address: int = None,
         data_processing: int = 0,
         poll_rate: bool = False,
-        supported_version: int = 1,
     ) -> None:
         """Initialize the Solvis switch entity."""
         super().__init__(
@@ -51,7 +50,6 @@ class SolvisSwitch(SolvisEntity, SwitchEntity):
             host,
             name,
             modbus_address,
-            supported_version,
             enabled_by_default,
             data_processing,
             poll_rate,

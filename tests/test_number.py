@@ -29,7 +29,6 @@ def mock_solvis_number(mock_coordinator, mock_device_info):
         multiplier=2.0,
         data_processing=0,
         poll_rate=False,
-        supported_version=1,
     )
 
 
@@ -44,7 +43,7 @@ def test_number_initialization(mock_solvis_number):
     assert mock_solvis_number.native_step == 0.5
     assert mock_solvis_number.native_min_value == 0
     assert mock_solvis_number.native_max_value == 100
-    assert mock_solvis_number.unique_id == "1_1_Test_Number_Sensor"
+    assert mock_solvis_number.unique_id == "1_Test_Number_Sensor"
 
 
 def test_number_initialization_default_step():
@@ -64,7 +63,6 @@ def test_number_initialization_default_step():
         multiplier=1.0,
         data_processing=0,
         poll_rate=False,
-        supported_version=1,
     )
     # native_step should default to 1.0 if step_size is not provided
     assert number_entity.native_step == 1.0

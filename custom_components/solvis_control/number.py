@@ -48,7 +48,6 @@ class SolvisNumber(SolvisEntity, NumberEntity):
         multiplier: float = 1,
         data_processing: int = 0,
         poll_rate: bool = False,
-        supported_version: int = 1,
     ) -> None:
         """Initialize the Solvis number entity."""
         super().__init__(
@@ -57,7 +56,6 @@ class SolvisNumber(SolvisEntity, NumberEntity):
             host,
             name,
             modbus_address,
-            supported_version,
             enabled_by_default,
             data_processing,
             poll_rate,

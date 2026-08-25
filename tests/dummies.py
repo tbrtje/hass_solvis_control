@@ -165,7 +165,6 @@ class DummyRegister:
         self,
         name,
         address,
-        supported_version,
         poll_rate=10,
         poll_time=10,
         reg=1,  # 1: input, else holding
@@ -177,7 +176,6 @@ class DummyRegister:
     ):
         self.name = name
         self.address = address
-        self.supported_version = supported_version
         self.poll_rate = poll_rate
         self.poll_time = poll_time
         self.register = reg

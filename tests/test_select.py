@@ -25,8 +25,7 @@ def test_select_solvis_select_initialization(dummy_solvisselect_entity):
     assert select_entity._response_key == "Test Entity"
     assert select_entity.entity_registry_enabled_default is True
     assert select_entity.device_info is not None
-    assert select_entity.supported_version == 1
-    assert select_entity.unique_id == "1_1_Test_Entity"
+    assert select_entity.unique_id == "1_Test_Entity"
     assert select_entity._attr_options == ("Option 1", "Option 2")
     assert select_entity.data_processing == 0
     assert select_entity.modbus_address == 1
@@ -226,19 +225,19 @@ def test_select_options_none(dummy_solvisselect_entity):
 def test_select_unique_id(dummy_solvisselect_entity):
     """Test that unique_id is generated correctly."""
     select_entity = dummy_solvisselect_entity()
-    assert select_entity.unique_id == "1_1_Test_Entity"
+    assert select_entity.unique_id == "1_Test_Entity"
 
 
 def test_select_unique_id_special_chars(dummy_solvisselect_entity):
     """Test unique_id generation with special characters in name."""
     select_entity = dummy_solvisselect_entity(name="Test! Entity@#")
-    assert select_entity.unique_id == "1_1_Test_Entity"
+    assert select_entity.unique_id == "1_Test_Entity"
 
 
 def test_select_unique_id_all_special_chars(dummy_solvisselect_entity):
     """Test unique_id with name having only special chars."""
-    entity = dummy_solvisselect_entity(name="!@#$%^&*()", supported_version=1)
-    assert entity.unique_id == "1_1"
+    entity = dummy_solvisselect_entity(name="!@#$%^&*()")
+    assert entity.unique_id == "1"
 
 
 # # # Tests for setup_entry
@@ -287,7 +286,6 @@ async def test_select_async_setup_entry_existing_entities_handling(hass, mock_co
         device_class=None,
         state_class=None,
         input_type=1,
-        supported_version=0,
     )
     mock_register2 = ModbusFieldConfig(
         name="new 2",
@@ -296,7 +294,6 @@ async def test_select_async_setup_entry_existing_entities_handling(hass, mock_co
         device_class=None,
         state_class=None,
         input_type=1,
-        supported_version=0,
     )
     with patch("homeassistant.helpers.entity_registry.async_get", return_value=mock_entity_registry):
         with patch("custom_components.solvis_control.utils.helpers.REGISTERS", [mock_register1, mock_register2]):

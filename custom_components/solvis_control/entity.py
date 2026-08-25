@@ -25,7 +25,6 @@ class SolvisEntity(CoordinatorEntity):
         host: str,
         name: str,
         modbus_address: int = None,
-        supported_version: int = 1,
         enabled_by_default: bool = True,
         data_processing: int = 0,
         poll_rate: bool = False,
@@ -38,8 +37,7 @@ class SolvisEntity(CoordinatorEntity):
         self.entity_registry_enabled_default = enabled_by_default
         self.device_info = device_info
         self._attr_has_entity_name = True
-        self.supported_version = supported_version
-        self._attr_unique_id = generate_unique_id(modbus_address, supported_version, name)
+        self._attr_unique_id = generate_unique_id(modbus_address, name)
         self._attr_translation_key = name
         self.data_processing = data_processing
         self.poll_rate = poll_rate

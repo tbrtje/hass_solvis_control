@@ -221,6 +221,11 @@ async def test_setup_exposes_the_recorded_anlage(hass) -> None:
     actual_entity_ids = {entity.entity_id for entity in registry.entities.values() if entity.config_entry_id == entry.entry_id}
 
     assert actual_entity_ids == EXPECTED_ENTITY_IDS
+    assert registry.entities["update.solvisleo_180_firmware_sc"].unique_id == "32770_version_sc"
+    assert registry.entities["update.solvisleo_180_firmware_nbg"].unique_id == "32771_version_nbg"
+    assert registry.entities["sensor.solvisleo_180_hkr1_schedule"].unique_id == "34048_hkr1_schedule"
+    assert registry.entities["binary_sensor.solvisleo_180_hkr1_schedule_active"].unique_id == "34048_hkr1_schedule_active"
+    assert registry.entities["sensor.solvisleo_180_stored_energy_of_stratified_storage_reference_12_degc"].unique_id == "33024_stored_energy_12"
     assert hass.states.get("sensor.solvisleo_180_hot_water_buffer_temperature_s1").state == "49.5"
     assert hass.states.get("sensor.solvisleo_180_stored_energy_of_stratified_storage_reference_12_degc").state == "5.0"
     assert hass.states.get("number.solvisleo_180_warm_water_target_temp").state == "47"

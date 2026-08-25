@@ -44,14 +44,14 @@ def test_firmware_update_initialization(mock_solvis_update_entity_firmware):
     """Test initialization of the firmware update entity."""
     entity = mock_solvis_update_entity_firmware
     assert entity.title == "Controller Firmware"
-    assert entity.unique_id == "32770_1_version_sc"
+    assert entity.unique_id == "32770_version_sc"
 
 
 def test_hardware_update_initialization(mock_solvis_update_entity_hardware):
     """Test initialization of the hardware update entity."""
     entity = mock_solvis_update_entity_hardware
     assert entity.title == "Network Board Firmware"
-    assert entity.unique_id == "32771_1_version_nbg"
+    assert entity.unique_id == "32771_version_nbg"
 
 
 @pytest.mark.asyncio

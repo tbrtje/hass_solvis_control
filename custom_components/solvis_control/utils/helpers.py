@@ -191,12 +191,12 @@ async def remove_old_entities(hass: HomeAssistant, config_entry_id: str, active_
             _LOGGER.debug(f"Removed old entity: {unique_id} (entity_id: {entity_entry.entity_id})")
 
 
-def generate_unique_id(modbus_address: int, supported_version: int, name: str) -> str:
+def generate_unique_id(modbus_address: int, name: str) -> str:
     """Generate a unique ID by cleaning the given name."""
     cleaned_name = re.sub(r"[^A-Za-z0-9_-]+", "_", name).strip("_")
     if cleaned_name:
-        return f"{modbus_address}_{supported_version}_{cleaned_name}"
-    return f"{modbus_address}_{supported_version}"  # if name consists of special chars only
+        return f"{modbus_address}_{cleaned_name}"
+    return str(modbus_address)  # if name consists of special chars only
 
 
 async def write_modbus_value(modbus, address: int, value: int) -> bool:
@@ -306,7 +306,6 @@ async def async_setup_solvis_entities(
             "modbus_address": register.address,
             "data_processing": register.data_processing,
             "poll_rate": register.poll_rate,
-            "supported_version": register.supported_version,
         }
 
         if entity_cls.__name__ == "SolvisSelect":

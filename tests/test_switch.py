@@ -23,7 +23,6 @@ def mock_solvis_switch(mock_coordinator, mock_device_info):
         modbus_address=1,
         data_processing=0,
         poll_rate=False,
-        supported_version=1,
     )
 
 
@@ -34,8 +33,7 @@ def test_switch_initialization(mock_solvis_switch):
     assert mock_solvis_switch._response_key == "Test Switch"
     assert mock_solvis_switch.entity_registry_enabled_default is True
     assert mock_solvis_switch.device_info is not None
-    assert mock_solvis_switch.supported_version == 1
-    assert mock_solvis_switch.unique_id == "1_1_Test_Switch"
+    assert mock_solvis_switch.unique_id == "1_Test_Switch"
 
 
 @pytest.mark.asyncio

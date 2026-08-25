@@ -32,7 +32,6 @@ def dummy_entity(hass, dummy_coordinator, mock_device_info, mock_platform):
         host="test_host",
         name="Test Entity",
         modbus_address=1,
-        supported_version=1,
         enabled_by_default=True,
         data_processing=0,
         poll_rate=False,
@@ -50,7 +49,6 @@ def minimal_entity(hass, dummy_coordinator, mock_device_info, mock_platform):
         host="test_host",
         name="Test Entity",
         modbus_address=1,
-        supported_version=1,
         enabled_by_default=True,
         data_processing=0,
         poll_rate=False,
@@ -67,8 +65,7 @@ def test_entity_initialization(dummy_entity):
     assert dummy_entity._response_key == "Test Entity"
     assert dummy_entity.entity_registry_enabled_default is True
     assert dummy_entity.device_info is not None
-    assert dummy_entity.supported_version == 1
-    expected_unique_id = generate_unique_id(1, 1, "Test Entity")
+    expected_unique_id = generate_unique_id(1, "Test Entity")
     assert dummy_entity._attr_unique_id == expected_unique_id
     assert dummy_entity.translation_key == "Test Entity"
     assert dummy_entity.data_processing == 0

@@ -84,13 +84,11 @@ class SolvisScheduleBinarySensor(SolvisEntity, BinarySensorEntity):
             host,
             name,
             modbus_address=modbus_address,
-            supported_version=coordinator.supported_version,
             enabled_by_default=False,
             data_processing=0,
             poll_rate=False,
         )
 
-        self._attr_unique_id = f"{host}_{name}"
         self._attr_device_class = BinarySensorDeviceClass.RUNNING
         self._attr_is_on = None
         self.source_key = source_key
@@ -152,7 +150,6 @@ class SolvisBinarySensor(SolvisEntity, BinarySensorEntity):
         enabled_by_default: bool = True,
         data_processing: int = 0,
         poll_rate: bool = False,
-        supported_version: int = 1,
         modbus_address: int | None = None,
     ) -> None:
         """Initialize the Solvis sensor."""
@@ -162,7 +159,6 @@ class SolvisBinarySensor(SolvisEntity, BinarySensorEntity):
             host,
             name,
             modbus_address,
-            supported_version,
             enabled_by_default,
             data_processing,
             poll_rate,

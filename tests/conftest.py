@@ -193,7 +193,6 @@ def mock_modbus(mocker, request):
         self.option_room_temperature_sensor = entry.data.get(CONF_OPTION_6, False)
         self.option_write_temperature_sensor = entry.data.get(CONF_OPTION_7, False)
         self.option_pv2heat = entry.data.get(CONF_OPTION_8, False)
-        self.supported_version = 1
         self.poll_rate_default = entry.data.get(POLL_RATE_DEFAULT, 10)
         self.poll_rate_slow = entry.data.get(POLL_RATE_SLOW, 30)
         self.poll_rate_high = entry.data.get(POLL_RATE_HIGH, 5)
@@ -214,7 +213,6 @@ def mock_coordinator():
     coordinator.modbus.connect = AsyncMock()
     coordinator.modbus.write_register = AsyncMock()
     coordinator.modbus.close = MagicMock()
-    coordinator.supported_version = None
     coordinator.async_add_listener = lambda _callback: None
     return coordinator
 
@@ -322,7 +320,6 @@ def dummy_solvisselect_entity(hass, mock_coordinator, mock_device_info, mock_pla
         modbus_address=1,
         data_processing=0,
         poll_rate=False,
-        supported_version=1,
         platform=None,
         entity_id=None,
     ):
@@ -336,7 +333,6 @@ def dummy_solvisselect_entity(hass, mock_coordinator, mock_device_info, mock_pla
             modbus_address=modbus_address,
             data_processing=data_processing,
             poll_rate=poll_rate,
-            supported_version=supported_version,
         )
         entity.hass = hass
         entity.platform = platform if platform is not None else mock_platform
@@ -361,7 +357,6 @@ def mock_solvis_sensor(mock_coordinator, mock_device_info):
         enabled_by_default=True,
         data_processing=0,
         poll_rate=False,
-        supported_version=1,
         modbus_address=1,
         suggested_precision=2,
     )

@@ -42,7 +42,6 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
         self._register_failures: dict[int, int] = {}
         self.host = entry.data.get(CONF_HOST)
         self.port = entry.data.get(CONF_PORT)
-        self.supported_version = 1
         self.poll_rate_default = entry.data.get(POLL_RATE_DEFAULT)
         self.poll_rate_slow = entry.data.get(POLL_RATE_SLOW)
         self.poll_rate_high = entry.data.get(POLL_RATE_HIGH)

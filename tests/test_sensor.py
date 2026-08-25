@@ -22,7 +22,7 @@ def test_sensor_initialization(mock_solvis_sensor):
     assert mock_solvis_sensor.device_class == "temperature"
     assert mock_solvis_sensor.state_class == "measurement"
     assert mock_solvis_sensor.suggested_display_precision == 2
-    assert mock_solvis_sensor.unique_id == "1_1_Test_Number_Sensor"
+    assert mock_solvis_sensor.unique_id == "1_Test_Number_Sensor"
 
 
 @pytest.mark.asyncio
@@ -79,7 +79,6 @@ async def test_async_setup_entry_existing_entities_handling_sensor(hass, mock_co
         device_class=None,
         state_class=None,
         input_type=0,
-        supported_version=0,
         suggested_precision=2,
     )
     register2 = ModbusFieldConfig(
@@ -89,7 +88,6 @@ async def test_async_setup_entry_existing_entities_handling_sensor(hass, mock_co
         device_class=None,
         state_class=None,
         input_type=0,
-        supported_version=0,
         suggested_precision=2,
     )
     with patch("homeassistant.helpers.entity_registry.async_get", return_value=mock_entity_registry):
@@ -215,7 +213,6 @@ def test_compute_combined_missing_key(monkeypatch, mock_coordinator):
 @pytest.mark.asyncio
 async def test_async_update_from_coordinator_sets_value(monkeypatch):
     coord = SolvisModbusCoordinator.__new__(SolvisModbusCoordinator)
-    coord.supported_version = None
     coord.async_add_listener = lambda _callback: None
     coord.data = {
         "t1": 20.0,
@@ -253,7 +250,6 @@ async def test_async_update_from_coordinator_sets_value(monkeypatch):
 @pytest.mark.asyncio
 async def test_async_update_from_coordinator_missing(monkeypatch):
     coord = SolvisModbusCoordinator.__new__(SolvisModbusCoordinator)
-    coord.supported_version = None
     coord.async_add_listener = lambda _callback: None
     coord.data = {"t1": 20.0}
 

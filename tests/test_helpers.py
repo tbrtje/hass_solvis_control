@@ -232,15 +232,15 @@ def test_remove_old_entities(monkeypatch):
 
 
 def test_generate_unique_id_normal():
-    uid = helpers.generate_unique_id(modbus_address=100, supported_version=1, name="Test Sensor")
+    uid = helpers.generate_unique_id(modbus_address=100, name="Test Sensor")
 
-    assert uid == "100_1_Test_Sensor"
+    assert uid == "100_Test_Sensor"
 
 
 def test_generate_unique_id_special_chars():
-    uid = helpers.generate_unique_id(modbus_address=100, supported_version=1, name="@@@")
+    uid = helpers.generate_unique_id(modbus_address=100, name="@@@")
 
-    assert uid == "100_1"
+    assert uid == "100"
 
 
 # # # Tests for write_modbus_value # # #

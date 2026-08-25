@@ -43,7 +43,6 @@ class SolvisSelect(SolvisEntity, SelectEntity):
         modbus_address: int = None,
         data_processing: int = 0,
         poll_rate: bool = False,
-        supported_version: int = 1,
     ) -> None:
         """Initialize the Solvis select entity."""
         super().__init__(
@@ -52,7 +51,6 @@ class SolvisSelect(SolvisEntity, SelectEntity):
             host,
             name,
             modbus_address,
-            supported_version,
             enabled_by_default,
             data_processing,
             poll_rate,
