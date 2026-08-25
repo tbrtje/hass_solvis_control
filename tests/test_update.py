@@ -8,8 +8,8 @@ import logging
 import pytest
 from unittest.mock import MagicMock, patch
 
-from custom_components.solvis_control.update import SolvisUpdateEntity
-from custom_components.solvis_control.const import LATEST_SW_VERSION, DOMAIN
+from custom_components.solvis_leo.update import SolvisUpdateEntity
+from custom_components.solvis_leo.const import LATEST_SW_VERSION, DOMAIN
 
 
 @pytest.fixture
@@ -61,8 +61,8 @@ async def test_firmware_update_version_processing(mock_solvis_update_entity_firm
     test_value = 32016  # Represents "3.20.16"
 
     with (
-        patch("custom_components.solvis_control.entity.process_coordinator_data", return_value=(True, test_value, {})) as proc_patch,
-        patch("custom_components.solvis_control.update.dr.async_get") as mock_async_get,
+        patch("custom_components.solvis_leo.entity.process_coordinator_data", return_value=(True, test_value, {})) as proc_patch,
+        patch("custom_components.solvis_leo.update.dr.async_get") as mock_async_get,
     ):
 
         mock_device_registry = MagicMock()
@@ -86,8 +86,8 @@ async def test_hardware_update_version_processing(mock_solvis_update_entity_hard
     test_value = 10203  # Represents "1.02.03"
 
     with (
-        patch("custom_components.solvis_control.entity.process_coordinator_data", return_value=(True, test_value, {})) as proc_patch,
-        patch("custom_components.solvis_control.update.dr.async_get") as mock_async_get,
+        patch("custom_components.solvis_leo.entity.process_coordinator_data", return_value=(True, test_value, {})) as proc_patch,
+        patch("custom_components.solvis_leo.update.dr.async_get") as mock_async_get,
     ):
 
         mock_device_registry = MagicMock()
@@ -110,13 +110,13 @@ async def test_invalid_version_data(mock_solvis_update_entity_firmware):
     entity = mock_solvis_update_entity_firmware
 
     # Test with None value
-    with patch("custom_components.solvis_control.entity.process_coordinator_data", return_value=(True, None, {})):
+    with patch("custom_components.solvis_leo.entity.process_coordinator_data", return_value=(True, None, {})):
         entity._handle_coordinator_update()
         assert entity.installed_version is None
         assert entity.latest_version is None
 
     # Test with short value
-    with patch("custom_components.solvis_control.entity.process_coordinator_data", return_value=(True, 1234, {})):
+    with patch("custom_components.solvis_leo.entity.process_coordinator_data", return_value=(True, 1234, {})):
         entity._handle_coordinator_update()
         assert entity.installed_version is None
         assert entity.latest_version is None
@@ -127,8 +127,8 @@ async def test_version_zero_is_not_a_warning(mock_solvis_update_entity_firmware,
     """A SolvisLeo answers the version registers with 0; that is expected, not a warning."""
     entity = mock_solvis_update_entity_firmware
 
-    with patch("custom_components.solvis_control.entity.process_coordinator_data", return_value=(True, 0, {})):
-        with caplog.at_level(logging.WARNING, logger="custom_components.solvis_control.update"):
+    with patch("custom_components.solvis_leo.entity.process_coordinator_data", return_value=(True, 0, {})):
+        with caplog.at_level(logging.WARNING, logger="custom_components.solvis_leo.update"):
             entity._handle_coordinator_update()
 
     assert entity.installed_version is None
@@ -143,8 +143,8 @@ async def test_version_int16_overflow(mock_solvis_update_entity_firmware):
     test_value = 33001 - 65536  # -32535, i.e. "3.30.01" wrapped by the signed read
 
     with (
-        patch("custom_components.solvis_control.entity.process_coordinator_data", return_value=(True, test_value, {})),
-        patch("custom_components.solvis_control.update.dr.async_get") as mock_async_get,
+        patch("custom_components.solvis_leo.entity.process_coordinator_data", return_value=(True, test_value, {})),
+        patch("custom_components.solvis_leo.update.dr.async_get") as mock_async_get,
     ):
         mock_device_registry = MagicMock()
         mock_device = MagicMock()
@@ -164,8 +164,8 @@ async def test_version_boundary_still_parses(mock_solvis_update_entity_firmware)
     entity = mock_solvis_update_entity_firmware
 
     with (
-        patch("custom_components.solvis_control.entity.process_coordinator_data", return_value=(True, 32767, {})),
-        patch("custom_components.solvis_control.update.dr.async_get") as mock_async_get,
+        patch("custom_components.solvis_leo.entity.process_coordinator_data", return_value=(True, 32767, {})),
+        patch("custom_components.solvis_leo.update.dr.async_get") as mock_async_get,
     ):
         mock_async_get.return_value = MagicMock()
         entity._handle_coordinator_update()
@@ -178,7 +178,7 @@ async def test_version_non_numeric_rejected(mock_solvis_update_entity_firmware):
     """A 5-character non-numeric value must not be sliced into a bogus version."""
     entity = mock_solvis_update_entity_firmware
 
-    with patch("custom_components.solvis_control.entity.process_coordinator_data", return_value=(True, "ab.cd", {})):
+    with patch("custom_components.solvis_leo.entity.process_coordinator_data", return_value=(True, "ab.cd", {})):
         entity._handle_coordinator_update()
         assert entity.installed_version is None
         assert entity.latest_version is None
@@ -190,7 +190,7 @@ async def test_update_value_device_none(mock_solvis_update_entity_firmware):
     entity = mock_solvis_update_entity_firmware
     test_value = 12345  # "1.23.45"
 
-    with patch("custom_components.solvis_control.update.dr.async_get") as mock_async_get:
+    with patch("custom_components.solvis_leo.update.dr.async_get") as mock_async_get:
         mock_device_registry = MagicMock()
         mock_async_get.return_value = mock_device_registry
         mock_device_registry.async_get_device.return_value = None  # Device is None

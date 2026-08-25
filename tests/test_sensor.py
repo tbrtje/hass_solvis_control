@@ -6,9 +6,9 @@ Version: v2.1.0
 
 import pytest
 from unittest.mock import AsyncMock, patch, MagicMock
-from custom_components.solvis_control.sensor import SolvisSensor, async_setup_entry, _LOGGER, SolvisDerivativeSensor
-from custom_components.solvis_control.const import CONF_HOST, CONF_NAME, DATA_COORDINATOR, DOMAIN, ModbusFieldConfig
-from custom_components.solvis_control.coordinator import SolvisModbusCoordinator
+from custom_components.solvis_leo.sensor import SolvisSensor, async_setup_entry, _LOGGER, SolvisDerivativeSensor
+from custom_components.solvis_leo.const import CONF_HOST, CONF_NAME, DATA_COORDINATOR, DOMAIN, ModbusFieldConfig
+from custom_components.solvis_leo.coordinator import SolvisModbusCoordinator
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers import issue_registry as ir
 
@@ -31,7 +31,7 @@ async def test_handle_coordinator_update_default(mock_solvis_sensor):
     mock_solvis_sensor.hass = MagicMock()
     mock_solvis_sensor.data_processing = 99
     test_value = 123
-    with patch("custom_components.solvis_control.entity.process_coordinator_data", return_value=(True, test_value, {"raw_value": test_value})):
+    with patch("custom_components.solvis_leo.entity.process_coordinator_data", return_value=(True, test_value, {"raw_value": test_value})):
         mock_solvis_sensor._handle_coordinator_update()
     assert mock_solvis_sensor._attr_native_value == test_value
 
@@ -40,7 +40,7 @@ async def test_handle_coordinator_update_default(mock_solvis_sensor):
 async def test_async_setup_entry_no_host_sensor(hass, mock_config_entry):
     """Test setup entry when no host is provided for sensor."""
     mock_config_entry.data.pop(CONF_HOST, None)
-    with patch("custom_components.solvis_control.utils.helpers._LOGGER.error") as mock_logger:
+    with patch("custom_components.solvis_leo.utils.helpers._LOGGER.error") as mock_logger:
         hass.data = {DOMAIN: {mock_config_entry.entry_id: {DATA_COORDINATOR: AsyncMock()}}}
         await async_setup_entry(hass, mock_config_entry, AsyncMock())
         mock_logger.assert_called_with("Device has no address")
@@ -51,10 +51,10 @@ async def test_async_setup_entry_entity_removal_exception_sensor(hass, mock_conf
     """Test exception handling during removal of old sensor entities."""
     hass.data = {DOMAIN: {mock_config_entry.entry_id: {DATA_COORDINATOR: AsyncMock()}}}
     with (
-        patch("custom_components.solvis_control.utils.helpers.remove_old_entities", side_effect=Exception("Test Exception")),
-        patch("custom_components.solvis_control.utils.helpers.generate_device_info"),
-        patch("custom_components.solvis_control.utils.helpers.REGISTERS", []),
-        patch("custom_components.solvis_control.utils.helpers._LOGGER.error") as mock_logger,
+        patch("custom_components.solvis_leo.utils.helpers.remove_old_entities", side_effect=Exception("Test Exception")),
+        patch("custom_components.solvis_leo.utils.helpers.generate_device_info"),
+        patch("custom_components.solvis_leo.utils.helpers.REGISTERS", []),
+        patch("custom_components.solvis_leo.utils.helpers._LOGGER.error") as mock_logger,
     ):
         mock_add_entities = MagicMock()
         await async_setup_entry(hass, mock_config_entry, mock_add_entities)
@@ -91,9 +91,9 @@ async def test_async_setup_entry_existing_entities_handling_sensor(hass, mock_co
         suggested_precision=2,
     )
     with patch("homeassistant.helpers.entity_registry.async_get", return_value=mock_entity_registry):
-        with patch("custom_components.solvis_control.utils.helpers.REGISTERS", [register1, register2]):
-            with patch("custom_components.solvis_control.utils.helpers.async_resolve_entity_id") as mock_resolve:
-                with patch("custom_components.solvis_control.utils.helpers._LOGGER.debug") as mock_log_debug:
+        with patch("custom_components.solvis_leo.utils.helpers.REGISTERS", [register1, register2]):
+            with patch("custom_components.solvis_leo.utils.helpers.async_resolve_entity_id") as mock_resolve:
+                with patch("custom_components.solvis_leo.utils.helpers._LOGGER.debug") as mock_log_debug:
                     mock_resolve.side_effect = lambda reg, uid: f"sensor_{uid[-1]}"
                     await async_setup_entry(hass, mock_config_entry, MagicMock())
                     mock_entity_registry.async_remove.assert_any_call("sensor_1")
@@ -107,7 +107,7 @@ async def test_async_setup_entry_existing_entities_handling_sensor(hass, mock_co
 async def test_handle_coordinator_update_not_available_extra_attrs(mock_solvis_sensor):
     """Test that when coordinator data is not available, extra state attributes are set to an empty dict."""
     mock_solvis_sensor.hass = MagicMock()
-    with patch("custom_components.solvis_control.entity.process_coordinator_data", return_value=(False, None, {"raw_value": None})):
+    with patch("custom_components.solvis_leo.entity.process_coordinator_data", return_value=(False, None, {"raw_value": None})):
         mock_solvis_sensor._handle_coordinator_update()
     assert mock_solvis_sensor._attr_extra_state_attributes == {}
 

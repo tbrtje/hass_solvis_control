@@ -13,15 +13,15 @@ from homeassistant.util import dt as dt_util
 from unittest.mock import AsyncMock, patch, MagicMock, PropertyMock
 from pymodbus.client import AsyncModbusTcpClient
 from pymodbus.exceptions import ConnectionException, ModbusException
-from custom_components.solvis_control.coordinator import SolvisModbusCoordinator
+from custom_components.solvis_leo.coordinator import SolvisModbusCoordinator
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.config_entries import ConfigEntry
 from datetime import timedelta
-from custom_components.solvis_control.select import SolvisSelect
-from custom_components.solvis_control.sensor import SolvisSensor
-from custom_components.solvis_control.const import (
+from custom_components.solvis_leo.select import SolvisSelect
+from custom_components.solvis_leo.sensor import SolvisSensor
+from custom_components.solvis_leo.const import (
     CONF_NAME,
     PORT,
     CONF_HOST,
@@ -53,8 +53,8 @@ def configure_logging():
     logging.basicConfig(level=logging.WARNING)
 
     debug_modules = [
-        "custom_components.solvis_control.config_flow",
-        "custom_components.solvis_control.utils.helpers",
+        "custom_components.solvis_leo.config_flow",
+        "custom_components.solvis_leo.utils.helpers",
         "tests.conftest",
     ]
 
@@ -71,8 +71,8 @@ def mock_get_mac(mocker, request):
     mac_value = param.get("mac", "00:11:22:33:44:55")
 
     patch_paths = {
-        "config_flow": "custom_components.solvis_control.config_flow.get_mac",
-        "helpers": "custom_components.solvis_control.utils.helpers.get_mac",
+        "config_flow": "custom_components.solvis_leo.config_flow.get_mac",
+        "helpers": "custom_components.solvis_leo.utils.helpers.get_mac",
     }
 
     return mocker.patch(patch_paths[patch_target], return_value=mac_value)
@@ -166,8 +166,8 @@ def mock_modbus(mocker, request):
 
     patch_targets = [
         "pymodbus.client.AsyncModbusTcpClient",
-        "custom_components.solvis_control.utils.helpers.AsyncModbusTcpClient",
-        "custom_components.solvis_control.config_flow.ModbusClient.AsyncModbusTcpClient",
+        "custom_components.solvis_leo.utils.helpers.AsyncModbusTcpClient",
+        "custom_components.solvis_leo.config_flow.ModbusClient.AsyncModbusTcpClient",
     ]
 
     for target in patch_targets:
@@ -198,7 +198,7 @@ def mock_modbus(mocker, request):
         self.poll_rate_high = entry.data.get(POLL_RATE_HIGH, 5)
         _LOGGER.debug(f"[SolvisModbusCoordinator] Verwende Modbus-Instanz: {self.modbus} (ID: {id(self.modbus)}) für {self.host}:{self.port}")
 
-    mocker.patch("custom_components.solvis_control.coordinator.SolvisModbusCoordinator.__init__", mock_init)
+    mocker.patch("custom_components.solvis_leo.coordinator.SolvisModbusCoordinator.__init__", mock_init)
 
     return mock_modbus_instance
 
@@ -238,7 +238,7 @@ def mock_entity_registry(hass):
 @pytest.fixture
 def mock_platform():
     platform = MagicMock()
-    platform.platform_name = "solvis_control"
+    platform.platform_name = "solvis_leo"
     platform.domain = "select"
     return platform
 

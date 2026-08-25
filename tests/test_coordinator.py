@@ -9,12 +9,12 @@ import pytest
 from unittest.mock import MagicMock
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.update_coordinator import UpdateFailed
-from custom_components.solvis_control.coordinator import SolvisModbusCoordinator
+from custom_components.solvis_leo.coordinator import SolvisModbusCoordinator
 from pymodbus.exceptions import ConnectionException, ModbusException, ModbusIOException
 from pymodbus.pdu import ExceptionResponse
 from tests.dummies import DummyConfigEntry, DummyEntity, DummyEntityRegistry, DummyRegister
 from tests.dummies import DummyModbusClient, DummyModbusResponse, DummyResponseObj
-from custom_components.solvis_control.const import (
+from custom_components.solvis_leo.const import (
     DOMAIN,
     CONF_NAME,
     CONF_HOST,
@@ -45,7 +45,7 @@ def patch_registers(monkeypatch):
         absolute_value=False,
         byte_swap=0,
     )
-    monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [dummy_register])
+    monkeypatch.setattr("custom_components.solvis_leo.coordinator.REGISTERS", [dummy_register])
     return dummy_register
 
 
@@ -69,7 +69,7 @@ async def test_async_update_data_skip_poll_rate(dummy_coordinator, monkeypatch):
         absolute_value=False,
         byte_swap=0,
     )
-    monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [dummy_register])
+    monkeypatch.setattr("custom_components.solvis_leo.coordinator.REGISTERS", [dummy_register])
     dummy_coordinator.poll_rate_high = 2
     data = await dummy_coordinator._async_update_data()
 
@@ -83,7 +83,7 @@ async def test_block_read_uint32_uses_csv_word_order(dummy_coordinator, monkeypa
     reg = DummyRegister(name="controller_unix_time", address=32768, poll_rate=0, poll_time=0, reg=1, multiplier=1)
     reg.count = 2
     reg.datatype = "UINT32"
-    monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [reg])
+    monkeypatch.setattr("custom_components.solvis_leo.coordinator.REGISTERS", [reg])
 
     # 1755028224 = 0x689B9B00 -> low word 0x9B00, high word 0x689B
     requested = {}
@@ -107,7 +107,7 @@ async def test_block_read_without_datatype_keeps_raw_words(dummy_coordinator, mo
     """A block without a combining datatype is kept as unsigned words (weekly schedules)."""
     reg = DummyRegister(name="schedule", address=34048, poll_rate=0, poll_time=0, reg=2, multiplier=1)
     reg.count = 42
-    monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [reg])
+    monkeypatch.setattr("custom_components.solvis_leo.coordinator.REGISTERS", [reg])
 
     words = list(range(42))
 
@@ -128,7 +128,7 @@ async def test_short_block_read_is_skipped(dummy_coordinator, monkeypatch):
     reg = DummyRegister(name="controller_unix_time", address=32768, poll_rate=0, poll_time=0, reg=1, multiplier=1)
     reg.count = 2
     reg.datatype = "UINT32"
-    monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [reg])
+    monkeypatch.setattr("custom_components.solvis_leo.coordinator.REGISTERS", [reg])
 
     async def read(address, count=1, **kwargs):
         return DummyModbusResponse([0x9B00])  # only one word came back
@@ -175,7 +175,7 @@ async def test_illegal_data_address_does_not_fail_update(dummy_coordinator, patc
     good = DummyRegister(name="good_sensor", address=100, poll_rate=0, poll_time=0, reg=1, multiplier=1.0)
     missing = DummyRegister(name="missing_sensor", address=33045, poll_rate=0, poll_time=0, reg=1, multiplier=1.0)
     missing_alias = DummyRegister(name="missing_alias", address=33045, poll_rate=0, poll_time=0, reg=1, multiplier=1.0)
-    monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [missing, missing_alias, good])
+    monkeypatch.setattr("custom_components.solvis_leo.coordinator.REGISTERS", [missing, missing_alias, good])
 
     real_read = dummy_coordinator.modbus.read_input_registers
 
@@ -198,7 +198,7 @@ async def test_illegal_data_address_does_not_fail_update(dummy_coordinator, patc
 async def test_illegal_data_address_is_retried(dummy_coordinator, monkeypatch):
     """A rejected address must be requested again on its next poll."""
     missing = DummyRegister(name="missing_sensor", address=33045, poll_rate=2, poll_time=0, reg=1, multiplier=1.0)
-    monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [missing])
+    monkeypatch.setattr("custom_components.solvis_leo.coordinator.REGISTERS", [missing])
 
     attempts = []
 
@@ -226,7 +226,7 @@ async def test_other_modbus_errors_are_skipped(dummy_coordinator, monkeypatch):
             return True
 
     reg = DummyRegister(name="broken", address=100, poll_rate=0, poll_time=0, reg=1, multiplier=1.0)
-    monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [reg])
+    monkeypatch.setattr("custom_components.solvis_leo.coordinator.REGISTERS", [reg])
 
     async def read(address, count=1, **kwargs):
         return OtherError()
@@ -249,7 +249,7 @@ async def test_async_update_data_invalid_response(dummy_coordinator, monkeypatch
         absolute_value=False,
         byte_swap=0,
     )
-    monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [dummy_register])
+    monkeypatch.setattr("custom_components.solvis_leo.coordinator.REGISTERS", [dummy_register])
 
     async def invalid_read(address, count):
         class DummyResponse:
@@ -275,7 +275,7 @@ async def test_async_update_data_modbus_exception(dummy_coordinator, monkeypatch
         absolute_value=False,
         byte_swap=0,
     )
-    monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [dummy_register])
+    monkeypatch.setattr("custom_components.solvis_leo.coordinator.REGISTERS", [dummy_register])
 
     async def raise_exception(address, count):
         raise ModbusException("Test modbus error")
@@ -298,7 +298,7 @@ async def test_poll_rate_slow_reset(dummy_coordinator, monkeypatch):
         absolute_value=False,
         byte_swap=0,
     )
-    monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [dummy_register])
+    monkeypatch.setattr("custom_components.solvis_leo.coordinator.REGISTERS", [dummy_register])
     data = await dummy_coordinator._async_update_data()
     assert "slow_sensor_reset" in data
     assert dummy_register.poll_time == dummy_coordinator.poll_rate_slow
@@ -316,7 +316,7 @@ async def test_poll_rate_default_reset(dummy_coordinator, monkeypatch):
         absolute_value=False,
         byte_swap=0,
     )
-    monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [dummy_register])
+    monkeypatch.setattr("custom_components.solvis_leo.coordinator.REGISTERS", [dummy_register])
     data = await dummy_coordinator._async_update_data()
     assert "default_sensor_reset" in data
     assert dummy_register.poll_time == dummy_coordinator.poll_rate_default
@@ -334,7 +334,7 @@ async def test_skip_disabled_entity(dummy_coordinator, monkeypatch):
         absolute_value=False,
         byte_swap=0,
     )
-    monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [dummy_register])
+    monkeypatch.setattr("custom_components.solvis_leo.coordinator.REGISTERS", [dummy_register])
     dummy_registry = DummyEntityRegistry({"entity.one": DummyEntity("unique_1", "entity.one", disabled=True)})
     entity_id = f"{DOMAIN}.{dummy_register.name}"
     dummy_registry.entities = {entity_id: MagicMock(disabled=True)}
@@ -357,7 +357,7 @@ async def test_exception_response(dummy_coordinator, monkeypatch):
         byte_swap=0,
     )
 
-    monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [dummy_register])
+    monkeypatch.setattr("custom_components.solvis_leo.coordinator.REGISTERS", [dummy_register])
 
     class DummyExceptionResponse:
         def isError(self):
@@ -384,7 +384,7 @@ async def test_data_conversion_error(dummy_coordinator, monkeypatch):
         absolute_value=False,
         byte_swap=0,
     )
-    monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [dummy_register])
+    monkeypatch.setattr("custom_components.solvis_leo.coordinator.REGISTERS", [dummy_register])
 
     def raise_value_error(registers, data_type, word_order):
         raise ValueError("Conversion error")
@@ -398,7 +398,7 @@ async def test_data_conversion_error(dummy_coordinator, monkeypatch):
 @pytest.mark.asyncio
 async def test_initial_reconnect_failed_raises_updatefailed(monkeypatch, dummy_coordinator):
     # Initial ensure_connected → False → UpdateFailed
-    monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [])
+    monkeypatch.setattr("custom_components.solvis_leo.coordinator.REGISTERS", [])
 
     dummy_coordinator.modbus.connected = False
     dummy_coordinator.modbus.raise_on_connect = True
@@ -416,8 +416,8 @@ async def test_lost_connection_fails_update(monkeypatch, dummy_coordinator, patc
         calls += 1
         return calls == 1  # 1. call ok, 2. call False
 
-    monkeypatch.setattr("custom_components.solvis_control.coordinator.ensure_connected", fake_ensure)
-    monkeypatch.setattr("custom_components.solvis_control.coordinator.REGISTERS", [patch_registers])
+    monkeypatch.setattr("custom_components.solvis_leo.coordinator.ensure_connected", fake_ensure)
+    monkeypatch.setattr("custom_components.solvis_leo.coordinator.REGISTERS", [patch_registers])
 
     with pytest.raises(UpdateFailed):
         await dummy_coordinator._async_update_data()

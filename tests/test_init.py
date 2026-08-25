@@ -1,5 +1,5 @@
 """
-Tests for Solvis Control Init
+Tests for SolvisLeo 180 Control Init
 
 Version: v2.1.0
 """
@@ -10,16 +10,16 @@ import asyncio
 import homeassistant.helpers.event as event
 
 from unittest.mock import AsyncMock
-from custom_components.solvis_control.coordinator import SolvisModbusCoordinator
-from custom_components.solvis_control.const import DATA_COORDINATOR
+from custom_components.solvis_leo.coordinator import SolvisModbusCoordinator
+from custom_components.solvis_leo.const import DATA_COORDINATOR
 from homeassistant.config_entries import ConfigEntry, ConfigEntryState, ConfigEntryNotReady
-from custom_components.solvis_control import (
+from custom_components.solvis_leo import (
     async_setup_entry,
     async_unload_entry,
     async_migrate_entry,
     options_update_listener,
 )
-from custom_components.solvis_control.const import (
+from custom_components.solvis_leo.const import (
     DOMAIN,
     CONF_NAME,
     CONF_HOST,
@@ -94,7 +94,7 @@ async def test_async_setup_entry(hass, extended_config_entry, monkeypatch):
 
     fake_client = AsyncMock()
     fake_client.connect.return_value = True
-    monkeypatch.setattr("custom_components.solvis_control.create_modbus_client", lambda host, port: fake_client)
+    monkeypatch.setattr("custom_components.solvis_leo.create_modbus_client", lambda host, port: fake_client)
 
     async def dummy_first_refresh(self):
         return
@@ -114,7 +114,7 @@ async def test_setup_entry_missing_host(hass, extended_config_entry, monkeypatch
 
     monkeypatch.setattr(hass.config_entries, "async_forward_entry_setups", lambda *args, **kwargs: True)
     monkeypatch.setattr(hass.config_entries, "async_update_entry", dummy_update_entry)
-    monkeypatch.setattr("custom_components.solvis_control.async_migrate_entry", fake_migrate)
+    monkeypatch.setattr("custom_components.solvis_leo.async_migrate_entry", fake_migrate)
 
     result = await async_setup_entry(hass, extended_config_entry)
 
@@ -128,7 +128,7 @@ async def test_setup_entry_missing_port(hass, extended_config_entry, monkeypatch
 
     monkeypatch.setattr(hass.config_entries, "async_forward_entry_setups", lambda *args, **kwargs: True)
     monkeypatch.setattr(hass.config_entries, "async_update_entry", dummy_update_entry)
-    monkeypatch.setattr("custom_components.solvis_control.async_migrate_entry", fake_migrate)
+    monkeypatch.setattr("custom_components.solvis_leo.async_migrate_entry", fake_migrate)
 
     result = await async_setup_entry(hass, extended_config_entry)
 
@@ -138,7 +138,7 @@ async def test_setup_entry_missing_port(hass, extended_config_entry, monkeypatch
 @pytest.mark.asyncio
 async def test_setup_entry_migration_failure(hass, extended_config_entry, monkeypatch):
     """Test async_setup_entry returns False if async_migrate_entry fails."""
-    monkeypatch.setattr("custom_components.solvis_control.async_migrate_entry", fake_migrate_fail)
+    monkeypatch.setattr("custom_components.solvis_leo.async_migrate_entry", fake_migrate_fail)
     result = await async_setup_entry(hass, extended_config_entry)
 
     assert result is False
@@ -148,13 +148,13 @@ async def test_setup_entry_migration_failure(hass, extended_config_entry, monkey
 async def test_setup_entry_connect_returns_false_raises_not_ready(hass, extended_config_entry, monkeypatch):
     """Test Modbus connect returns False triggers ConfigEntryNotReady."""
     monkeypatch.setattr(
-        "custom_components.solvis_control.async_migrate_entry",
+        "custom_components.solvis_leo.async_migrate_entry",
         lambda hass, entry: asyncio.sleep(0, result=True),
     )
     fake_client = AsyncMock()
     fake_client.connect.return_value = False
     monkeypatch.setattr(
-        "custom_components.solvis_control.create_modbus_client",
+        "custom_components.solvis_leo.create_modbus_client",
         lambda host, port: fake_client,
     )
     with pytest.raises(ConfigEntryNotReady):
@@ -165,13 +165,13 @@ async def test_setup_entry_connect_returns_false_raises_not_ready(hass, extended
 async def test_setup_entry_connect_exception_raises_not_ready(hass, extended_config_entry, monkeypatch):
     """Test Modbus connect exception triggers ConfigEntryNotReady."""
     monkeypatch.setattr(
-        "custom_components.solvis_control.async_migrate_entry",
+        "custom_components.solvis_leo.async_migrate_entry",
         lambda hass, entry: asyncio.sleep(0, result=True),
     )
     fake_client = AsyncMock()
     fake_client.connect.side_effect = Exception("Connection error")
     monkeypatch.setattr(
-        "custom_components.solvis_control.create_modbus_client",
+        "custom_components.solvis_leo.create_modbus_client",
         lambda host, port: fake_client,
     )
     with pytest.raises(ConfigEntryNotReady):

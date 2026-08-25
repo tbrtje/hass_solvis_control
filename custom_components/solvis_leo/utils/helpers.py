@@ -17,7 +17,7 @@ from scapy.all import ARP, Ether, srp
 from pymodbus.exceptions import ConnectionException, ModbusException
 from pymodbus.client import AsyncModbusTcpClient
 
-from custom_components.solvis_control.const import (
+from custom_components.solvis_leo.const import (
     CONF_NAME,
     PORT,
     CONF_HOST,
@@ -77,7 +77,7 @@ def generate_device_info(entry: ConfigEntry, host: str, name: str) -> DeviceInfo
         "identifiers": {(DOMAIN, host)},
         "name": name,
         "manufacturer": MANUFACTURER,
-        "model": "Solvis Control 3",
+        "model": "SolvisLeo 180 (SC3)",
     }
 
     if "VERSIONSC" in entry.data:

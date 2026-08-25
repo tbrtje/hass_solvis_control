@@ -5,7 +5,7 @@ import pytest
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.data_entry_flow import FlowResultType
 
-from custom_components.solvis_control.const import (
+from custom_components.solvis_leo.const import (
     CONF_HOST,
     CONF_NAME,
     CONF_PORT,

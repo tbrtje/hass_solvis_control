@@ -10,8 +10,8 @@ from pytest import LogCaptureFixture
 from unittest.mock import AsyncMock, patch, MagicMock
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from custom_components.solvis_control.select import SolvisSelect, async_setup_entry, _LOGGER
-from custom_components.solvis_control.const import CONF_HOST, CONF_NAME, DATA_COORDINATOR, DOMAIN, POLL_RATE_DEFAULT, POLL_RATE_SLOW, ModbusFieldConfig
+from custom_components.solvis_leo.select import SolvisSelect, async_setup_entry, _LOGGER
+from custom_components.solvis_leo.const import CONF_HOST, CONF_NAME, DATA_COORDINATOR, DOMAIN, POLL_RATE_DEFAULT, POLL_RATE_SLOW, ModbusFieldConfig
 from pymodbus.exceptions import ConnectionException
 from homeassistant.helpers import entity_registry as er
 
@@ -68,7 +68,7 @@ async def test_async_select_option_modbus_failure(dummy_solvisselect_entity):
     error_response = MagicMock()
     error_response.isError.return_value = True
     select_entity.coordinator.modbus.write_register = AsyncMock(return_value=error_response)
-    with patch("custom_components.solvis_control.select._LOGGER.error") as mock_logger:
+    with patch("custom_components.solvis_leo.select._LOGGER.error") as mock_logger:
         await select_entity.async_select_option("1")
         mock_logger.assert_called_with("[Test Entity] Failed to send option 1 to register 1")
 
@@ -130,7 +130,7 @@ def test_handle_coordinator_update_skip_slow_polling(dummy_solvisselect_entity):
     register_mock = MagicMock()
     register_mock.poll_rate = 1
     register_mock.poll_time = 10
-    with patch("custom_components.solvis_control.utils.helpers.REGISTERS", [register_mock]):
+    with patch("custom_components.solvis_leo.utils.helpers.REGISTERS", [register_mock]):
         select_entity._handle_coordinator_update()
     assert select_entity._attr_current_option is None
 
@@ -142,7 +142,7 @@ def test_handle_coordinator_update_skip_standard_polling(dummy_solvisselect_enti
     register_mock = MagicMock()
     register_mock.poll_rate = 0
     register_mock.poll_time = 5
-    with patch("custom_components.solvis_control.utils.helpers.REGISTERS", [register_mock]):
+    with patch("custom_components.solvis_leo.utils.helpers.REGISTERS", [register_mock]):
         select_entity._handle_coordinator_update()
     assert select_entity._attr_current_option is None
 
@@ -150,7 +150,7 @@ def test_handle_coordinator_update_skip_standard_polling(dummy_solvisselect_enti
 def test_handle_coordinator_update_no_matching_register(dummy_solvisselect_entity):
     """Test _handle_coordinator_update when no matching register is found."""
     select_entity = dummy_solvisselect_entity(name="Test Entity", entity_id="select.test")
-    with patch("custom_components.solvis_control.utils.helpers.REGISTERS", []):
+    with patch("custom_components.solvis_leo.utils.helpers.REGISTERS", []):
         select_entity._handle_coordinator_update()
     assert select_entity._attr_available is False
 
@@ -161,7 +161,7 @@ def test_handle_coordinator_update_missing_poll_rate(dummy_solvisselect_entity):
     select_entity.coordinator.poll_rate_slow = 30
     register_mock = MagicMock()
     register_mock.poll_rate = None
-    with patch("custom_components.solvis_control.utils.helpers.REGISTERS", [register_mock]):
+    with patch("custom_components.solvis_leo.utils.helpers.REGISTERS", [register_mock]):
         select_entity._handle_coordinator_update()
     assert select_entity._attr_available is False
 
@@ -171,7 +171,7 @@ def test_handle_coordinator_update_unexpected_data_type(dummy_solvisselect_entit
     select_entity = dummy_solvisselect_entity(name="Test Entity", entity_id="select.test")
     select_entity.coordinator.data = {"Test Entity": {"unexpected": "dict"}}
 
-    with patch("custom_components.solvis_control.utils.helpers._LOGGER.warning") as mock_logger:
+    with patch("custom_components.solvis_leo.utils.helpers._LOGGER.warning") as mock_logger:
         select_entity._handle_coordinator_update()
         mock_logger.assert_called_with("[Test Entity] Invalid response data type from coordinator: {'unexpected': 'dict'} has type <class 'dict'>")
 
@@ -190,7 +190,7 @@ def test_handle_coordinator_update_with_complex_value(dummy_solvisselect_entity)
     """Test that complex numbers are correctly rejected in _handle_coordinator_update."""
     select_entity = dummy_solvisselect_entity(name="Test Entity", entity_id="select.test")
     select_entity.coordinator.data = {"Test Entity": complex(2, 3)}
-    with patch("custom_components.solvis_control.utils.helpers._LOGGER.warning") as mock_logger:
+    with patch("custom_components.solvis_leo.utils.helpers._LOGGER.warning") as mock_logger:
         select_entity._handle_coordinator_update()
         mock_logger.assert_called_with("[Test Entity] Invalid response data type from coordinator: (2+3j) has type <class 'complex'>")
         assert select_entity._attr_available is False
@@ -249,9 +249,9 @@ async def test_select_async_setup_entry_entity_removal_exception(hass, mock_conf
     hass.data = {DOMAIN: {mock_config_entry.entry_id: {DATA_COORDINATOR: AsyncMock()}}}
     with (
         patch("homeassistant.helpers.entity_registry.async_get", side_effect=Exception("Test Exception")),
-        patch("custom_components.solvis_control.utils.helpers.generate_device_info"),
-        patch("custom_components.solvis_control.utils.helpers.REGISTERS", []),
-        patch("custom_components.solvis_control.utils.helpers._LOGGER.error") as mock_log_error,
+        patch("custom_components.solvis_leo.utils.helpers.generate_device_info"),
+        patch("custom_components.solvis_leo.utils.helpers.REGISTERS", []),
+        patch("custom_components.solvis_leo.utils.helpers._LOGGER.error") as mock_log_error,
     ):
         mock_add_entities = MagicMock()
         await async_setup_entry(hass, mock_config_entry, mock_add_entities)
@@ -263,7 +263,7 @@ async def test_select_async_setup_entry_entity_removal_exception(hass, mock_conf
 async def test_select_async_setup_entry_no_host(hass, mock_config_entry):
     """Test setup entry when no host is provided."""
     mock_config_entry.data.pop(CONF_HOST, None)
-    with patch("custom_components.solvis_control.utils.helpers._LOGGER.error") as mock_logger:
+    with patch("custom_components.solvis_leo.utils.helpers._LOGGER.error") as mock_logger:
         hass.data = {DOMAIN: {mock_config_entry.entry_id: {DATA_COORDINATOR: AsyncMock()}}}
         await async_setup_entry(hass, mock_config_entry, AsyncMock())
         mock_logger.assert_called_with("Device has no address")
@@ -296,9 +296,9 @@ async def test_select_async_setup_entry_existing_entities_handling(hass, mock_co
         input_type=1,
     )
     with patch("homeassistant.helpers.entity_registry.async_get", return_value=mock_entity_registry):
-        with patch("custom_components.solvis_control.utils.helpers.REGISTERS", [mock_register1, mock_register2]):
-            with patch("custom_components.solvis_control.utils.helpers.async_resolve_entity_id") as mock_resolve:
-                with patch("custom_components.solvis_control.utils.helpers._LOGGER.debug") as mock_log_debug:
+        with patch("custom_components.solvis_leo.utils.helpers.REGISTERS", [mock_register1, mock_register2]):
+            with patch("custom_components.solvis_leo.utils.helpers.async_resolve_entity_id") as mock_resolve:
+                with patch("custom_components.solvis_leo.utils.helpers._LOGGER.debug") as mock_log_debug:
                     # Mock async_resolve_entity_id()
                     mock_resolve.side_effect = lambda reg, uid: f"entity_{uid[-1]}"
                     await async_setup_entry(hass, mock_config_entry, MagicMock())

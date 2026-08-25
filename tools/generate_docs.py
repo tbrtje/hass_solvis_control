@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from custom_components.solvis_control.const import REGISTERS
+from custom_components.solvis_leo.const import REGISTERS
 
 
 REPOSITORY_ROOT = Path(__file__).parents[1]
@@ -37,7 +37,7 @@ def render_register_table() -> str:
     lines = [
         "# SolvisLeo 180 register table",
         "",
-        "This file is generated from `custom_components/solvis_control/const.py`. Do not edit it by hand; run `python -m tools.generate_docs --write` after changing `REGISTERS`. Implementation identifiers are raw code keys, not display names.",
+        "This file is generated from `custom_components/solvis_leo/const.py`. Do not edit it by hand; run `python -m tools.generate_docs --write` after changing `REGISTERS`. Implementation identifiers are raw code keys, not display names.",
         "",
         "| Address | Implementation identifier | Register type | Platform | Data type | Count | Byte swap | Multiplier | Unit | Enabled by default |",
         "| ---: | --- | --- | --- | --- | ---: | --- | ---: | --- | --- |",
@@ -71,7 +71,7 @@ def render_polling_group_table() -> str:
     lines = [
         "# SolvisLeo 180 polling groups",
         "",
-        "This file is generated from `custom_components/solvis_control/const.py`. Do not edit it by hand; run `python -m tools.generate_docs --write` after changing `REGISTERS`. Implementation identifiers are raw code keys, not display names.",
+        "This file is generated from `custom_components/solvis_leo/const.py`. Do not edit it by hand; run `python -m tools.generate_docs --write` after changing `REGISTERS`. Implementation identifiers are raw code keys, not display names.",
         "",
         "| Polling group | Address | Implementation identifier | Platform |",
         "| --- | ---: | --- | --- |",

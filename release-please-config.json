@@ -15,7 +15,7 @@
       "extra-files": [
         {
           "type": "json",
-          "path": "custom_components/solvis_control/manifest.json",
+          "path": "custom_components/solvis_leo/manifest.json",
           "jsonpath": "$.version"
         }
       ]

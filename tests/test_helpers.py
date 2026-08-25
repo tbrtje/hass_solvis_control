@@ -1,5 +1,5 @@
 """
-Tests for Solvis Control Helpers
+Tests for SolvisLeo 180 Control Helpers
 
 Version: v2.1.0
 """
@@ -11,13 +11,13 @@ import pytest
 from decimal import Decimal
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.config_entries import ConfigEntry
-from custom_components.solvis_control.utils import helpers
+from custom_components.solvis_leo.utils import helpers
 from pymodbus.exceptions import ConnectionException, ModbusException
 from tests.dummies import DummyConfigEntry, DummyEntity, DummyEntityRegistry, DummyRegister, dummy_srp, dummy_srp_empty
 from tests.dummies import DummyModbusClient, DummyModbusResponse, DummyResponseObj
-from custom_components.solvis_control.sensor import SolvisSensor
+from custom_components.solvis_leo.sensor import SolvisSensor
 from homeassistant.const import EntityCategory
-from custom_components.solvis_control.const import (
+from custom_components.solvis_leo.const import (
     CONF_NAME,
     PORT,
     CONF_HOST,
@@ -72,7 +72,7 @@ def test_generate_device_info():
     assert (DOMAIN, host) in info["identifiers"]
     assert info["name"] == name
     assert info["manufacturer"] == MANUFACTURER
-    assert info["model"] == "Solvis Control 3"
+    assert info["model"] == "SolvisLeo 180 (SC3)"
     assert info["sw_version"] == "1.0.1"
     assert info["hw_version"] == "1.0"
 
@@ -376,7 +376,7 @@ def test_register_definitions_do_not_gate_polling_by_configuration():
 def test_every_register_has_a_translation(lang):
     """Guard against drift: a new register without a name shows up as its raw key in the UI."""
     platform_of = {0: "sensor", 1: "select", 2: "number", 3: "switch", 4: "binary_sensor", 5: "update"}
-    path = pathlib.Path("custom_components/solvis_control/translations") / f"{lang}.json"
+    path = pathlib.Path("custom_components/solvis_leo/translations") / f"{lang}.json"
     entity = json.loads(path.read_text(encoding="utf-8"))["entity"]
 
     # input_type 6 is raw block data; its entities are declared in SCHEDULES, not per register
@@ -388,7 +388,7 @@ def test_every_register_has_a_translation(lang):
 @pytest.mark.parametrize("lang", ["en", "de", "it", "nl"])
 def test_every_schedule_has_translations(lang):
     """Each schedule yields a sensor and a companion binary sensor; both need a name."""
-    path = pathlib.Path("custom_components/solvis_control/translations") / f"{lang}.json"
+    path = pathlib.Path("custom_components/solvis_leo/translations") / f"{lang}.json"
     entity = json.loads(path.read_text(encoding="utf-8"))["entity"]
 
     missing = []

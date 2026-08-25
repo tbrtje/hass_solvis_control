@@ -57,7 +57,7 @@ class SolvisUpdateEntity(SolvisEntity, UpdateEntity):
         )
 
         self._attr_device_class = UpdateDeviceClass.FIRMWARE
-        self._attr_title = "Solvis Controller"  # Default title
+        self._attr_title = "SolvisLeo 180 SC3"  # Default title
         if self.modbus_address == 32770:
             self._attr_title = "Controller Firmware"
         else:  # self.modbus_address == 32771

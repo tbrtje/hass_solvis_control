@@ -6,8 +6,8 @@ Version: v2.1.0
 
 import pytest
 from unittest.mock import MagicMock, patch
-from custom_components.solvis_control.entity import SolvisEntity
-from custom_components.solvis_control.utils.helpers import generate_unique_id
+from custom_components.solvis_leo.entity import SolvisEntity
+from custom_components.solvis_leo.utils.helpers import generate_unique_id
 
 
 class DummySolvisEntity(SolvisEntity):
@@ -74,7 +74,7 @@ def test_entity_initialization(dummy_entity):
 
 def test_handle_coordinator_update_available(dummy_entity, dummy_coordinator):
     # Simulate available data via process_coordinator_data
-    with patch("custom_components.solvis_control.entity.process_coordinator_data", return_value=(True, "new_value", {"attr": "val"})):
+    with patch("custom_components.solvis_leo.entity.process_coordinator_data", return_value=(True, "new_value", {"attr": "val"})):
         dummy_coordinator.data = {"Test Entity": 123}
         dummy_entity._handle_coordinator_update()
         assert dummy_entity._value == "new_value"
@@ -84,7 +84,7 @@ def test_handle_coordinator_update_available(dummy_entity, dummy_coordinator):
 
 def test_handle_coordinator_update_unavailable(dummy_entity, dummy_coordinator):
     # Simulate unavailable data (False)
-    with patch("custom_components.solvis_control.entity.process_coordinator_data", return_value=(False, "old_value", {"attr": "val"})):
+    with patch("custom_components.solvis_leo.entity.process_coordinator_data", return_value=(False, "old_value", {"attr": "val"})):
         dummy_coordinator.data = {"Test Entity": 456}
         dummy_entity._value = "prev_value"
         dummy_entity._extra_attrs = {"old": "data"}
@@ -95,7 +95,7 @@ def test_handle_coordinator_update_unavailable(dummy_entity, dummy_coordinator):
 
 
 def test_handle_coordinator_update_no_update(dummy_entity):
-    with patch("custom_components.solvis_control.entity.process_coordinator_data", return_value=(None, None, None)):
+    with patch("custom_components.solvis_leo.entity.process_coordinator_data", return_value=(None, None, None)):
         dummy_entity._value = "previous"
         dummy_entity._extra_attrs = {"old": "data"}
         dummy_entity._handle_coordinator_update()

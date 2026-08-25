@@ -8,9 +8,9 @@ import pytest
 import asyncio
 from unittest.mock import MagicMock
 from homeassistant.helpers import entity_registry as er
-from custom_components.solvis_control.coordinator import SolvisModbusCoordinator
+from custom_components.solvis_leo.coordinator import SolvisModbusCoordinator
 from pymodbus.exceptions import ConnectionException, ModbusException, ConnectionException
-from custom_components.solvis_control.const import (
+from custom_components.solvis_leo.const import (
     DOMAIN,
     CONF_NAME,
     CONF_HOST,

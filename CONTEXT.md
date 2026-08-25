@@ -16,7 +16,8 @@ _Avoid_: system, plant, device (too vague; "device" means the HA device entry)
 **SolvisLeo 180**:
 The appliance this integration supports: an air-source heat pump with an integrated
 180-litre stratified tank. Has no burner and no solar circuit.
-_Avoid_: Leo (only in prose, never as an identifier), boiler
+_Avoid_: Leo (only in prose, never as an identifier), boiler. The fixed Home Assistant
+integration domain `solvis_leo` is the sole exception, as recorded in ADR 0001.
 
 **SC3**:
 The controller running the Anlage, and the Modbus endpoint. Its predecessor SC2 is

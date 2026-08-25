@@ -1,11 +1,11 @@
 """
-Definition of constants for the Solvis Control integration.
+Definition of constants for the SolvisLeo 180 Control integration.
 """
 
 from dataclasses import dataclass
 from homeassistant.components.sensor import SensorStateClass
 
-DOMAIN = "solvis_control"
+DOMAIN = "solvis_leo"
 
 CONF_NAME = "name"
 CONF_HOST = "host"

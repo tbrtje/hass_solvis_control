@@ -8,10 +8,10 @@ Each entry records what was verified, so the analysis does not have to be redone
 ## 1. The "skip disabled entities" check never fires
 
 **Status:** confirmed, not fixed
-**Files:** `custom_components/solvis_control/coordinator.py:146-153`
+**Files:** `custom_components/solvis_leo/coordinator.py:146-153`
 
 The coordinator builds the registry key as `f"{DOMAIN}.{register.name}"`, i.e.
-`solvis_control.warm_water_power`. Home Assistant assigns `<platform>.<object_id>`,
+`solvis_leo.warm_water_power`. Home Assistant assigns `<platform>.<object_id>`,
 so the real id is `sensor.warm_water_power`. The lookup therefore always returns
 `None` and the check is dead code — every register is polled regardless of whether
 its entity is disabled.
@@ -25,7 +25,7 @@ Verified against a real (not mocked) entity registry:
 ```
 actual entity_id       : sensor.warm_water_power
 disabled               : True
-key used by coordinator: solvis_control.warm_water_power
+key used by coordinator: solvis_leo.warm_water_power
 lookup result          : None
 lookup by real id      : found, disabled=True
 ```
@@ -62,7 +62,7 @@ hand — but the fix should exempt derivative source registers from the skip.
 ## 2. Multipliers disagree with the SC3 GLT documentation
 
 **Status:** discrepancy confirmed, intentionally not changed
-**Files:** `custom_components/solvis_control/const.py:679-806`
+**Files:** `custom_components/solvis_leo/const.py:679-806`
 
 The SC3 GLT register map gives factor `0.1` for the whole `Q_*` / `P*_*` block. The
 integration uses:
@@ -87,7 +87,7 @@ case it belongs in a per-model configuration rather than a global multiplier.
 ## 3. Four registers declared as holding inside an input-register block
 
 **Status:** cosmetic inconsistency, harmless on tested hardware
-**Files:** `custom_components/solvis_control/const.py`
+**Files:** `custom_components/solvis_leo/const.py`
 
 `solar_power` (33543), `heatpump_power_output_thermal` (33544),
 `heatpump_power_input_electric` (33545) and `pv2heat_power_electric` (33548) use
@@ -107,7 +107,7 @@ controllers may only serve one of the two.
 The six schedules (34048, 34090, 34132, 34174, 34216, 34258) are read as one
 42-register block each and exposed per plan as `sensor.<plan>_schedule` (next
 switching time, full week in attributes) plus `binary_sensor.<plan>_active` for the
-history timeline. Decoding lives in `custom_components/solvis_control/utils/schedule.py`.
+history timeline. Decoding lives in `custom_components/solvis_leo/utils/schedule.py`.
 
 **Open:**
 

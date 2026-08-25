@@ -4,7 +4,7 @@ from datetime import datetime, time
 
 import pytest
 
-from custom_components.solvis_control.utils.schedule import (
+from custom_components.solvis_leo.utils.schedule import (
     decode_schedule,
     index_to_time,
     is_active,
@@ -142,8 +142,8 @@ def _entity_deps():
 
 def test_schedule_sensor_exposes_week_and_next_switch(monkeypatch):
     from unittest.mock import MagicMock
-    from custom_components.solvis_control.sensor import SolvisScheduleSensor
-    from custom_components.solvis_control import sensor as sensor_module
+    from custom_components.solvis_leo.sensor import SolvisScheduleSensor
+    from custom_components.solvis_leo import sensor as sensor_module
 
     coordinator, device_info = _entity_deps()
     coordinator.data = {"hkr1_schedule": tuple(build(monday=[(24, 32)]))}
@@ -162,7 +162,7 @@ def test_schedule_sensor_exposes_week_and_next_switch(monkeypatch):
 
 def test_schedule_sensor_without_data_stays_empty():
     from unittest.mock import MagicMock
-    from custom_components.solvis_control.sensor import SolvisScheduleSensor
+    from custom_components.solvis_leo.sensor import SolvisScheduleSensor
 
     coordinator, device_info = _entity_deps()
     entity = SolvisScheduleSensor(coordinator=coordinator, device_info=device_info, host="h", name="hkr1_schedule", modbus_address=34048)
@@ -181,8 +181,8 @@ def test_schedule_sensor_without_data_stays_empty():
 def test_schedule_binary_sensor_arms_a_timer_at_the_next_boundary(monkeypatch):
     """The state must flip on the slot edge, not whenever the next poll happens."""
     from unittest.mock import MagicMock
-    from custom_components.solvis_control.binary_sensor import SolvisScheduleBinarySensor
-    from custom_components.solvis_control import binary_sensor as bs_module
+    from custom_components.solvis_leo.binary_sensor import SolvisScheduleBinarySensor
+    from custom_components.solvis_leo import binary_sensor as bs_module
 
     coordinator, device_info = _entity_deps()
     coordinator.data = {"hkr1_schedule": tuple(build(monday=[(24, 32)]))}
@@ -203,8 +203,8 @@ def test_schedule_binary_sensor_arms_a_timer_at_the_next_boundary(monkeypatch):
 
 def test_schedule_binary_sensor_cancels_the_previous_timer(monkeypatch):
     from unittest.mock import MagicMock
-    from custom_components.solvis_control.binary_sensor import SolvisScheduleBinarySensor
-    from custom_components.solvis_control import binary_sensor as bs_module
+    from custom_components.solvis_leo.binary_sensor import SolvisScheduleBinarySensor
+    from custom_components.solvis_leo import binary_sensor as bs_module
 
     coordinator, device_info = _entity_deps()
     coordinator.data = {"hkr1_schedule": tuple(build(monday=[(24, 32)]))}
@@ -225,7 +225,7 @@ def test_schedule_binary_sensor_cancels_the_previous_timer(monkeypatch):
 
 def test_schedule_binary_sensor_without_data_is_unknown():
     from unittest.mock import MagicMock
-    from custom_components.solvis_control.binary_sensor import SolvisScheduleBinarySensor
+    from custom_components.solvis_leo.binary_sensor import SolvisScheduleBinarySensor
 
     coordinator, device_info = _entity_deps()
     entity = SolvisScheduleBinarySensor(coordinator=coordinator, device_info=device_info, host="h", name="hkr1_schedule_active", source_key="hkr1_schedule", modbus_address=34048)

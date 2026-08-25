@@ -8,7 +8,7 @@ import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 from homeassistant.helpers import entity_registry as er
 
-from custom_components.solvis_control.const import (
+from custom_components.solvis_leo.const import (
     CONF_HOST,
     CONF_NAME,
     CONF_PORT,
@@ -202,7 +202,7 @@ async def setup_recorded_anlage(hass):
     )
     entry.add_to_hass(hass)
 
-    with patch("custom_components.solvis_control.create_modbus_client", return_value=client):
+    with patch("custom_components.solvis_leo.create_modbus_client", return_value=client):
         assert await hass.config_entries.async_setup(entry.entry_id)
         await hass.async_block_till_done()
 
@@ -220,6 +220,7 @@ async def test_setup_exposes_the_recorded_anlage(hass) -> None:
     registry = er.async_get(hass)
     actual_entity_ids = {entity.entity_id for entity in registry.entities.values() if entity.config_entry_id == entry.entry_id}
 
+    assert entry.domain == "solvis_leo"
     assert actual_entity_ids == EXPECTED_ENTITY_IDS
     assert registry.entities["update.solvisleo_180_firmware_sc"].unique_id == "32770_version_sc"
     assert registry.entities["update.solvisleo_180_firmware_nbg"].unique_id == "32771_version_nbg"
@@ -247,7 +248,7 @@ async def test_register_failure_is_isolated_and_recovers(hass, caplog) -> None:
     caplog.clear()
     healthy_reads_before_failure = client.request_count("input", 33549)
     client.fail("input", 33546)
-    with caplog.at_level(logging.DEBUG, logger="custom_components.solvis_control.coordinator"):
+    with caplog.at_level(logging.DEBUG, logger="custom_components.solvis_leo.coordinator"):
         for attempt in range(1, 4):
             await coordinator.async_refresh()
             await hass.async_block_till_done()

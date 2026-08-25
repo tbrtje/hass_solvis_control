@@ -1,6 +1,6 @@
 # SolvisLeo 180 register table
 
-This file is generated from `custom_components/solvis_control/const.py`. Do not edit it by hand; run `python -m tools.generate_docs --write` after changing `REGISTERS`. Implementation identifiers are raw code keys, not display names.
+This file is generated from `custom_components/solvis_leo/const.py`. Do not edit it by hand; run `python -m tools.generate_docs --write` after changing `REGISTERS`. Implementation identifiers are raw code keys, not display names.
 
 | Address | Implementation identifier | Register type | Platform | Data type | Count | Byte swap | Multiplier | Unit | Enabled by default |
 | ---: | --- | --- | --- | --- | ---: | --- | ---: | --- | --- |

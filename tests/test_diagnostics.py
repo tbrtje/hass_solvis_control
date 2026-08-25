@@ -1,16 +1,16 @@
 """
-Tests for Solvis Control diagnostics
+Tests for SolvisLeo 180 Control diagnostics
 
 Version: v2.1.0
 """
 
 import pytest
 import pymodbus.client as ModbusClient
-import custom_components.solvis_control.diagnostics as diagnostics
+import custom_components.solvis_leo.diagnostics as diagnostics
 
 from pymodbus.exceptions import ModbusException, ConnectionException
-from custom_components.solvis_control.diagnostics import scan_modbus_registers, async_get_config_entry_diagnostics
-from custom_components.solvis_control.const import REGISTERS
+from custom_components.solvis_leo.diagnostics import scan_modbus_registers, async_get_config_entry_diagnostics
+from custom_components.solvis_leo.const import REGISTERS
 from contextlib import asynccontextmanager
 
 
@@ -115,7 +115,7 @@ async def test_scan_modbus_registers_input(monkeypatch):
     TestField.address = 100
     TestField.register = 1
 
-    monkeypatch.setattr("custom_components.solvis_control.diagnostics.REGISTERS", [TestField])
+    monkeypatch.setattr("custom_components.solvis_leo.diagnostics.REGISTERS", [TestField])
     monkeypatch.setattr(
         diagnostics,
         "AsyncModbusTcpClient",
@@ -134,7 +134,7 @@ async def test_scan_modbus_registers_holding(monkeypatch):
     TestField.address = 200
     TestField.register = 2
 
-    monkeypatch.setattr("custom_components.solvis_control.diagnostics.REGISTERS", [TestField])
+    monkeypatch.setattr("custom_components.solvis_leo.diagnostics.REGISTERS", [TestField])
     monkeypatch.setattr(
         diagnostics,
         "AsyncModbusTcpClient",
@@ -152,7 +152,7 @@ async def test_scan_modbus_registers_error(monkeypatch):
     TestField = type("TestField", (), {})()
     TestField.address = 300
     TestField.register = 1
-    monkeypatch.setattr("custom_components.solvis_control.diagnostics.REGISTERS", [TestField])
+    monkeypatch.setattr("custom_components.solvis_leo.diagnostics.REGISTERS", [TestField])
     monkeypatch.setattr(
         diagnostics,
         "AsyncModbusTcpClient",
@@ -173,7 +173,7 @@ async def test_async_get_config_entry_diagnostics(monkeypatch):
     TestFieldHolding.address = 500
     TestFieldHolding.register = 2
 
-    monkeypatch.setattr("custom_components.solvis_control.diagnostics.REGISTERS", [TestFieldInput, TestFieldHolding])
+    monkeypatch.setattr("custom_components.solvis_leo.diagnostics.REGISTERS", [TestFieldInput, TestFieldHolding])
     monkeypatch.setattr(
         diagnostics,
         "AsyncModbusTcpClient",

@@ -1,9 +1,9 @@
 {
 	"config":{
-		"flow_title": "Solvis Control Installatie",
+		"flow_title": "SolvisLeo 180 Control Installatie",
 		"step":{
 			"user":{
-				"title": "Solvis Control Basisinstallatie",
+				"title": "SolvisLeo 180 Control Basisinstallatie",
 				"description": "Configureer de verbinding met de regelaar en de pollingintervallen.",
 				"data":{
 					"host": "Host",
@@ -81,10 +81,10 @@
 		}
 	},
 	"options":{
-		"flow_title":"Solvis Control Installatie",
+		"flow_title":"SolvisLeo 180 Control Installatie",
 		"step":{
 			"init":{
-				"title": "Solvis Control Basisinstallatie",
+				"title": "SolvisLeo 180 Control Basisinstallatie",
 				"description": "Configureer de verbinding met de regelaar en de pollingintervallen.",
 				"data":{
 					"host": "Host",

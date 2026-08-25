@@ -1,9 +1,9 @@
 {
 	"config":{
-		"flow_title": "Solvis Control Setup",
+		"flow_title": "SolvisLeo 180 Control Setup",
 		"step":{
 			"user":{
-				"title": "Solvis Control Basic Setup",
+				"title": "SolvisLeo 180 Control Basic Setup",
 				"description": "Configure the controller connection and polling intervals.",
 				"data":{
 					"host": "host",
@@ -81,10 +81,10 @@
 		}
 	},
 	"options":{
-		"flow_title":"Solvis Control Setup",
+		"flow_title":"SolvisLeo 180 Control Setup",
 		"step":{
 			"init":{
-				"title": "Solvis Control Basic Setup",
+				"title": "SolvisLeo 180 Control Basic Setup",
 				"description": "Configure the controller connection and polling intervals.",
 				"data":{
 					"host": "host",

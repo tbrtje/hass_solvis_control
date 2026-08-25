@@ -26,7 +26,7 @@ become available here: correcting register scaling that is wrong for this applia
 deleting the SC2 code paths, and removing the configuration machinery that exists only
 to tell devices apart.
 
-The integration is renamed from `solvis_control` to `solvis_leo` so the two cannot be
-confused or installed side by side. Entity history is not preserved across the rename;
-the Anlage was three days old when this was decided, so there was nothing worth
-keeping.
+The integration is named `solvis_leo` so it cannot be confused with or installed
+alongside the upstream integration. Entity history is not preserved across this
+one-way identity change; the Anlage was three days old when this was decided, so there
+was nothing worth keeping.

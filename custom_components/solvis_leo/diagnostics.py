@@ -7,7 +7,7 @@ from typing import Any
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from pymodbus.exceptions import ModbusException, ConnectionException
-from custom_components.solvis_control.const import REGISTERS
+from custom_components.solvis_leo.const import REGISTERS
 
 import pymodbus.client as ModbusClient
 
