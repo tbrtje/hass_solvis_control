@@ -27,7 +27,7 @@ async def add_config_entry(hass) -> ConfigEntry:
     """Add a minimal saved entry without allowing the integration to start."""
     config_entry = ConfigEntry(
         version=2,
-        minor_version=6,
+        minor_version=7,
         domain=DOMAIN,
         title="SolvisLeo 180",
         data={

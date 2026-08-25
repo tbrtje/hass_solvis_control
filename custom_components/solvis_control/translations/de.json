@@ -69,20 +69,6 @@
 					"hkr2_room_temp_sensor": "Wählen Sie 'deaktiviert', falls kein Sensor installiert ist, 'lesen', falls der Wert nur ausgelesen werden soll (Standard) und 'schreiben', falls der Wert geschrieben werden soll.",
 					"hkr3_room_temp_sensor": "Wählen Sie 'deaktiviert', falls kein Sensor installiert ist, 'lesen', falls der Wert nur ausgelesen werden soll (Standard) und 'schreiben', falls der Wert geschrieben werden soll."
 				}
-			},
-			"hkr_names": {
-				"title": "Benamung der Heizkreise (optional)",
-				"description": "Bei Bedarf können Sie folgend individuelle Namen für die Heizkreise festlegen. Wenn Sie die Standardnamen der Integration verwenden wollen, lassen Sie die Felder leer.",
-				"data": {
-					"hkr1_name": "Bezeichnung Heizkreis 1",
-					"hkr2_name": "Bezeichnung Heizkreis 2",
-					"hkr3_name": "Bezeichnung Heizkreis 3"
-				},
-				"data_description": {
-					"hkr1_name": "Benutzerdefinierter Name für Heizkreis 1 (leer = standard)",
-					"hkr2_name": "Benutzerdefinierter Name für Heizkreis 2 (leer = standard)",
-					"hkr3_name": "Benutzerdefinierter Name für Heizkreis 3 (leer = standard)"
-				}
 			}
 		},
 		"error":{
@@ -165,20 +151,6 @@
 					"hkr1_room_temp_sensor": "Wählen Sie 'deaktiviert', falls kein Sensor installiert ist, 'lesen', falls der Wert nur ausgelesen werden soll (Standard) und 'schreiben', falls der Wert geschrieben werden soll.",
 					"hkr2_room_temp_sensor": "Wählen Sie 'deaktiviert', falls kein Sensor installiert ist, 'lesen', falls der Wert nur ausgelesen werden soll (Standard) und 'schreiben', falls der Wert geschrieben werden soll.",
 					"hkr3_room_temp_sensor": "Wählen Sie 'deaktiviert', falls kein Sensor installiert ist, 'lesen', falls der Wert nur ausgelesen werden soll (Standard) und 'schreiben', falls der Wert geschrieben werden soll."
-				}
-			},
-			"hkr_names": {
-				"title": "Benamung der Heizkreise (optional)",
-				"description": "Bei Bedarf können Sie folgend individuelle Namen für die Heizkreise festlegen. Wenn Sie die Standardnamen der Integration verwenden wollen, lassen Sie die Felder leer.",
-				"data": {
-					"hkr1_name": "Bezeichnung Heizkreis 1",
-					"hkr2_name": "Bezeichnung Heizkreis 2",
-					"hkr3_name": "Bezeichnung Heizkreis 3"
-				},
-				"data_description": {
-					"hkr1_name": "Benutzerdefinierter Name für Heizkreis 1 (leer = standard)",
-					"hkr2_name": "Benutzerdefinierter Name für Heizkreis 2 (leer = standard)",
-					"hkr3_name": "Benutzerdefinierter Name für Heizkreis 3 (leer = standard)"
 				}
 			}
 		},

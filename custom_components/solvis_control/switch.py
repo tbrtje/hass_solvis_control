@@ -38,9 +38,6 @@ class SolvisSwitch(SolvisEntity, SwitchEntity):
         device_info: DeviceInfo,
         host: str,
         name: str,
-        hkr1_name: str | None = None,
-        hkr2_name: str | None = None,
-        hkr3_name: str | None = None,
         enabled_by_default: bool = True,
         modbus_address: int = None,
         data_processing: int = 0,
@@ -58,9 +55,6 @@ class SolvisSwitch(SolvisEntity, SwitchEntity):
             enabled_by_default,
             data_processing,
             poll_rate,
-            hkr1_name=hkr1_name,
-            hkr2_name=hkr2_name,
-            hkr3_name=hkr3_name,
         )
 
         self._attr_current_option = None

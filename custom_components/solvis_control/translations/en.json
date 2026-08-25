@@ -69,20 +69,6 @@
 					"hkr2_room_temp_sensor": "Select ‘deactivated’ if no sensor is installed, ‘read’ if the value is only to be read out (default) and ‘write’ if the value is to be written.",
 					"hkr3_room_temp_sensor": "Select ‘deactivated’ if no sensor is installed, ‘read’ if the value is only to be read out (default) and ‘write’ if the value is to be written."
 				}
-			},
-			"hkr_names": {
-				"title": "Naming of the heating circuits (optional)",
-				"description": "If desired, you can assign individual names for the heating circuits as follows. If you want to use the integration’s default names, leave the fields blank.",
-				"data": {
-					"hkr1_name": "Label for heating circuit 1",
-					"hkr2_name": "Label for heating circuit 2",
-					"hkr3_name": "Label for heating circuit 3"
-				},
-				"data_description": {
-					"hkr1_name": "Custom name for heating circuit 1 (blank = default)",
-					"hkr2_name": "Custom name for heating circuit 2 (blank = default)",
-					"hkr3_name": "Custom name for heating circuit 3 (blank = default)"
-				}
 			}
 		},
 		"error":{
@@ -165,20 +151,6 @@
 					"hkr1_room_temp_sensor": "Select ‘deactivated’ if no sensor is installed, ‘read’ if the value is only to be read out (default) and ‘write’ if the value is to be written.",
 					"hkr2_room_temp_sensor": "Select ‘deactivated’ if no sensor is installed, ‘read’ if the value is only to be read out (default) and ‘write’ if the value is to be written.",
 					"hkr3_room_temp_sensor": "Select ‘deactivated’ if no sensor is installed, ‘read’ if the value is only to be read out (default) and ‘write’ if the value is to be written."
-				}
-			},
-			"hkr_names": {
-				"title": "Naming of the heating circuits (optional)",
-				"description": "If desired, you can assign individual names for the heating circuits as follows. If you want to use the integration’s default names, leave the fields blank.",
-				"data": {
-					"hkr1_name": "Label for heating circuit 1",
-					"hkr2_name": "Label for heating circuit 2",
-					"hkr3_name": "Label for heating circuit 3"
-				},
-				"data_description": {
-					"hkr1_name": "Custom name for heating circuit 1 (blank = default)",
-					"hkr2_name": "Custom name for heating circuit 2 (blank = default)",
-					"hkr3_name": "Custom name for heating circuit 3 (blank = default)"
 				}
 			}
 		},

@@ -195,6 +195,9 @@ async def setup_recorded_anlage(hass):
             POLL_RATE_HIGH: 10,
             POLL_RATE_DEFAULT: 10,
             POLL_RATE_SLOW: 10,
+            "hkr1_name": "Ground floor",
+            "hkr2_name": "Upper floor",
+            "hkr3_name": "Attic",
         },
     )
     entry.add_to_hass(hass)

@@ -46,7 +46,7 @@ class SolvisConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Configure a controller connection and its three polling intervals."""
 
     VERSION = 2
-    MINOR_VERSION = 6
+    MINOR_VERSION = 7
 
     async def async_step_user(self, user_input: ConfigType | None = None) -> FlowResult:
         """Handle the single setup step."""
@@ -81,7 +81,7 @@ class SolvisOptionsFlow(config_entries.OptionsFlow):
     """Allow the controller address and polling intervals to be changed."""
 
     VERSION = 2
-    MINOR_VERSION = 6
+    MINOR_VERSION = 7
 
     def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
         """Seed the one options form with the saved configuration."""

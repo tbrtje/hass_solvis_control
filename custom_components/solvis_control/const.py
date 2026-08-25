@@ -32,10 +32,6 @@ CONF_OPTION_9 = "hkr2_room_temperature_sensor"  # HKR2 room temperature sensor r
 CONF_OPTION_10 = "hkr2_write_room_temperature_sensor"  # HKR2 room temperature sensor write
 CONF_OPTION_11 = "hkr3_room_temperature_sensor"  # HKR3 room temperature sensor read
 CONF_OPTION_12 = "hkr3_write_room_temperature_sensor"  # HKR3 room temperature sensor write
-CONF_HKR1_NAME = "hkr1_name"
-CONF_HKR2_NAME = "hkr2_name"
-CONF_HKR3_NAME = "hkr3_name"
-
 DATA_COORDINATOR = "coordinator"
 MANUFACTURER = "Solvis"
 PORT = 502

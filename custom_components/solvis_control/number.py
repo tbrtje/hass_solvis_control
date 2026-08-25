@@ -38,9 +38,6 @@ class SolvisNumber(SolvisEntity, NumberEntity):
         device_info: DeviceInfo,
         host: str,
         name: str,
-        hkr1_name: str | None = None,
-        hkr2_name: str | None = None,
-        hkr3_name: str | None = None,
         unit_of_measurement: str | None = None,
         device_class: str | None = None,
         state_class: str | None = None,
@@ -64,9 +61,6 @@ class SolvisNumber(SolvisEntity, NumberEntity):
             enabled_by_default,
             data_processing,
             poll_rate,
-            hkr1_name=hkr1_name,
-            hkr2_name=hkr2_name,
-            hkr3_name=hkr3_name,
         )
 
         self.multiplier = multiplier
