@@ -710,7 +710,7 @@
           2
         ]
       },
-      "name": "burner_modulation_o1_status"
+      "name": "heizstab_modulation_o1_status"
     },
     {
       "address": 3845,

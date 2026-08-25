@@ -119,7 +119,7 @@
       "heatpump_energy_thermal": {
         "default": "mdi:lightning-bolt"
       },
-      "burner_energy_thermal": {
+      "heizstab_energy_thermal": {
         "default": "mdi:lightning-bolt"
       },
       "warm_water_energy": {
@@ -128,10 +128,10 @@
       "heating_circuits_energy": {
         "default": "mdi:lightning-bolt"
       },
-      "heat_generator_2_power_thermal": {
+      "heizstab_power_thermal": {
         "default": "mdi:home-lightning-bolt"
       },
-      "heat_generator_2_power_electric": {
+      "heizstab_power_electric": {
         "default": "mdi:home-lightning-bolt"
       },
       "warm_water_power": {
@@ -236,7 +236,7 @@
       "laufzeit_brennerstufe_2": {
         "default": "mdi:gas-burner"
       },
-      "burner_modulation_o1_status": {
+      "heizstab_modulation_o1_status": {
         "default": "mdi:numeric-1"
       },
       "solar_pump_primary_o2_status": {
@@ -257,8 +257,8 @@
       "heat_meter_power_thermal": {
         "default": "mdi:gas-burner"
       },
-      "burner_modulation_o1": {
-        "default": "mdi:gas-burner"
+      "heizstab_modulation_o1": {
+        "default": "mdi:heating-coil"
       },
       "solar_pump_primary_o2": {
         "default": "mdi:solar-panel"
@@ -298,8 +298,8 @@
       "hkr1_mixer_heating_circuit_open_a8": {
         "default": "mdi:water"
       },
-      "burner_status_a12": {
-        "default": "mdi:gas-burner"
+      "heizstab_status_a12": {
+        "default": "mdi:heating-coil"
       },
       "heatpump_switching_valve_a14": {
         "default": "mdi:hvac"

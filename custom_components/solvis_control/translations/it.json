@@ -331,8 +331,8 @@
 			"heatpump_energy_thermal":{
 				"name":"potenza termica pompa di calore"
 			},
-			"burner_energy_thermal":{
-				"name":"potenza termica bruciatore"
+			"heizstab_energy_thermal":{
+				"name":"energia termica Heizstab"
 			},
 			"warm_water_energy":{
 				"name":"Quantità di calore ACS"
@@ -340,11 +340,11 @@
 			"heating_circuits_energy":{
 				"name":"Quantità di calore dei circuiti di riscaldamento"
 			},
-			"heat_generator_2_power_thermal":{
-				"name":"potenza termica generatore di calore 2"
+			"heizstab_power_thermal":{
+				"name":"potenza termica Heizstab"
 			},
-			"heat_generator_2_power_electric":{
-				"name":"potenza elettrica generatore di calore 2"
+			"heizstab_power_electric":{
+				"name":"potenza elettrica Heizstab"
 			},
 			"warm_water_power":{
 				"name":"Uscita acqua calda"
@@ -433,8 +433,8 @@
 			"hkr2_room_temp":{
 				"name":"HKR2 temperatura ambiente"
 			},
-			"burner_modulation_o1_status": {
-				"name": "Modbus modulazione bruciatore",
+			"heizstab_modulation_o1_status": {
+				"name": "Modalità modulazione Heizstab",
 				"state": {
 					"0": "PWM automatico",
 					"1": "PWM manuale",
@@ -490,8 +490,8 @@
 			"heat_meter_power_thermal": {
 				"name": "contabilizzatore del calore"
 			},
-			"burner_modulation_o1": {
-				"name": "(O1) modulazione bruciatore"
+			"heizstab_modulation_o1": {
+				"name": "(O1) modulazione Heizstab"
 			},
 			"solar_pump_primary_o2": {
 				"name": "(O2) pompa solare primaria"
@@ -547,8 +547,8 @@
 			"heatpump_runtime":{
 				"name":"Ore di funzionamento pompa di calore"
 			},
-			"heat_generator_2_runtime":{
-				"name":"Ore di funzionamento generatore 2"
+			"heizstab_runtime":{
+				"name":"Ore di funzionamento Heizstab"
 			},
 			"pv2heat_runtime":{
 				"name":"Ore di funzionamento PV2Heat"
@@ -712,11 +712,11 @@
 			"hkr2_mixer_heating_circuit_close_a11":{
 				"name":"(A11) miscelatore circuito HKR2 chiude"
 			},
-			"burner_status_a12":{
-				"name":"(A12) stato bruciatore"
+			"heizstab_status_a12":{
+				"name":"(A12) stato Heizstab"
 			},
-			"heatpump_heating_rod_level_2_3_a13":{
-				"name":"(A13) Elemento riscaldante della pompa di calore fase 2 e 3"
+			"heizstab_level_2_3_a13":{
+				"name":"(A13) Heizstab fase 2 e 3"
 			},
 			"heatpump_switching_valve_a14": {
 				"name":"(A14) Valvola di commutazione della pompa di calore"

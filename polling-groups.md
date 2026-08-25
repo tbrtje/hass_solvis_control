@@ -1,7 +1,7 @@
 | Internal name                             | Name in Home Assistant                          | Polling Group |
 | :---------------------------------------- | :---------------------------------------------- | :------------ |
 | hkr_number                                | Heizkreise Anzahl                               | slow          |
-| burner_modulation_o1_status               | Brennermodulation Modus                         | default       |
+| heizstab_modulation_o1_status             | Heizstab Modulation Betriebsart                 | default       |
 | solar_pump_primary_o2_status              | Solarpumpe primär Modus                         | default       |
 | solar_pump_secondary_o3_status            | Solarpumpe sekundär Modus                       | default       |
 | heatpump_charging_pump_o4_status          | Wärmepumpe Ladepumpe Modus                      | default       |
@@ -10,11 +10,11 @@
 | pv2heat_energy                            | PV2Heat Wärmemenge                              | default       |
 | solar_energy                              | Solarthermie Wärmemenge                         | slow          |
 | heatpump_energy_thermal                   | Wärmepumpe Wärmemenge thermisch                 | slow          |
-| burner_energy_thermal                     | Brenner Wärmemenge thermisch                    | slow          |
+| heizstab_energy_thermal                   | Heizstab thermische Energie                     | slow          |
 | warm_water_energy                         | Warmwasser Wärmemenge                           | slow          |
 | heating_circuits_energy                   | Heizkreise Wärmemenge                           | slow          |
-| heat_generator_2_power_thermal            | Wärmeerzeuger 2 Leistung thermisch              | high          |
-| heat_generator_2_power_electric           | Wärmeerzeuger 2 Leistung elektrisch             | high          |
+| heizstab_power_thermal                    | Heizstab thermische Leistung                    | high          |
+| heizstab_power_electric                   | Heizstab elektrische Leistung                   | high          |
 | warm_water_power                          | Warmwasser Leistung                             | high          |
 | solar_pump_primary_runtime                | Solarpumpe primär Laufzeit                      | slow          |
 | solar_pump_secondary_runtime              | Solarpumpe sekundär Laufzeit                    | slow          |
@@ -48,8 +48,8 @@
 | hkr3_mixer_heating_circuit_close_a7       | HKR3 Mischer Heizkreis zu (A7)                  | default       |
 | hkr2_mixer_heating_circuit_open_a10       | HKR2 Mischer Heizkreis auf (A10)                | default       |
 | hkr2_mixer_heating_circuit_close_a11      | HKR2 Mischer Heizkreis zu (A11)                 | default       |
-| heatpump_heating_rod_level_2_3_a13        | Wärmepumpe Heizstab Stufe 2 & 3 (A13)           | default       |
-| burner_status_a12                         | Brennerstatus (A12)                             | default       |
+| heizstab_level_2_3_a13                    | Heizstab Stufe 2 & 3 (A13)                      | default       |
+| heizstab_status_a12                       | Heizstab Status (A12)                           | default       |
 | solar_volume_flow_s17                     | Solar Volumenstrom (S17)                        | default       |
 | solar_volume_flow_s17                     | Solar Volumenstrom (S17)                        | default       |
 | solar_power                               | Solarthermie Leistung                           | default       |
@@ -102,7 +102,7 @@
 | pv2heat_power_electric                    | PV2Heat Leistung elektrisch                     | default       |
 | heatpump_switching_valve_a14              | Wärmepumpe Umschaltventil (A14)                 | default       |
 | heat_meter_power_thermal                  | Wärmemengenzähler Leistung                      | default       |
-| burner_modulation_o1                      | Brennermodulation (O1)                          | default       |
+| heizstab_modulation_o1                    | Heizstab Modulation (O1)                        | default       |
 | solar_pump_primary_o2                     | Solarpumpe primär (O2)                          | default       |
 | solar_pump_secondary_o3                   | Solarpumpe sekundär (O3)                        | default       |
 | heatpump_charging_pump_o4                 | Wärmepumpe Ladepumpe (O4)                       | default       |

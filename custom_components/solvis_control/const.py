@@ -153,8 +153,8 @@ REGISTERS = [
         multiplier=1,
         poll_time=0,
     ),
-    ModbusFieldConfig(  # Analog Out 1 Status (the status of Analog Out O1 = burner_modulation_O1)
-        name="burner_modulation_o1_status",
+    ModbusFieldConfig(  # Analog Out 1 Status (the status of Analog Out O1 = heizstab_modulation_O1)
+        name="heizstab_modulation_o1_status",
         address=3840,
         device_class=None,
         unit=None,
@@ -617,8 +617,8 @@ REGISTERS = [
         poll_time=0,
         input_type=4,
     ),
-    ModbusFieldConfig(  # A12 Brennerstatus
-        name="burner_status_a12",  # maybe also valve for remote heat, depending on config
+    ModbusFieldConfig(  # A12 Heizstabstatus
+        name="heizstab_status_a12",
         address=33291,
         unit=None,
         multiplier=1,
@@ -630,7 +630,7 @@ REGISTERS = [
         supported_version=1,
     ),
     ModbusFieldConfig(  # A13 Heizstab Stufe 2 & 3
-        name="heatpump_heating_rod_level_2_3_a13",
+        name="heizstab_level_2_3_a13",
         address=33292,
         unit=None,
         device_class=None,
@@ -652,7 +652,7 @@ REGISTERS = [
         input_type=4,
     ),
     ModbusFieldConfig(
-        name="burner_modulation_o1",
+        name="heizstab_modulation_o1",
         address=33294,
         unit="%",
         device_class=None,
@@ -730,8 +730,8 @@ REGISTERS = [
         poll_time=0,
         suggested_precision=0,
     ),
-    ModbusFieldConfig(  # Wärmemenge Wärmeerzeuger 2 / Brenner - see #116, #173
-        name="burner_energy_thermal",
+    ModbusFieldConfig(  # Wärmemenge Heizstab - see #116, #173
+        name="heizstab_energy_thermal",
         address=33538,
         device_class="energy",
         unit="kWh",
@@ -777,8 +777,8 @@ REGISTERS = [
         poll_rate=1,
         supported_version=1,
     ),
-    ModbusFieldConfig(  # aktuelle Leistung Wärmeerzeuger 2 (thermisch)
-        name="heat_generator_2_power_thermal",
+    ModbusFieldConfig(  # aktuelle Leistung Heizstab (thermisch)
+        name="heizstab_power_thermal",
         address=33546,
         unit="kW",
         device_class="power",
@@ -787,8 +787,8 @@ REGISTERS = [
         poll_rate=2,
         supported_version=1,
     ),
-    ModbusFieldConfig(  # aktuelle Leistung Wärmeerzeuger 2 (elektrisch)
-        name="heat_generator_2_power_electric",
+    ModbusFieldConfig(  # aktuelle Leistung Heizstab (elektrisch)
+        name="heizstab_power_electric",
         address=33547,
         unit="kW",
         device_class="power",
@@ -1495,8 +1495,8 @@ REGISTERS = [
         suggested_precision=0,
         supported_version=1,
     ),
-    ModbusFieldConfig(  # Laufzeit Waermeerzeuger 2 / Heizstab
-        name="heat_generator_2_runtime",
+    ModbusFieldConfig(  # Laufzeit Heizstab
+        name="heizstab_runtime",
         address=33555,
         unit="h",
         device_class=None,

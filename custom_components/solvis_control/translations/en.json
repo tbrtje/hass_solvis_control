@@ -331,8 +331,8 @@
 			"heatpump_energy_thermal":{
 				"name":"Heat pump Thermal heat output"
 			},
-			"burner_energy_thermal":{
-				"name":"Burner Thermal heat output"
+			"heizstab_energy_thermal":{
+				"name":"Heizstab thermal energy"
 			},
 			"warm_water_energy":{
 				"name":"Hot water Heat output"
@@ -340,11 +340,11 @@
 			"heating_circuits_energy":{
 				"name":"Heating circuits Heat output"
 			},
-			"heat_generator_2_power_thermal":{
-				"name":"Heat generator 2 Thermal output"
+			"heizstab_power_thermal":{
+				"name":"Heizstab thermal power"
 			},
-			"heat_generator_2_power_electric":{
-				"name":"Heat generator 2 Electrical power"
+			"heizstab_power_electric":{
+				"name":"Heizstab electrical power"
 			},
 			"warm_water_power":{
 				"name":"Hot water power"
@@ -433,8 +433,8 @@
 			"hkr2_room_temp":{
 				"name":"HKR2 Room temp"
 			},
-			"burner_modulation_o1_status": {
-				"name": "Burner modulation mode",
+			"heizstab_modulation_o1_status": {
+				"name": "Heizstab modulation mode",
 				"state": {
 					"0": "Auto PWM",
 					"1": "Manual PWM",
@@ -490,8 +490,8 @@
 			"heat_meter_power_thermal": {
 				"name": "Heat meter output"
 			},
-			"burner_modulation_o1": {
-				"name": "Burner modulation (O1)"
+			"heizstab_modulation_o1": {
+				"name": "Heizstab modulation (O1)"
 			},
 			"solar_pump_primary_o2": {
 				"name": "Primary solar pump (O2)"
@@ -547,8 +547,8 @@
 			"heatpump_runtime":{
 				"name":"Heat pump runtime"
 			},
-			"heat_generator_2_runtime":{
-				"name":"Heat generator 2 runtime"
+			"heizstab_runtime":{
+				"name":"Heizstab runtime"
 			},
 			"pv2heat_runtime":{
 				"name":"PV2Heat runtime"
@@ -712,11 +712,11 @@
 			"hkr2_mixer_heating_circuit_close_a11":{
 				"name":"HKR2 Mixer heating circuit closed (A11)"
 			},
-			"burner_status_a12":{
-				"name":"Burner status (A12)"
+			"heizstab_status_a12":{
+				"name":"Heizstab status (A12)"
 			},
-			"heatpump_heating_rod_level_2_3_a13":{
-				"name":"Heat pump heating element stage 2 & 3 (A13)"
+			"heizstab_level_2_3_a13":{
+				"name":"Heizstab stage 2 & 3 (A13)"
 			},
 			"heatpump_switching_valve_a14": {
 				"name":"Heat pump changeover valve (A14)"

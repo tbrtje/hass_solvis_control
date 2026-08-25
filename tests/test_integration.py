@@ -25,13 +25,13 @@ ROOT = Path(__file__).parents[1]
 # The recorded inventory rejects GLT addresses 33045 and 33299, so their former
 # digin_error and analog_out_o6 entities are deliberately absent here.
 EXPECTED_ENTITY_IDS = {
-    "binary_sensor.solvisleo_180_burner_status_a12",
+    "binary_sensor.solvisleo_180_heizstab_status_a12",
     "binary_sensor.solvisleo_180_circulation_pump_a1",
     "binary_sensor.solvisleo_180_circulation_schedule_active",
     "binary_sensor.solvisleo_180_eco_schedule_active",
     "binary_sensor.solvisleo_180_heat_pump_changeover_valve_a14",
     "binary_sensor.solvisleo_180_heat_pump_charging_pump_a2",
-    "binary_sensor.solvisleo_180_heat_pump_heating_element_stage_2_3_a13",
+    "binary_sensor.solvisleo_180_heizstab_stage_2_3_a13",
     "binary_sensor.solvisleo_180_hkr2_mixer_heating_circuit_closed_a11",
     "binary_sensor.solvisleo_180_hkr2_mixer_heating_circuit_open_a10",
     "binary_sensor.solvisleo_180_hkr2_pump_a4",
@@ -75,9 +75,9 @@ EXPECTED_ENTITY_IDS = {
     "sensor.solvisleo_180_analog_in_2",
     "sensor.solvisleo_180_analog_in_3",
     "sensor.solvisleo_180_analog_out_o6_mode",
-    "sensor.solvisleo_180_burner_modulation_mode",
-    "sensor.solvisleo_180_burner_modulation_o1",
-    "sensor.solvisleo_180_burner_thermal_heat_output",
+    "sensor.solvisleo_180_heizstab_modulation_mode",
+    "sensor.solvisleo_180_heizstab_modulation_o1",
+    "sensor.solvisleo_180_heizstab_thermal_energy",
     "sensor.solvisleo_180_circulation_mode",
     "sensor.solvisleo_180_circulation_schedule",
     "sensor.solvisleo_180_circulation_temperature_s11",
@@ -86,9 +86,9 @@ EXPECTED_ENTITY_IDS = {
     "sensor.solvisleo_180_cooling_energy",
     "sensor.solvisleo_180_cooling_power",
     "sensor.solvisleo_180_eco_schedule",
-    "sensor.solvisleo_180_heat_generator_2_electrical_power",
-    "sensor.solvisleo_180_heat_generator_2_runtime",
-    "sensor.solvisleo_180_heat_generator_2_thermal_output",
+    "sensor.solvisleo_180_heizstab_electrical_power",
+    "sensor.solvisleo_180_heizstab_runtime",
+    "sensor.solvisleo_180_heizstab_thermal_power",
     "sensor.solvisleo_180_heat_meter_output",
     "sensor.solvisleo_180_heat_pump_charging_pump_mode",
     "sensor.solvisleo_180_heat_pump_charging_pump_o4",
@@ -230,7 +230,7 @@ async def test_setup_exposes_the_recorded_anlage(hass) -> None:
 @pytest.mark.asyncio
 async def test_register_failure_is_isolated_and_recovers(hass, caplog) -> None:
     client, _, coordinator = await setup_recorded_anlage(hass)
-    failed_entity_id = "sensor.solvisleo_180_heat_generator_2_thermal_output"
+    failed_entity_id = "sensor.solvisleo_180_heizstab_thermal_power"
     healthy_entity_id = "sensor.solvisleo_180_hot_water_power"
     await coordinator.async_refresh()
     await hass.async_block_till_done()
@@ -250,13 +250,13 @@ async def test_register_failure_is_isolated_and_recovers(hass, caplog) -> None:
             expected_state = "unavailable" if attempt == 3 else "0.0"
             assert hass.states.get(failed_entity_id).state == expected_state
 
-    failure_logs = [record for record in caplog.records if "heat_generator_2_power_thermal | 33546" in record.getMessage() and "Exception during read" in record.getMessage()]
+    failure_logs = [record for record in caplog.records if "heizstab_power_thermal | 33546" in record.getMessage() and "Exception during read" in record.getMessage()]
     assert [record.levelno for record in failure_logs] == [
         logging.WARNING,
         logging.DEBUG,
         logging.DEBUG,
     ]
-    failure_warnings = [record for record in caplog.records if record.levelno >= logging.WARNING and "heat_generator_2_power_thermal" in record.getMessage()]
+    failure_warnings = [record for record in caplog.records if record.levelno >= logging.WARNING and "heizstab_power_thermal" in record.getMessage()]
     assert failure_warnings == [failure_logs[0]]
 
     client.restore("input", 33546)
@@ -294,4 +294,4 @@ async def test_connection_loss_fails_the_whole_update(hass) -> None:
 
     assert not coordinator.last_update_success
     assert hass.states.get("sensor.solvisleo_180_hot_water_power").state == "unavailable"
-    assert hass.states.get("sensor.solvisleo_180_heat_generator_2_thermal_output").state == "unavailable"
+    assert hass.states.get("sensor.solvisleo_180_heizstab_thermal_power").state == "unavailable"

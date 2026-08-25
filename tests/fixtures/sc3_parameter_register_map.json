@@ -38,7 +38,7 @@
     {"address": 3336, "count": 1, "name": "hkr3_heating_curve_day_temp_3"},
     {"address": 3337, "count": 1, "name": "hkr3_heating_curve_reduction_temp"},
     {"address": 3338, "count": 1, "name": "hkr3_heating_curve_slope"},
-    {"address": 3840, "count": 1, "name": "burner_modulation_o1_status"},
+    {"address": 3840, "count": 1, "name": "heizstab_modulation_o1_status"},
     {"address": 3845, "count": 1, "name": "solar_pump_primary_o2_status"},
     {"address": 3850, "count": 1, "name": "solar_pump_secondary_o3_status"},
     {"address": 3855, "count": 1, "name": "heatpump_charging_pump_o4_status"},
