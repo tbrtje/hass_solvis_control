@@ -1,477 +1,152 @@
-# Reading registers
+# SolvisLeo 180 register table
 
-| Adresse   | Solvis Beschreibung                            | Unterstützt seit V | Sensortyp | Conf.-Option | Bemerkung                 | Min | Max    | Einheit                  |
-| --------- | ---------------------------------------------- | ------------------ | --------- | ------------ | ------------------------- | --- | ------ | ------------------------ |
-| 0         | Setup 1                                        |                    |           |              |                           |     |        |                          |
-| 1         | Setup 2                                        |                    |           |              |                           |     |        |                          |
-| 2         | Anzahl Heizkreise                              | 2.0.0              | 0         | 0            | #173                      | 1   | 3      |                          |
-| 2049      | Zirkulation Betriebsart                        | 0.9                | 0         | 0            |                           | 0   | 3      |                          |
-| 3840      | Analog Out 1 Status                            | 1.1.0              | 0         | 0            |                           | 0   | 3      |                          |
-| 3845      | Analog Out 2 Status                            | 1.1.0              | 0         | 0            |                           | 0   | 3      |                          |
-| 3850      | Analog Out 3 Status                            | 1.1.0              | 0         | 0            |                           | 0   | 3      |                          |
-| 3855      | Analog Out 4 Status                            | 1.1.0              | 0         | 0            |                           | 0   | 3      |                          |
-| 3860      | Analog Out 5 Status                            | 1.1.0              | 0         | 0            |                           | 0   | 3      |                          |
-| 3865      | Analog Out 6 Status                            | 1.1.0              | 0         | 0            |                           | 0   | 3      |                          |
-| 32768     | Unix Timestamp low                             | 2.2.0              | 0         | 0            | SC3 GLT, 32 Bit ab hier   |     |        | s                        |
-| 32769     | Unix Timestamp high                            |                    |           |              | Teil des Blocks ab 32768  |     |        |                          |
-| 32770     | Version SC3                                    | 0.9                | 0         | 0            |                           |     |        |                          |
-| 32771     | Version NBG                                    | 0.9                | 0         | 0            |                           |     |        |                          |
-| 33024     | Temp S1                                        | 0.1                | 0         | 0            |                           |     | 0,1 °C |                          |
-| 33025     | Temp S2                                        | 0.1                | 0         | 0            |                           |     | 0,1 °C |                          |
-| 33026     | Temp S3                                        | 0.1                | 0         | 0            |                           |     | 0,1 °C |                          |
-| 33027     | Temp S4                                        | 0.1                | 0         | 0            |                           |     | 0,1 °C |                          |
-| 33028     | Temp S5                                        | 0.9                | 0         | 3            |                           |     | 0,1 °C |                          |
-| 33029     | Temp S6                                        | 0.9                | 0         | 3            |                           |     | 0,1 °C |                          |
-| 33030     | Temp S7                                        | 0.9                | 0         | 3            |                           |     | 0,1 °C |                          |
-| 33031     | Temp S8                                        | 0.1                | 0         | 3            |                           |     | 0,1 °C |                          |
-| 33032     | Temp S9                                        | 0.1                | 0         | 0            |                           |     | 0,1 °C |                          |
-| 33033     | Temp S10                                       | 0.1                | 0         | 0            |                           |     | 0,1 °C |                          |
-| 33034     | Temp S11                                       | 0.1                | 0         | 0            |                           |     | 0,1 °C |                          |
-| 33035     | Temp S12                                       | 1.0.0              | 0         | 0            |                           |     | 0,1 °C |                          |
-| 33036     | Temp S13                                       | 1.0.0              | 0         | 1            |                           |     | 0,1 °C |                          |
-| 33037     | Temp S14                                       |                    |           |              |                           |     | 0,1 °C |                          |
-| 33038     | Temp S15                                       | 0.1                | 0         | 0            |                           |     | 0,1 °C |                          |
-| 33039     | Temp S16                                       | 1.0                | 0         | 2            |                           |     | 0,1 °C |                          |
-| 33040     | Volumenstrom S17                               | 0.9                | 0         | 3            |                           |     | l/min  |                          |
-| 33041     | Volumenstrom S18                               | 0.1                | 0         | 0            |                           |     | l/min  |                          |
-| 33042     | Analog In 1                                    | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        | 0,01 V                   |
-| 33043     | Analog In 2                                    | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        | 0,01 V                   |
-| 33044     | Analog In 3                                    | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        | 0,01 V                   |
-| 33045     | DigIn Störungen                                | 1.1.1              | 0         | 0            |                           |     |        |                          |
-| 33280     | Ausgang A1                                     | 0.1                | 4         | 0            |                           | 0   | 100    | 100                      |
-| 33281     | Ausgang A2                                     | 0.1                | 4         | 4            | #53                       | 0   | 200    | 200                      |
-| 33282     | Ausgang A3                                     | 1.0                | 4         | 0            |                           | 0   | 100    | 100                      |
-| 33283     | Ausgang A4                                     | 1.0                | 4         | 1            |                           | 0   | 100    | 100                      |
-| 33284     | Ausgang A5                                     | 1.0                | 4         | 2            |                           | 0   | 100    | 100                      |
-| 33285     | Ausgang A6                                     | 2.0.0              | 4         | 2            | #138                      | 0   | 100    | 100                      |
-| 33286     | Ausgang A7                                     | 2.0.0              | 4         | 2            | #138                      | 0   | 100    | 100                      |
-| 33287     | Ausgang A8                                     | 2.0.0              | 4         | 0            |                           | 0   | 100    | 100                      |
-| 33288     | Ausgang A9                                     | 2.0.0              | 4         | 0            |                           | 0   | 100    | 100                      |
-| 33289     | Ausgang A10                                    | 2.0.0              | 4         | 1            | #138                      | 0   | 100    | 100                      |
-| 33290     | Ausgang A11                                    | 2.0.0              | 4         | 1            | #138                      | 0   | 100    | 100                      |
-| 33291     | Ausgang A12                                    | 0.1                | 4         | 0            | #138, #283                | 0   | 100    | 100                      |
-| 33292     | Ausgang A13                                    | 2.0.0              | 4         | 4            | #138, #283                | 0   | 100    | 100                      |
-| 33293     | Ausgang A14                                    | 2.0.0              | 4         | 4            |                           | 0   | 100    | 100                      |
-| 33294     | Analog Out O1                                  | 2.0.0              | 0         | 0            |                           | 0   | 100    | % (PWM) / 0,1 V (0-10 V) |
-| 33295     | Analog Out O2                                  | 2.0.0              | 0         | 3            |                           | 0   | 100    | % (PWM) / 0,1 V (0-10 V) |
-| 33296     | Analog Out O3                                  | 2.0.0              | 0         | 3            |                           | 0   | 100    | % (PWM) / 0,1 V (0-10 V) |
-| 33297     | Analog Out O4                                  | 2.0.0              | 0         | 4            |                           | 0   | 100    | % (PWM) / 0,1 V (0-10 V) |
-| 33298     | Analog Out O5                                  | 2.0.0              | 0         | 0            |                           | 0   | 100    | % (PWM) / 0,1 V (0-10 V) |
-| 33299     | Analog Out O6                                  | 2.0.0              | 0         | 0            |                           | 0   | 100    | % (PWM) / 0,1 V (0-10 V) |
-| ~~33536~~ | ~~Laufzeit Brennerstufe 1~~                    | ~~1.1.1~~          | ~~0~~     | ~~0~~        | #116                      |     |        |                          |
-| 33536     | Solarthermie Wärmemenge                        | 2.0.0              | 0         | 3            | #116, #173                |     |        | 10 kWh                   |
-| ~~33537~~ | ~~Brennerstarts Stufe 1~~                      | ~~0.1~~            | ~~0~~     | ~~0~~        | #115                      |     |        |                          |
-| 33537     | Wärmemenge Wärmeerzeuger 1 / Wärmepumpe        | 2.0.0              | 0         | 0 (4)        | #115, #173                |     |        | 10 kWh                   |
-| ~~33538~~ | ~~Laufzeit Brennerstufe 2~~                    | ~~1.1.1~~          | ~~0~~     | ~~0~~        | #116                      |     |        |                          |
-| 33538     | Wärmemenge Wärmeerzeuger 2 / Brenner           | 2.0.0              | 0         | 0            | #116, #173                |     |        | 10 kWh                   |
-| ~~33539~~ | ~~Wärmeerzeuger SX aktuelle Leistung~~         | ~~0.1~~            | ~~0~~     | ~~0~~        | #54                   |     |        | ~~W~~                    |
-| 33539     | Wärmemenge PV2Heat                             | 2.0.0              | 0         | 0            | #54, #173             |     | 10 kWh |                          |
-| ~~33540~~ | ~~Ionisationsstrom~~                           | ~~0.9~~            | ~~0~~     | ~~0~~        | #173                      |     |        | ~~mA~~                   |
-| 33540     | Wärmemenge Warmwasser                          | 2.0.0              | 0         | 0            | #173                      |     |        | 10 kWh                   |
-| 33541     | Wärmemenge Heizkreise                          | 2.0.0              | 0         | 0            | #173, SC3 only (#264) |     |        | 10 kWh                   |
-| 33542     | Wärmemenge Kühlung                             | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        | kWh                      |
-| 33546     | aktuelle Leistung Wärmeerzeuger 2 (thermisch)  | 2.0.0              | 0         | 0            | #173, SC3 only (#264) |     |        | 0,1 kW                   |
-| 33547     | aktuelle Leistung Wärmeerzeuger 2 (elektrisch) | 2.0.0              | 0         | 0            | #173, SC3 only (#264) |     |        | 0,1 kW                   |
-| 33548     | PV2Heat Leistung elektrisch                    | 2.0.0              | 0         | 0            | #55, #173                 |     |        | 0,1 kW                   |
-| 33549     | aktuelle Leistung Warmwasser (thermisch)       | 2.0.0              | 0         | 0            | #173, SC3 only (#264) |     |        | 0,1 kW                   |
-| 33550     | Wärmemengenzähler Leistung                     | 2.0.0              | 0         | 5            | #121                      |     |        | 0,1 kW                   |
-| 33551     | Kühlleistung                                   | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        | kW                       |
-| 33552     | Laufzeit Solarpumpe 1                          | 2.0.0              | 0         | 3            | #173, SC3 only (#264) |     |        | h                        |
-| 33553     | Laufzeit Solarpumpe 2                          | 2.0.0              | 0         | 3            | #173, SC3 only (#264) |     |        | h                        |
-| 33554     | Laufzeit Wärmepumpe                            | 2.2.0              | 0         | 4            | SC3 GLT (SolvisLeo)       |     |        | h                        |
-| 33555     | Laufzeit Wärmeerzeuger 2                       | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        | h                        |
-| 33556     | Laufzeit PV2Heat                               | 2.2.0              | 0         | 8            | SC3 GLT (SolvisLeo)       |     |        | h                        |
-| 33792     | Meldungen Anzahl                               | 2.0.0              | 0         | 0            | #173                      |     |        |                          |
-| 33793     | Meldung 1 Code                                 | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        |                          |
-| 33796     | Meldung 1 Par 1                                |                    |           |              |                           |     |        |                          |
-| 33797     | Meldung 1 Par 2                                |                    |           |              |                           |     |        |                          |
-| 33794     | Meldung 1 UnixZeit H                           |                    |           |              |                           |     |        |                          |
-| 33795     | Meldung 1 UnixZeit L                           |                    |           |              |                           |     |        |                          |
-| 33838     | Meldung 10 Code                                | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        |                          |
-| 33841     | Meldung 10 Par 1                               |                    |           |              |                           |     |        |                          |
-| 33842     | Meldung 10 Par 2                               |                    |           |              |                           |     |        |                          |
-| 33839     | Meldung 10 UnixZeit H                          |                    |           |              |                           |     |        |                          |
-| 33840     | Meldung 10 UnixZeit L                          |                    |           |              |                           |     |        |                          |
-| 33798     | Meldung 2 Code                                 | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        |                          |
-| 33801     | Meldung 2 Par 1                                |                    |           |              |                           |     |        |                          |
-| 33802     | Meldung 2 Par 2                                |                    |           |              |                           |     |        |                          |
-| 33799     | Meldung 2 UnixZeit H                           |                    |           |              |                           |     |        |                          |
-| 33800     | Meldung 2 UnixZeit L                           |                    |           |              |                           |     |        |                          |
-| 33803     | Meldung 3 Code                                 | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        |                          |
-| 33806     | Meldung 3 Par 1                                |                    |           |              |                           |     |        |                          |
-| 33807     | Meldung 3 Par 2                                |                    |           |              |                           |     |        |                          |
-| 33804     | Meldung 3 UnixZeit H                           |                    |           |              |                           |     |        |                          |
-| 33805     | Meldung 3 UnixZeit L                           |                    |           |              |                           |     |        |                          |
-| 33808     | Meldung 4 Code                                 | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        |                          |
-| 33811     | Meldung 4 Par 1                                |                    |           |              |                           |     |        |                          |
-| 33812     | Meldung 4 Par 2                                |                    |           |              |                           |     |        |                          |
-| 33809     | Meldung 4 UnixZeit H                           |                    |           |              |                           |     |        |                          |
-| 33810     | Meldung 4 UnixZeit L                           |                    |           |              |                           |     |        |                          |
-| 33813     | Meldung 5 Code                                 | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        |                          |
-| 33816     | Meldung 5 Par 1                                |                    |           |              |                           |     |        |                          |
-| 33817     | Meldung 5 Par 2                                |                    |           |              |                           |     |        |                          |
-| 33814     | Meldung 5 UnixZeit H                           |                    |           |              |                           |     |        |                          |
-| 33815     | Meldung 5 UnixZeit L                           |                    |           |              |                           |     |        |                          |
-| 33818     | Meldung 6 Code                                 | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        |                          |
-| 33821     | Meldung 6 Par 1                                |                    |           |              |                           |     |        |                          |
-| 33822     | Meldung 6 Par 2                                |                    |           |              |                           |     |        |                          |
-| 33819     | Meldung 6 UnixZeit H                           |                    |           |              |                           |     |        |                          |
-| 33820     | Meldung 6 UnixZeit L                           |                    |           |              |                           |     |        |                          |
-| 33823     | Meldung 7 Code                                 | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        |                          |
-| 33826     | Meldung 7 Par 1                                |                    |           |              |                           |     |        |                          |
-| 33827     | Meldung 7 Par 2                                |                    |           |              |                           |     |        |                          |
-| 33824     | Meldung 7 UnixZeit H                           |                    |           |              |                           |     |        |                          |
-| 33825     | Meldung 7 UnixZeit L                           |                    |           |              |                           |     |        |                          |
-| 33828     | Meldung 8 Code                                 | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        |                          |
-| 33831     | Meldung 8 Par 1                                |                    |           |              |                           |     |        |                          |
-| 33832     | Meldung 8 Par 2                                |                    |           |              |                           |     |        |                          |
-| 33829     | Meldung 8 UnixZeit H                           |                    |           |              |                           |     |        |                          |
-| 33830     | Meldung 8 UnixZeit L                           |                    |           |              |                           |     |        |                          |
-| 33833     | Meldung 9 Code                                 | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        |                          |
-| 33836     | Meldung 9 Par 1                                |                    |           |              |                           |     |        |                          |
-| 33837     | Meldung 9 Par 2                                |                    |           |              |                           |     |        |                          |
-| 33834     | Meldung 9 UnixZeit H                           |                    |           |              |                           |     |        |                          |
-| 33835     | Meldung 9 UnixZeit L                           |                    |           |              |                           |     |        |                          |
-| 34307     | Anforderungstemperatur HKR1                    | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        | °C                       |
-| 34308     | Anforderungstemperatur HKR2                    | 2.2.0              | 0         | 1            | SC3 GLT (SolvisLeo)       |     |        | °C                       |
-| 34309     | Anforderungstemperatur HKR3                    | 2.2.0              | 0         | 2            | SC3 GLT (SolvisLeo)       |     |        | °C                       |
-| 34310     | Regelzustand HKR1                              | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        |                          |
-| 34311     | Regelzustand HKR2                              | 2.2.0              | 0         | 1            | SC3 GLT (SolvisLeo)       |     |        |                          |
-| 34312     | Regelzustand HKR3                              | 2.2.0              | 0         | 2            | SC3 GLT (SolvisLeo)       |     |        |                          |
-| 34313     | Regelzustand Mischer HKR1                      | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        |                          |
-| 34314     | Regelzustand Mischer HKR2                      | 2.2.0              | 0         | 1            | SC3 GLT (SolvisLeo)       |     |        |                          |
-| 34315     | Regelzustand Mischer HKR3                      | 2.2.0              | 0         | 2            | SC3 GLT (SolvisLeo)       |     |        |                          |
-| 34316     | Heizkreis Vorlauftemperatur (WMZ)              | 2.2.0              | 0         | 5            | SC3 GLT (SolvisLeo)       |     |        | °C                       |
-| 34317     | Heizkreis Rücklauftemperatur (WMZ)             | 2.2.0              | 0         | 5            | SC3 GLT (SolvisLeo)       |     |        | °C                       |
-| 34318     | Heizkreis Spreizung (WMZ)                      | 2.2.0              | 0         | 5            | SC3 GLT (SolvisLeo)       |     |        | K                        |
-| 34319     | Heizkreis Volumenstrom (WMZ)                   | 2.2.0              | 0         | 5            | SC3 GLT (SolvisLeo)       |     |        | l/min                    |
-| 34320     | Heizkreis Leistung (WMZ)                       | 2.2.0              | 0         | 5            | SC3 GLT (SolvisLeo)       |     |        | kW                       |
-| 34560     | Smart Energy nutzbare Leistung                 | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        | W                        |
-| 34561     | Smart Energy Netzbezug                         | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        | W                        |
-| 34562     | Smart Energy Verbraucher 1 Status              | 2.2.0              | 0         | 0            | SC3 GLT (SolvisLeo)       |     |        |                          |
+This file is generated from `custom_components/solvis_control/const.py`. Do not edit it by hand; run `python -m tools.generate_docs --write` after changing `REGISTERS`. Implementation identifiers are raw code keys, not display names.
 
-# Holding Register
-
-| Adresse | Solvis Beschreibung                     | Unterstützt seit V | Sensortyp | Conf.-Option | Bemerkung                           | Min  | Max   | Einheit  |
-| ------- | --------------------------------------- | ------------------ | --------- | ------------ | ----------------------------------- | ---- | ----- | -------- |
-| 838     | WP hybrid Warmwasser Bivalenztemperatur | 2.0.0              | 0         | 4            | #173, read only!                    | -20  | 40    | °C       |
-| 839     | WP hybrid Heizung Bivalenztemperatur    | 2.0.0              | 0         | 4            | #173, read only!                    | -20  | 20    | °C       |
-| 1542    | Solar primär Drehzahl max               |                    |           |              |                                     | 0    | 100   | %        |
-| 1543    | Solar primär Drehzahl min               |                    |           |              |                                     | 0    | 100   | %        |
-| 1798    | Solar sekundär Drehzahl max             |                    |           |              |                                     | 0    | 100   | %        |
-| 1799    | Solar sekundär Drehzahl min             |                    |           |              |                                     | 0    | 100   | %        |
-| 2304    | WW Modus                                |                    |           |              |                                     | 0    | 32767 |          |
-| 2305    | WW Sollwert                             | 0.9                | 2         | 0            |                                     | 10   | 65    | °C       |
-| 2328    | WW Nachheizung Start                    | 1.1.1              | 3         | 0            | Wrong documentation, should be 2322 | 0    | 1     |          |
-| 2817    | HKR1 WW Vorrang                         | 1.0.0              | 3         | 0            |                                     | 0    | 1     | aus/ein  |
-| 2818    | HKR1 Betriebsart                        | 1.0.0              | 1         | 0            |                                     | 2    | 7     |          |
-| 2819    | HKR1 Vorlaufart                         | 1.0.0              | 0         | 0            | not in Solvis Documentation; #339   | 0    | 1     |          |
-| 2820    | HKR1 Fix Temperatur Tag                 | 1.0.0              | 2         | 0            |                                     | 5    | 75    | °C       |
-| 2821    | HKR1 Fix Absenktemperatur               | 1.0.0              | 2         | 0            |                                     | 5    | 75    | °C       |
-| 2822    | HKR1 Heizkurve Tag Temperatur 1         | 1.0.0              | 2         | 0            |                                     | 5    | 50    | °C       |
-| 2823    | HKR1 Heizkurve Tag Temperatur 2         | 1.0.0              | 2         | 0            |                                     | 5    | 30    | °C       |
-| 2824    | HKR1 Heizkurve Tag Temperatur 3         | 1.0.0              | 2         | 0            |                                     | 5    | 30    | °C       |
-| 2825    | HKR1 Heizkurve Absenktemperatur         | 1.0.0              | 2         | 0            |                                     | 5    | 30    | °C       |
-| 2832    | HKR1 Heizkurve Steilheit                | 1.0.0              | 2         | 0            |                                     | 20   | 250   | in 10tel |
-| 2870    | HKR1 Urlaub zu Hause Temperatur         |                    |           |              |                                     | 0    | 30    | °C       |
-| 2871    | HKR1 Urlaub zu Hause Dauer              |                    |           |              |                                     | 0    | 31    | Tag      |
-| 2872    | HKR1 Urlaub zu Hause Heizen Start       |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 2873    | HKR1 Urlaub zu Hause Heizen Stop        |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 2880    | HKR1 Urlaub auswärts Temperatur         |                    |           |              |                                     | 0    | 30    | °C       |
-| 2881    | HKR1 Urlaub auswärts bis Tag            |                    |           |              |                                     | 1    | 31    | Tag      |
-| 2882    | HKR1 Urlaub auswärts bis Monat          |                    |           |              |                                     | 1    | 12    | Monat    |
-| 2883    | HKR1 Urlaub auswärts bis Jahr           |                    |           |              |                                     | 2006 | 2099  | Jahr     |
-| 3073    | HKR2 WW Vorrang                         | 1.0.0              | 3         | 0            |                                     | 0    | 1     | aus/ein  |
-| 3074    | HKR2 Betriebsart                        | 1.0.0              | 1         | 0            |                                     | 2    | 7     |          |
-| 3075    | HKR2 Vorlaufart                         | 1.0.0              | 0         | 0            | not in Solvis Documentation; #339   | 0    | 1     |          |
-| 3076    | HKR2 Fix Temperatur Tag                 | 1.0.0              | 2         | 0            |                                     | 5    | 75    | °C       |
-| 3077    | HKR2 Fix Absenktemperatur               | 1.0.0              | 2         | 0            |                                     | 5    | 75    | °C       |
-| 3078    | HKR2 Heizkurve Tag Temperatur 1         | 1.0.0              | 2         | 0            |                                     | 5    | 50    | °C       |
-| 3079    | HKR2 Heizkurve Tag Temperatur 2         | 1.0.0              | 2         | 0            |                                     | 5    | 30    | °C       |
-| 3080    | HKR2 Heizkurve Tag Temperatur 3         | 1.0.0              | 2         | 0            |                                     | 5    | 30    | °C       |
-| 3081    | HKR2 Heizkurve Absenktemperatur         | 1.0.0              | 2         | 0            |                                     | 5    | 30    | °C       |
-| 3088    | HKR2 Heizkurve Steilheit                | 1.0.0              | 2         | 0            |                                     | 20   | 250   | in 10tel |
-| 3126    | HKR2 Urlaub zu Hause Temperatur         |                    |           |              |                                     | 0    | 30    | °C       |
-| 3127    | HKR2 Urlaub zu Hause Dauer              |                    |           |              |                                     | 0    | 31    | Tag      |
-| 3128    | HKR2 Urlaub zu Hause Heizen Start       |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 3129    | HKR2 Urlaub zu Hause Heizen Stop        |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 3136    | HKR2 Urlaub auswärts Temperatur         |                    |           |              |                                     | 0    | 30    | °C       |
-| 3137    | HKR2 Urlaub auswärts bis Tag            |                    |           |              |                                     | 1    | 31    | Tag      |
-| 3138    | HKR2 Urlaub auswärts bis Monat          |                    |           |              |                                     | 1    | 12    | Monat    |
-| 3139    | HKR2 Urlaub auswärts bis Jahr           |                    |           |              |                                     | 2006 | 2099  | Jahr     |
-| 3329    | HKR3 WW Vorrang                         | 1.0.0              | 3         | 0            |                                     | 0    | 1     | aus/ein  |
-| 3330    | HKR3 Betriebsart                        | 1.0.0              | 1         | 0            |                                     | 2    | 7     |          |
-| 3331    | HKR3 Vorlaufart                         | 1.0.0              | 0         | 0            | not in Solvis Documentation ; #339  | 0    | 1     |          |
-| 3332    | HKR3 Fix Temperatur Tag                 | 1.0.0              | 2         | 0            |                                     | 5    | 75    | °C       |
-| 3333    | HKR3 Fix Absenktemperatur               | 1.0.0              | 2         | 0            |                                     | 5    | 75    | °C       |
-| 3334    | HKR3 Heizkurve Tag Temperatur 1         | 1.0.0              | 2         | 0            |                                     | 5    | 50    | °C       |
-| 3335    | HKR3 Heizkurve Tag Temperatur 2         | 1.0.0              | 2         | 0            |                                     | 5    | 30    | °C       |
-| 3336    | HKR3 Heizkurve Tag Temperatur 3         | 1.0.0              | 2         | 0            |                                     | 5    | 30    | °C       |
-| 3337    | HKR3 Heizkurve Absenktemperatur         | 1.0.0              | 2         | 0            |                                     | 5    | 30    | °C       |
-| 3344    | HKR3 Heizkurve Steilheit                | 1.0.0              | 2         | 0            |                                     | 20   | 250   | in 10tel |
-| 3382    | HKR3 Urlaub zu Hause Temperatur         |                    |           |              |                                     | 0    | 30    | °C       |
-| 3383    | HKR3 Urlaub zu Hause Dauer              |                    |           |              |                                     | 0    | 31    | Tag      |
-| 3384    | HKR3 Urlaub zu Hause Heizen Start       |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 3385    | HKR3 Urlaub zu Hause Heizen Stop        |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 3392    | HKR3 Urlaub auswärts Temperatur         |                    |           |              |                                     | 0    | 30    | °C       |
-| 3393    | HKR3 Urlaub auswärts bis Tag            |                    |           |              |                                     | 1    | 31    | Tag      |
-| 3394    | HKR3 Urlaub auswärts bis Monat          |                    |           |              |                                     | 1    | 12    | Monat    |
-| 3395    | HKR3 Urlaub auswärts bis Jahr           |                    |           |              |                                     | 2006 | 2099  | Jahr     |
-| 33543   | Leistung Solarthermie                   | 1.1.3              | 0         | 3            | not in Solvis Documentation         | 0    |       | kW       |
-| 33544   | Wärmepumpe Leistung                     | 0.9                | 0         | 4            | not in Solvis Documentation         |      |       | kW       |
-| 33545   | Elektrische Wärmepumpenleistung         | 0.9                | 0         | 4            | not in Solvis Documentation         |      |       | kW       |
-| 34048     | Wochenplan HK 1 Tag 1 Start 0                  | 2.2.0              | 6         | 0            | Blockread, 42 Register    | 0   | 95     | 0,25 h                   |
-| 34049   | Wochenplan HK 1 Tag 1 Stop 0            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34050   | Wochenplan HK 1 Tag 1 Start 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34051   | Wochenplan HK 1 Tag 1 Stop 1            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34052   | Wochenplan HK 1 Tag 1 Start 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34053   | Wochenplan HK 1 Tag 1 Stop 2            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34054   | Wochenplan HK 1 Tag 2 Start 0           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34055   | Wochenplan HK 1 Tag 2 Stop 0            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34056   | Wochenplan HK 1 Tag 2 Start 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34057   | Wochenplan HK 1 Tag 2 Stop 1            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34058   | Wochenplan HK 1 Tag 2 Start 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34059   | Wochenplan HK 1 Tag 2 Stop 2            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34060   | Wochenplan HK 1 Tag 3 Start 0           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34061   | Wochenplan HK 1 Tag 3 Stop 0            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34062   | Wochenplan HK 1 Tag 3 Start 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34063   | Wochenplan HK 1 Tag 3 Stop 1            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34064   | Wochenplan HK 1 Tag 3 Start 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34065   | Wochenplan HK 1 Tag 3 Stop 2            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34066   | Wochenplan HK 1 Tag 4 Start 0           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34067   | Wochenplan HK 1 Tag 4 Stop 0            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34068   | Wochenplan HK 1 Tag 4 Start 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34069   | Wochenplan HK 1 Tag 4 Stop 1            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34070   | Wochenplan HK 1 Tag 4 Start 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34071   | Wochenplan HK 1 Tag 4 Stop 2            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34072   | Wochenplan HK 1 Tag 5 Start 0           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34073   | Wochenplan HK 1 Tag 5 Stop 0            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34074   | Wochenplan HK 1 Tag 5 Start 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34075   | Wochenplan HK 1 Tag 5 Stop 1            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34076   | Wochenplan HK 1 Tag 5 Start 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34077   | Wochenplan HK 1 Tag 5 Stop 2            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34078   | Wochenplan HK 1 Tag 6 Start 0           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34079   | Wochenplan HK 1 Tag 6 Stop 0            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34080   | Wochenplan HK 1 Tag 6 Start 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34081   | Wochenplan HK 1 Tag 6 Stop 1            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34082   | Wochenplan HK 1 Tag 6 Start 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34083   | Wochenplan HK 1 Tag 6 Stop 2            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34084   | Wochenplan HK 1 Tag 7 Start 0           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34085   | Wochenplan HK 1 Tag 7 Stop 0            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34086   | Wochenplan HK 1 Tag 7 Start 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34087   | Wochenplan HK 1 Tag 7 Stop 1            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34088   | Wochenplan HK 1 Tag 7 Start 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34089   | Wochenplan HK 1 Tag 7 Stop 2            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34090     | Wochenplan HK 2 Tag 1 Start 0                  | 2.2.0              | 6         | 1            | Blockread, 42 Register    | 0   | 95     | 0,25 h                   |
-| 34091   | Wochenplan HK 2 Tag 1 Stop 0            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34092   | Wochenplan HK 2 Tag 1 Start 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34093   | Wochenplan HK 2 Tag 1 Stop 1            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34094   | Wochenplan HK 2 Tag 1 Start 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34095   | Wochenplan HK 2 Tag 1 Stop 2            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34096   | Wochenplan HK 2 Tag 2 Start 0           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34097   | Wochenplan HK 2 Tag 2 Stop 0            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34098   | Wochenplan HK 2 Tag 2 Start 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34099   | Wochenplan HK 2 Tag 2 Stop 1            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34100   | Wochenplan HK 2 Tag 2 Start 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34101   | Wochenplan HK 2 Tag 2 Stop 2            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34102   | Wochenplan HK 2 Tag 3 Start 0           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34103   | Wochenplan HK 2 Tag 3 Stop 0            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34104   | Wochenplan HK 2 Tag 3 Start 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34105   | Wochenplan HK 2 Tag 3 Stop 1            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34106   | Wochenplan HK 2 Tag 3 Start 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34107   | Wochenplan HK 2 Tag 3 Stop 2            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34108   | Wochenplan HK 2 Tag 4 Start 0           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34109   | Wochenplan HK 2 Tag 4 Stop 0            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34110   | Wochenplan HK 2 Tag 4 Start 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34111   | Wochenplan HK 2 Tag 4 Stop 1            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34112   | Wochenplan HK 2 Tag 4 Start 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34113   | Wochenplan HK 2 Tag 4 Stop 2            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34114   | Wochenplan HK 2 Tag 5 Start 0           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34115   | Wochenplan HK 2 Tag 5 Stop 0            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34116   | Wochenplan HK 2 Tag 5 Start 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34117   | Wochenplan HK 2 Tag 5 Stop 1            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34118   | Wochenplan HK 2 Tag 5 Start 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34119   | Wochenplan HK 2 Tag 5 Stop 2            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34120   | Wochenplan HK 2 Tag 6 Start 0           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34121   | Wochenplan HK 2 Tag 6 Stop 0            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34122   | Wochenplan HK 2 Tag 6 Start 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34123   | Wochenplan HK 2 Tag 6 Stop 1            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34124   | Wochenplan HK 2 Tag 6 Start 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34125   | Wochenplan HK 2 Tag 6 Stop 2            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34126   | Wochenplan HK 2 Tag 7 Start 0           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34127   | Wochenplan HK 2 Tag 7 Stop 0            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34128   | Wochenplan HK 2 Tag 7 Start 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34129   | Wochenplan HK 2 Tag 7 Stop 1            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34130   | Wochenplan HK 2 Tag 7 Start 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34131   | Wochenplan HK 2 Tag 7 Stop 2            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34132     | Wochenplan HK 3 Tag 1 Start 0                  | 2.2.0              | 6         | 2            | Blockread, 42 Register    | 0   | 95     | 0,25 h                   |
-| 34133   | Wochenplan HK 3 Tag 1 Stop 0            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34134   | Wochenplan HK 3 Tag 1 Start 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34135   | Wochenplan HK 3 Tag 1 Stop 1            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34136   | Wochenplan HK 3 Tag 1 Start 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34137   | Wochenplan HK 3 Tag 1 Stop 2            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34138   | Wochenplan HK 3 Tag 2 Start 0           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34139   | Wochenplan HK 3 Tag 2 Stop 0            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34140   | Wochenplan HK 3 Tag 2 Start 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34141   | Wochenplan HK 3 Tag 2 Stop 1            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34142   | Wochenplan HK 3 Tag 2 Start 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34143   | Wochenplan HK 3 Tag 2 Stop 2            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34144   | Wochenplan HK 3 Tag 3 Start 0           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34145   | Wochenplan HK 3 Tag 3 Stop 0            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34146   | Wochenplan HK 3 Tag 3 Start 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34147   | Wochenplan HK 3 Tag 3 Stop 1            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34148   | Wochenplan HK 3 Tag 3 Start 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34149   | Wochenplan HK 3 Tag 3 Stop 2            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34150   | Wochenplan HK 3 Tag 4 Start 0           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34151   | Wochenplan HK 3 Tag 4 Stop 0            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34152   | Wochenplan HK 3 Tag 4 Start 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34153   | Wochenplan HK 3 Tag 4 Stop 1            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34154   | Wochenplan HK 3 Tag 4 Start 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34155   | Wochenplan HK 3 Tag 4 Stop 2            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34156   | Wochenplan HK 3 Tag 5 Start 0           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34157   | Wochenplan HK 3 Tag 5 Stop 0            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34158   | Wochenplan HK 3 Tag 5 Start 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34159   | Wochenplan HK 3 Tag 5 Stop 1            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34160   | Wochenplan HK 3 Tag 5 Start 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34161   | Wochenplan HK 3 Tag 5 Stop 2            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34162   | Wochenplan HK 3 Tag 6 Start 0           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34163   | Wochenplan HK 3 Tag 6 Stop 0            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34164   | Wochenplan HK 3 Tag 6 Start 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34165   | Wochenplan HK 3 Tag 6 Stop 1            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34166   | Wochenplan HK 3 Tag 6 Start 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34167   | Wochenplan HK 3 Tag 6 Stop 2            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34168   | Wochenplan HK 3 Tag 7 Start 0           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34169   | Wochenplan HK 3 Tag 7 Stop 0            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34170   | Wochenplan HK 3 Tag 7 Start 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34171   | Wochenplan HK 3 Tag 7 Stop 1            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34172   | Wochenplan HK 3 Tag 7 Start 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34173   | Wochenplan HK 3 Tag 7 Stop 2            |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34174     | Wochenplan HK WW Tag 1 Start 0                 | 2.2.0              | 6         | 0            | Blockread, 42 Register    | 0   | 95     | 0,25 h                   |
-| 34175   | Wochenplan HK WW Tag 1 Stop 0           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34176   | Wochenplan HK WW Tag 1 Start 1          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34177   | Wochenplan HK WW Tag 1 Stop 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34178   | Wochenplan HK WW Tag 1 Start 2          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34179   | Wochenplan HK WW Tag 1 Stop 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34180   | Wochenplan HK WW Tag 2 Start 0          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34181   | Wochenplan HK WW Tag 2 Stop 0           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34182   | Wochenplan HK WW Tag 2 Start 1          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34183   | Wochenplan HK WW Tag 2 Stop 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34184   | Wochenplan HK WW Tag 2 Start 2          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34185   | Wochenplan HK WW Tag 2 Stop 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34186   | Wochenplan HK WW Tag 3 Start 0          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34187   | Wochenplan HK WW Tag 3 Stop 0           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34188   | Wochenplan HK WW Tag 3 Start 1          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34189   | Wochenplan HK WW Tag 3 Stop 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34190   | Wochenplan HK WW Tag 3 Start 2          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34191   | Wochenplan HK WW Tag 3 Stop 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34192   | Wochenplan HK WW Tag 4 Start 0          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34193   | Wochenplan HK WW Tag 4 Stop 0           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34194   | Wochenplan HK WW Tag 4 Start 1          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34195   | Wochenplan HK WW Tag 4 Stop 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34196   | Wochenplan HK WW Tag 4 Start 2          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34197   | Wochenplan HK WW Tag 4 Stop 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34198   | Wochenplan HK WW Tag 5 Start 0          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34199   | Wochenplan HK WW Tag 5 Stop 0           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34200   | Wochenplan HK WW Tag 5 Start 1          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34201   | Wochenplan HK WW Tag 5 Stop 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34202   | Wochenplan HK WW Tag 5 Start 2          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34203   | Wochenplan HK WW Tag 5 Stop 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34204   | Wochenplan HK WW Tag 6 Start 0          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34205   | Wochenplan HK WW Tag 6 Stop 0           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34206   | Wochenplan HK WW Tag 6 Start 1          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34207   | Wochenplan HK WW Tag 6 Stop 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34208   | Wochenplan HK WW Tag 6 Start 2          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34209   | Wochenplan HK WW Tag 6 Stop 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34210   | Wochenplan HK WW Tag 7 Start 0          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34211   | Wochenplan HK WW Tag 7 Stop 0           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34212   | Wochenplan HK WW Tag 7 Start 1          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34213   | Wochenplan HK WW Tag 7 Stop 1           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34214   | Wochenplan HK WW Tag 7 Start 2          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34215   | Wochenplan HK WW Tag 7 Stop 2           |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34216     | Wochenplan HK Zirk Tag 1 Start 0               | 2.2.0              | 6         | 0            | Blockread, 42 Register    | 0   | 95     | 0,25 h                   |
-| 34217   | Wochenplan HK Zirk Tag 1 Stop 0         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34218   | Wochenplan HK Zirk Tag 1 Start 1        |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34219   | Wochenplan HK Zirk Tag 1 Stop 1         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34220   | Wochenplan HK Zirk Tag 1 Start 2        |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34221   | Wochenplan HK Zirk Tag 1 Stop 2         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34222   | Wochenplan HK Zirk Tag 2 Start 0        |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34223   | Wochenplan HK Zirk Tag 2 Stop 0         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34224   | Wochenplan HK Zirk Tag 2 Start 1        |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34225   | Wochenplan HK Zirk Tag 2 Stop 1         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34226   | Wochenplan HK Zirk Tag 2 Start 2        |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34227   | Wochenplan HK Zirk Tag 2 Stop 2         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34228   | Wochenplan HK Zirk Tag 3 Start 0        |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34229   | Wochenplan HK Zirk Tag 3 Stop 0         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34230   | Wochenplan HK Zirk Tag 3 Start 1        |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34231   | Wochenplan HK Zirk Tag 3 Stop 1         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34232   | Wochenplan HK Zirk Tag 3 Start 2        |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34233   | Wochenplan HK Zirk Tag 3 Stop 2         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34234   | Wochenplan HK Zirk Tag 4 Start 0        |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34235   | Wochenplan HK Zirk Tag 4 Stop 0         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34236   | Wochenplan HK Zirk Tag 4 Start 1        |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34237   | Wochenplan HK Zirk Tag 4 Stop 1         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34238   | Wochenplan HK Zirk Tag 4 Start 2        |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34239   | Wochenplan HK Zirk Tag 4 Stop 2         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34240   | Wochenplan HK Zirk Tag 5 Start 0        |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34241   | Wochenplan HK Zirk Tag 5 Stop 0         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34242   | Wochenplan HK Zirk Tag 5 Start 1        |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34243   | Wochenplan HK Zirk Tag 5 Stop 1         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34244   | Wochenplan HK Zirk Tag 5 Start 2        |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34245   | Wochenplan HK Zirk Tag 5 Stop 2         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34246   | Wochenplan HK Zirk Tag 6 Start 0        |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34247   | Wochenplan HK Zirk Tag 6 Stop 0         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34248   | Wochenplan HK Zirk Tag 6 Start 1        |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34249   | Wochenplan HK Zirk Tag 6 Stop 1         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34250   | Wochenplan HK Zirk Tag 6 Start 2        |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34251   | Wochenplan HK Zirk Tag 6 Stop 2         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34252   | Wochenplan HK Zirk Tag 7 Start 0        |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34253   | Wochenplan HK Zirk Tag 7 Stop 0         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34254   | Wochenplan HK Zirk Tag 7 Start 1        |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34255   | Wochenplan HK Zirk Tag 7 Stop 1         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34256   | Wochenplan HK Zirk Tag 7 Start 2        |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34257   | Wochenplan HK Zirk Tag 7 Stop 2         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34258     | Wochenplan HK Eco Tag 1 Start 0                | 2.2.0              | 6         | 0            | Blockread, 42 Register    | 0   | 95     | 0,25 h                   |
-| 34259   | Wochenplan HK Eco Tag 1 Stop 0          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34260   | Wochenplan HK Eco Tag 1 Start 1         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34261   | Wochenplan HK Eco Tag 1 Stop 1          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34262   | Wochenplan HK Eco Tag 1 Start 2         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34263   | Wochenplan HK Eco Tag 1 Stop 2          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34264   | Wochenplan HK Eco Tag 2 Start 0         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34265   | Wochenplan HK Eco Tag 2 Stop 0          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34266   | Wochenplan HK Eco Tag 2 Start 1         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34267   | Wochenplan HK Eco Tag 2 Stop 1          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34268   | Wochenplan HK Eco Tag 2 Start 2         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34269   | Wochenplan HK Eco Tag 2 Stop 2          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34270   | Wochenplan HK Eco Tag 3 Start 0         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34271   | Wochenplan HK Eco Tag 3 Stop 0          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34272   | Wochenplan HK Eco Tag 3 Start 1         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34273   | Wochenplan HK Eco Tag 3 Stop 1          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34274   | Wochenplan HK Eco Tag 3 Start 2         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34275   | Wochenplan HK Eco Tag 3 Stop 2          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34276   | Wochenplan HK Eco Tag 4 Start 0         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34277   | Wochenplan HK Eco Tag 4 Stop 0          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34278   | Wochenplan HK Eco Tag 4 Start 1         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34279   | Wochenplan HK Eco Tag 4 Stop 1          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34280   | Wochenplan HK Eco Tag 4 Start 2         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34281   | Wochenplan HK Eco Tag 4 Stop 2          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34282   | Wochenplan HK Eco Tag 5 Start 0         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34283   | Wochenplan HK Eco Tag 5 Stop 0          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34284   | Wochenplan HK Eco Tag 5 Start 1         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34285   | Wochenplan HK Eco Tag 5 Stop 1          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34286   | Wochenplan HK Eco Tag 5 Start 2         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34287   | Wochenplan HK Eco Tag 5 Stop 2          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34288   | Wochenplan HK Eco Tag 6 Start 0         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34289   | Wochenplan HK Eco Tag 6 Stop 0          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34290   | Wochenplan HK Eco Tag 6 Start 1         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34291   | Wochenplan HK Eco Tag 6 Stop 1          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34292   | Wochenplan HK Eco Tag 6 Start 2         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34293   | Wochenplan HK Eco Tag 6 Stop 2          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34294   | Wochenplan HK Eco Tag 7 Start 0         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34295   | Wochenplan HK Eco Tag 7 Stop 0          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34296   | Wochenplan HK Eco Tag 7 Start 1         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34297   | Wochenplan HK Eco Tag 7 Stop 1          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34298   | Wochenplan HK Eco Tag 7 Start 2         |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34299   | Wochenplan HK Eco Tag 7 Stop 2          |                    |           |              |                                     | 0    | 95    | 0,25h    |
-| 34304   | Raumtemperatur 1                        | 1.0.0              | 0         | 0            |                                     |      |       | 0,1°C    |
-| 34305   | Raumtemperatur 2                        | 1.0.0              | 0         | 1            |                                     |      |       | 0,1°C    |
-| 34306   | Raumtemperatur 3                        | 1.0.0              | 0         | 2            |                                     |      |       | 0,1°C    |
+| Address | Implementation identifier | Register type | Platform | Data type | Count | Byte swap | Multiplier | Unit | Enabled by default |
+| ---: | --- | --- | --- | --- | ---: | --- | ---: | --- | --- |
+| 2 | hkr_number | input | sensor | INT16 | 1 | no | 1 | — | yes |
+| 2049 | circulation_operating_mode | input | sensor | INT16 | 1 | no | 1 | — | yes |
+| 3840 | heizstab_modulation_o1_status | input | sensor | INT16 | 1 | no | 1 | — | yes |
+| 3845 | solar_pump_primary_o2_status | input | sensor | INT16 | 1 | no | 1 | — | yes |
+| 3850 | solar_pump_secondary_o3_status | input | sensor | INT16 | 1 | no | 1 | — | yes |
+| 3855 | heatpump_charging_pump_o4_status | input | sensor | INT16 | 1 | no | 1 | — | yes |
+| 3860 | warm_water_pump_o5_status | input | sensor | INT16 | 1 | no | 1 | — | yes |
+| 3865 | analog_out_o6_status | input | sensor | INT16 | 1 | no | 1 | — | no |
+| 34048 | hkr1_schedule | holding | block | INT16 | 42 | no | 1 | — | no |
+| 34090 | hkr2_schedule | holding | block | INT16 | 42 | no | 1 | — | no |
+| 34132 | hkr3_schedule | holding | block | INT16 | 42 | no | 1 | — | no |
+| 34174 | warm_water_schedule | holding | block | INT16 | 42 | no | 1 | — | no |
+| 34216 | circulation_schedule | holding | block | INT16 | 42 | no | 1 | — | no |
+| 34258 | eco_schedule | holding | block | INT16 | 42 | no | 1 | — | no |
+| 32768 | controller_unix_time | input | sensor | UINT32 | 2 | no | 1 | s | no |
+| 32770 | version_sc | input | update | INT16 | 1 | no | 1 | — | yes |
+| 32771 | version_nbg | input | update | INT16 | 1 | no | 1 | — | yes |
+| 33024 | warm_water_buffer_temp_s1 | input | sensor | INT16 | 1 | no | 0.1 | °C | yes |
+| 33025 | warm_water_temp_s2 | input | sensor | INT16 | 1 | no | 0.1 | °C | yes |
+| 33026 | storage_reference_temp_s3 | input | sensor | INT16 | 1 | no | 0.1 | °C | yes |
+| 33027 | heating_buffer_upper_temp_s4 | input | sensor | INT16 | 1 | no | 0.1 | °C | yes |
+| 33028 | solar_flow_secondary_temp_s5 | input | sensor | INT16 | 1 | no | 0.1 | °C | yes |
+| 33029 | solar_return_secondary_temp_s6 | input | sensor | INT16 | 1 | no | 0.1 | °C | yes |
+| 33030 | solar_flow_primary_temp_s7 | input | sensor | INT16 | 1 | no | 0.1 | °C | yes |
+| 33031 | solar_collector_temp_s8 | input | sensor | INT16 | 1 | no | 0.1 | °C | yes |
+| 33032 | heating_buffer_lower_temp_s9 | input | sensor | INT16 | 1 | no | 0.1 | °C | yes |
+| 33033 | outdoor_air_temp_s10 | input | sensor | INT16 | 1 | no | 0.1 | °C | yes |
+| 33034 | circulation_temp_s11 | input | sensor | INT16 | 1 | no | 0.1 | °C | yes |
+| 33035 | hkr1_flow_water_temp_s12 | input | sensor | INT16 | 1 | no | 0.1 | °C | yes |
+| 33036 | hkr2_flow_water_temp_s13 | input | sensor | INT16 | 1 | no | 0.1 | °C | yes |
+| 33037 | temp_s14 | input | sensor | INT16 | 1 | no | 0.1 | °C | no |
+| 33038 | cold_water_temp_s15 | input | sensor | INT16 | 1 | no | 0.1 | °C | yes |
+| 33039 | temp_s16 | input | sensor | INT16 | 1 | no | 0.1 | °C | no |
+| 33040 | solar_volume_flow_s17 | input | sensor | INT16 | 1 | no | 1 | l/h | yes |
+| 33041 | warm_water_volume_flow_s18 | input | sensor | INT16 | 1 | no | 0.1 | l/min | yes |
+| 33280 | circulation_pump_a1 | input | binary_sensor | INT16 | 1 | yes | 1 | — | yes |
+| 33281 | heatpump_charging_pump_a2 | input | binary_sensor | INT16 | 1 | no | 1 | — | yes |
+| 33282 | hkr1_pump_a3 | input | binary_sensor | INT16 | 1 | yes | 1 | — | yes |
+| 33283 | hkr2_pump_a4 | input | binary_sensor | INT16 | 1 | yes | 1 | — | yes |
+| 33284 | hkr3_pump_a5 | input | binary_sensor | INT16 | 1 | yes | 1 | — | yes |
+| 33285 | hkr3_mixer_heating_circuit_open_a6 | input | binary_sensor | INT16 | 1 | yes | 1 | — | yes |
+| 33286 | hkr3_mixer_heating_circuit_close_a7 | input | binary_sensor | INT16 | 1 | yes | 1 | — | yes |
+| 33287 | hkr1_mixer_heating_circuit_open_a8 | input | binary_sensor | INT16 | 1 | no | 1 | — | yes |
+| 33288 | hkr1_mixer_heating_circuit_close_a9 | input | binary_sensor | INT16 | 1 | no | 1 | — | yes |
+| 33289 | hkr2_mixer_heating_circuit_open_a10 | input | binary_sensor | INT16 | 1 | yes | 1 | — | yes |
+| 33290 | hkr2_mixer_heating_circuit_close_a11 | input | binary_sensor | INT16 | 1 | yes | 1 | — | yes |
+| 33291 | heizstab_status_a12 | input | binary_sensor | INT16 | 1 | yes | 1 | — | yes |
+| 33292 | heizstab_level_2_3_a13 | input | binary_sensor | INT16 | 1 | yes | 1 | — | yes |
+| 33293 | heatpump_switching_valve_a14 | input | binary_sensor | INT16 | 1 | yes | 1 | — | yes |
+| 33294 | heizstab_modulation_o1 | input | sensor | INT16 | 1 | no | 0.1 | % | yes |
+| 33295 | solar_pump_primary_o2 | input | sensor | INT16 | 1 | no | 0.1 | % | yes |
+| 33296 | solar_pump_secondary_o3 | input | sensor | INT16 | 1 | no | 0.1 | % | yes |
+| 33297 | heatpump_charging_pump_o4 | input | sensor | INT16 | 1 | no | 0.1 | % | yes |
+| 33298 | warm_water_pump_o5 | input | sensor | INT16 | 1 | no | 0.1 | % | yes |
+| 33536 | solar_energy | input | sensor | INT16 | 1 | no | 10 | kWh | yes |
+| 33537 | heatpump_energy_thermal | input | sensor | INT16 | 1 | no | 10 | kWh | yes |
+| 33538 | heizstab_energy_thermal | input | sensor | INT16 | 1 | no | 10 | kWh | yes |
+| 33539 | pv2heat_energy | input | sensor | INT16 | 1 | no | 10 | kWh | yes |
+| 33540 | warm_water_energy | input | sensor | INT16 | 1 | no | 10 | kWh | yes |
+| 33541 | heating_circuits_energy | input | sensor | INT16 | 1 | no | 10 | kWh | yes |
+| 33546 | heizstab_power_thermal | input | sensor | INT16 | 1 | no | 0.1 | kW | yes |
+| 33547 | heizstab_power_electric | input | sensor | INT16 | 1 | no | 0.1 | kW | yes |
+| 33548 | pv2heat_power_electric | holding | sensor | INT16 | 1 | no | 0.1 | kW | yes |
+| 33549 | warm_water_power | input | sensor | INT16 | 1 | no | 1 | kW | yes |
+| 33550 | heat_meter_power_thermal | input | sensor | INT16 | 1 | no | 0.1 | kW | yes |
+| 33552 | solar_pump_primary_runtime | input | sensor | INT16 | 1 | no | 1 | h | yes |
+| 33553 | solar_pump_secondary_runtime | input | sensor | INT16 | 1 | no | 1 | h | yes |
+| 33792 | messages_number | input | sensor | INT16 | 1 | no | 1 | — | yes |
+| 838 | heatpump_hybrid_warm_water_bivalence_temp | holding | sensor | INT16 | 1 | no | 1 | °C | yes |
+| 839 | heatpump_hybrid_heating_bivalence_temp | holding | sensor | INT16 | 1 | no | 1 | °C | yes |
+| 2305 | warm_water_target_temp | holding | number | INT16 | 1 | no | 1 | °C | yes |
+| 2322 | warm_water_reheat | holding | switch | INT16 | 1 | no | 1 | — | yes |
+| 2817 | hkr1_warm_water_priority | holding | switch | INT16 | 1 | no | 1 | — | yes |
+| 2818 | hkr1_operating_mode | holding | select | INT16 | 1 | no | 1 | — | yes |
+| 2819 | hkr1_flow_type | holding | sensor | INT16 | 1 | no | 1 | — | yes |
+| 2820 | hkr1_fix_day_temp | holding | number | INT16 | 1 | no | 1 | °C | yes |
+| 2821 | hkr1_fix_reduction_temp | holding | number | INT16 | 1 | no | 1 | °C | yes |
+| 2822 | hkr1_heating_curve_day_temp_1 | holding | number | INT16 | 1 | no | 1 | °C | yes |
+| 2823 | hkr1_heating_curve_day_temp_2 | holding | number | INT16 | 1 | no | 1 | °C | yes |
+| 2824 | hkr1_heating_curve_day_temp_3 | holding | number | INT16 | 1 | no | 1 | °C | yes |
+| 2825 | hkr1_heating_curve_reduction_temp | holding | number | INT16 | 1 | no | 1 | °C | yes |
+| 2826 | hkr1_heating_curve_slope | holding | number | INT16 | 1 | no | 0.01 | — | yes |
+| 3073 | hkr2_warm_water_priority | holding | switch | INT16 | 1 | no | 1 | — | yes |
+| 3074 | hkr2_operating_mode | holding | select | INT16 | 1 | no | 1 | — | yes |
+| 3075 | hkr2_flow_type | holding | sensor | INT16 | 1 | no | 1 | — | yes |
+| 3076 | hkr2_fix_day_temp | holding | number | INT16 | 1 | no | 1 | °C | yes |
+| 3077 | hkr2_fix_reduction_temp | holding | number | INT16 | 1 | no | 1 | °C | yes |
+| 3078 | hkr2_heating_curve_day_temp_1 | holding | number | INT16 | 1 | no | 1 | °C | yes |
+| 3079 | hkr2_heating_curve_day_temp_2 | holding | number | INT16 | 1 | no | 1 | °C | yes |
+| 3080 | hkr2_heating_curve_day_temp_3 | holding | number | INT16 | 1 | no | 1 | °C | yes |
+| 3081 | hkr2_heating_curve_reduction_temp | holding | number | INT16 | 1 | no | 1 | °C | yes |
+| 3082 | hkr2_heating_curve_slope | holding | number | INT16 | 1 | no | 0.01 | — | yes |
+| 3329 | hkr3_warm_water_priority | holding | switch | INT16 | 1 | no | 1 | — | yes |
+| 3330 | hkr3_operating_mode | holding | select | INT16 | 1 | no | 1 | — | yes |
+| 3331 | hkr3_flow_type | holding | sensor | INT16 | 1 | no | 1 | — | yes |
+| 3332 | hkr3_fix_day_temp | holding | number | INT16 | 1 | no | 1 | °C | yes |
+| 3333 | hkr3_fix_reduction_temp | holding | number | INT16 | 1 | no | 1 | °C | yes |
+| 3334 | hkr3_heating_curve_day_temp_1 | holding | number | INT16 | 1 | no | 1 | °C | yes |
+| 3335 | hkr3_heat_curve_day_temp_2 | holding | number | INT16 | 1 | no | 1 | °C | yes |
+| 3336 | hkr3_heating_curve_day_temp_3 | holding | number | INT16 | 1 | no | 1 | °C | yes |
+| 3337 | hkr3_heating_curve_reduction_temp | holding | number | INT16 | 1 | no | 1 | °C | yes |
+| 3338 | hkr3_heating_curve_slope | holding | number | INT16 | 1 | no | 0.01 | — | yes |
+| 33543 | solar_power | holding | sensor | INT16 | 1 | no | 0.1 | kW | yes |
+| 33544 | heatpump_power_output_thermal | holding | sensor | INT16 | 1 | no | 0.1 | kW | yes |
+| 33545 | heatpump_power_input_electric | holding | sensor | INT16 | 1 | no | 0.1 | kW | yes |
+| 34304 | hkr1_room_temp | holding | sensor | INT16 | 1 | no | 0.1 | °C | yes |
+| 34304 | hkr1_room_temp_write | holding | number | INT16 | 1 | no | 0.1 | °C | yes |
+| 34305 | hkr2_room_temp | holding | sensor | INT16 | 1 | no | 0.1 | °C | yes |
+| 34305 | hkr2_room_temp_write | holding | number | INT16 | 1 | no | 0.1 | °C | yes |
+| 34306 | hkr3_room_temp | holding | sensor | INT16 | 1 | no | 0.1 | °C | yes |
+| 34306 | hkr3_room_temp_write | holding | number | INT16 | 1 | no | 0.1 | °C | yes |
+| 33042 | analog_in_1 | input | sensor | INT16 | 1 | no | 0.01 | V | no |
+| 33043 | analog_in_2 | input | sensor | INT16 | 1 | no | 0.01 | V | no |
+| 33044 | analog_in_3 | input | sensor | INT16 | 1 | no | 0.01 | V | no |
+| 33542 | cooling_energy | input | sensor | INT16 | 1 | no | 10 | kWh | no |
+| 33551 | cooling_power | input | sensor | INT16 | 1 | no | 0.1 | kW | no |
+| 33554 | heatpump_runtime | input | sensor | INT16 | 1 | no | 1 | h | yes |
+| 33555 | heizstab_runtime | input | sensor | INT16 | 1 | no | 1 | h | yes |
+| 33556 | pv2heat_runtime | input | sensor | INT16 | 1 | no | 1 | h | yes |
+| 33793 | message_1_code | input | sensor | INT16 | 1 | no | 1 | — | no |
+| 33798 | message_2_code | input | sensor | INT16 | 1 | no | 1 | — | no |
+| 33803 | message_3_code | input | sensor | INT16 | 1 | no | 1 | — | no |
+| 33808 | message_4_code | input | sensor | INT16 | 1 | no | 1 | — | no |
+| 33813 | message_5_code | input | sensor | INT16 | 1 | no | 1 | — | no |
+| 33818 | message_6_code | input | sensor | INT16 | 1 | no | 1 | — | no |
+| 33823 | message_7_code | input | sensor | INT16 | 1 | no | 1 | — | no |
+| 33828 | message_8_code | input | sensor | INT16 | 1 | no | 1 | — | no |
+| 33833 | message_9_code | input | sensor | INT16 | 1 | no | 1 | — | no |
+| 33838 | message_10_code | input | sensor | INT16 | 1 | no | 1 | — | no |
+| 34307 | hkr1_demand_temp | input | sensor | INT16 | 1 | no | 1 | °C | no |
+| 34308 | hkr2_demand_temp | input | sensor | INT16 | 1 | no | 1 | °C | no |
+| 34309 | hkr3_demand_temp | input | sensor | INT16 | 1 | no | 1 | °C | no |
+| 34310 | hkr1_control_state | input | sensor | INT16 | 1 | no | 1 | — | no |
+| 34311 | hkr2_control_state | input | sensor | INT16 | 1 | no | 1 | — | no |
+| 34312 | hkr3_control_state | input | sensor | INT16 | 1 | no | 1 | — | no |
+| 34313 | hkr1_mixer_control_state | input | sensor | INT16 | 1 | no | 1 | — | no |
+| 34314 | hkr2_mixer_control_state | input | sensor | INT16 | 1 | no | 1 | — | no |
+| 34315 | hkr3_mixer_control_state | input | sensor | INT16 | 1 | no | 1 | — | no |
+| 34316 | heating_circuit_flow_temp | input | sensor | INT16 | 1 | no | 0.1 | °C | no |
+| 34317 | heating_circuit_return_temp | input | sensor | INT16 | 1 | no | 0.1 | °C | no |
+| 34318 | heating_circuit_spread | input | sensor | INT16 | 1 | no | 0.1 | K | no |
+| 34319 | heating_circuit_volume_flow | input | sensor | INT16 | 1 | no | 0.1 | l/min | no |
+| 34320 | heating_circuit_power | input | sensor | INT16 | 1 | no | 0.1 | kW | no |
+| 34560 | smart_energy_power_to_use | input | sensor | INT16 | 1 | no | 1 | W | no |
+| 34561 | smart_energy_power_from_grid | input | sensor | INT16 | 1 | no | 1 | W | no |
+| 34562 | smart_energy_consumer_1_status | input | sensor | INT16 | 1 | no | 1 | — | no |

@@ -1,110 +1,152 @@
-| Internal name                             | Name in Home Assistant                          | Polling Group |
-| :---------------------------------------- | :---------------------------------------------- | :------------ |
-| hkr_number                                | Heizkreise Anzahl                               | slow          |
-| heizstab_modulation_o1_status             | Heizstab Modulation Betriebsart                 | default       |
-| solar_pump_primary_o2_status              | Solarpumpe primär Modus                         | default       |
-| solar_pump_secondary_o3_status            | Solarpumpe sekundär Modus                       | default       |
-| heatpump_charging_pump_o4_status          | Wärmepumpe Ladepumpe Modus                      | default       |
-| warm_water_pump_o5_status                 | Warmwasserpumpe Modus                           | default       |
-| analog_out_o6_status                      | Analog Out O6 Modus                             | default       |
-| pv2heat_energy                            | PV2Heat Wärmemenge                              | default       |
-| solar_energy                              | Solarthermie Wärmemenge                         | slow          |
-| heatpump_energy_thermal                   | Wärmepumpe Wärmemenge thermisch                 | slow          |
-| heizstab_energy_thermal                   | Heizstab thermische Energie                     | slow          |
-| warm_water_energy                         | Warmwasser Wärmemenge                           | slow          |
-| heating_circuits_energy                   | Heizkreise Wärmemenge                           | slow          |
-| heizstab_power_thermal                    | Heizstab thermische Leistung                    | high          |
-| heizstab_power_electric                   | Heizstab elektrische Leistung                   | high          |
-| warm_water_power                          | Warmwasser Leistung                             | high          |
-| solar_pump_primary_runtime                | Solarpumpe primär Laufzeit                      | slow          |
-| solar_pump_secondary_runtime              | Solarpumpe sekundär Laufzeit                    | slow          |
-| messages_number                           | Meldungen Anzahl                                | slow          |
-| outdoor_air_temp_s10                      | Außentemperatur (S10)                           | default       |
-| solar_collector_temp_s8                   | Solarkollektor Temperatur (S8)                  | default       |
-| circulation_temp_s11                      | Zirkulation Temperatur (S11)                    | default       |
-| hkr1_flow_water_temp_s12                  | HKR1 Vorlauftemperatur (S12)                    | default       |
-| hkr2_flow_water_temp_s13                  | HKR2 Vorlauftemperatur (S13)                    | default       |
-| temp_s14                                  | Temperatursensor S14                            | default       |
-| temp_s16                                  | Temperatursensor S16                            | default       |
-| warm_water_temp_s2                        | Warmwassertemperatur (S2)                       | default       |
-| warm_water_reheat                         | Warmwasser Nachheizung Start                    | default       |
-| solar_flow_primary_temp_s7                | Solarvorlauf primär Temperatur (S7)             | default       |
-| solar_return_secondary_temp_s6            | Solarrücklauf sekundär Temperatur (S6)          | default       |
-| solar_flow_secondary_temp_s5              | Solarvorlauf sekundär Temperatur (S5)           | default       |
-| storage_reference_temp_s3                 | Speicherreferenztemperatur (S3)                 | default       |
-| heating_buffer_lower_temp_s9              | Heizungspuffer unten Temperatur (S9)            | default       |
-| heating_buffer_upper_temp_s4              | Heizungspuffer oben Temperatur (S4)             | default       |
-| warm_water_buffer_temp_s1                 | Warmwasserpuffer Temperatur (S1)                | default       |
-| cold_water_temp_s15                       | Kaltwassertemperatur (S15)                      | default       |
-| circulation_pump_a1                       | Zirkulationspumpe (A1)                          | default       |
-| heatpump_charging_pump_a2                 | Wärmepumpe Ladepumpe (A2)                       | default       |
-| heatpump_hybrid_warm_water_bivalence_temp | Wärmepumpe hybrid Warmwasser Bivalenztemperatur | slow          |
-| heatpump_hybrid_heating_bivalence_temp    | Wärmepumpe hybrid Heizung Bivalenztemperatur    | slow          |
-| warm_water_target_temp                    | Warmwasser Solltemperatur                       | default       |
-| hkr1_pump_a3                              | HKR1 Pumpe (A3)                                 | default       |
-| hkr2_pump_a4                              | HKR2 Pumpe (A4)                                 | default       |
-| hkr3_pump_a5                              | HKR3 Pumpe (A5)                                 | default       |
-| hkr3_mixer_heating_circuit_open_a6        | HKR3 Mischer Heizkreis auf (A6)                 | default       |
-| hkr3_mixer_heating_circuit_close_a7       | HKR3 Mischer Heizkreis zu (A7)                  | default       |
-| hkr2_mixer_heating_circuit_open_a10       | HKR2 Mischer Heizkreis auf (A10)                | default       |
-| hkr2_mixer_heating_circuit_close_a11      | HKR2 Mischer Heizkreis zu (A11)                 | default       |
-| heizstab_level_2_3_a13                    | Heizstab Stufe 2 & 3 (A13)                      | default       |
-| heizstab_status_a12                       | Heizstab Status (A12)                           | default       |
-| solar_volume_flow_s17                     | Solar Volumenstrom (S17)                        | default       |
-| solar_volume_flow_s17                     | Solar Volumenstrom (S17)                        | default       |
-| solar_power                               | Solarthermie Leistung                           | default       |
-| warm_water_volume_flow_s18                | Warmwasser Volumenstrom (S18)                   | default       |
-| warm_water_volume_flow_s18                | Warmwasser Volumenstrom (S18)                   | default       |
-| hkr1_operating_mode                       | HKR1 Betriebsart                                | slow          |
-| hkr1_warm_water_priority                  | HKR1 Warmwasser Vorrang                         | slow          |
-| hkr1_flow_type                            | HKR1 Vorlaufart                                 | slow          |
-| hkr1_fix_day_temp                         | HKR1 Fix Vorlauf Tag-Temperatur                 | slow          |
-| hkr1_fix_reduction_temp                   | HKR1 Fix Vorlauf Absenk-Temperatur              | slow          |
-| hkr1_heating_curve_day_temp_1             | HKR1 Heizkurve Tag-Temperatur 1                 | slow          |
-| hkr1_heating_curve_day_temp_2             | HKR1 Heizkurve Tag-Temperatur 2                 | slow          |
-| hkr1_heating_curve_day_temp_3             | HKR1 Heizkurve Tag-Temperatur 3                 | slow          |
-| hkr1_heating_curve_reduction_temp         | HKR1 Heizkurve Absenk-Temperatur                | slow          |
-| hkr1_heating_curve_slope                  | HKR1 Heizkurve Steilheit                        | slow          |
-| hkr1_room_temp                            | HKR1 Raumtemperatur                             | default       |
-| hkr1_room_temp_write                      | HKR1 Raumtemperatur                             | default       |
-| hkr1_mixer_heating_circuit_close_a9       | HKR1 Mischer Heizkreis zu (A9)                  | default       |
-| hkr1_mixer_heating_circuit_open_a8        | HKR1 Mischer Heizkreis auf (A8)                 | default       |
-| hkr2_operating_mode                       | HKR2 Betriebsart                                | slow          |
-| hkr2_flow_type                            | HKR2 Vorlaufart                                 | slow          |
-| hkr2_warm_water_priority                  | HKR2 Warmwasser Vorrang                         | default       |
-| hkr2_fix_day_temp                         | HKR2 Fix Vorlauf Tag-Temperatur                 | slow          |
-| hkr2_fix_reduction_temp                   | HKR2 Fix Vorlauf Absenk-Temperatur              | slow          |
-| hkr2_heating_curve_day_temp_1             | HKR2 Heizkurve Tag-Temperatur 1                 | slow          |
-| hkr2_heating_curve_day_temp_2             | HKR2 Heizkurve Tag-Temperatur 2                 | slow          |
-| hkr2_heating_curve_day_temp_3             | HKR2 Heizkurve Tag-Temperatur 3                 | slow          |
-| hkr2_heating_curve_reduction_temp         | HKR2 Heizkurve Absenk-Temperatur                | slow          |
-| hkr2_heating_curve_slope                  | HKR2 Heizkurve Steilheit                        | slow          |
-| hkr2_room_temp                            | HKR2 Raumtemperatur                             | default       |
-| hkr2_room_temp_write                      | HKR2 Raumtemperatur                             | default       |
-| hkr3_operating_mode                       | HKR3 Betriebsart                                | slow          |
-| hkr3_flow_type                            | HKR3 Vorlaufart                                 | slow          |
-| hkr3_warm_water_priority                  | HKR3 Warmwasser Vorrang                         | slow          |
-| hkr3_fix_day_temp                         | HKR3 Fix Vorlauf Tag-Temperatur                 | slow          |
-| hkr3_fix_reduction_temp                   | HKR3 Fix Vorlauf Absenk-Temperatur              | slow          |
-| hkr3_heating_curve_day_temp_1             | HKR3 Heizkurve Tag-Temperatur 1                 | slow          |
-| hkr3_heat_curve_day_temp_2                | HKR3 Heizkurve Tag-Temperatur 2                 | slow          |
-| hkr3_heating_curve_day_temp_3             | HKR3 Heizkurve Tag-Temperatur 3                 | slow          |
-| hkr3_heating_curve_reduction_temp         | HKR3 Heizkurve Absenk-Temperatur                | default       |
-| hkr3_heating_curve_slope                  | HKR3 Heizkurve Steilheit                        | slow          |
-| hkr3_room_temp                            | HKR3 Raumtemperatur                             | default       |
-| hkr3_room_temp_write                      | HKR3 Raumtemperatur                             | default       |
-| version_sc                                | Version SC                                      | slow          |
-| version_nbg                               | Version NBG                                     | slow          |
-| digin_error                               | DigIn Fehler                                    | default       |
-| circulation_operating_mode                | Zirkulation Betriebsart                         | default       |
-| heatpump_power_output_thermal             | Wärmepumpe Leistung thermisch                   | default       |
-| heatpump_power_input_electric             | Wärmepumpe Leistungsaufnahme elektrisch         | default       |
-| pv2heat_power_electric                    | PV2Heat Leistung elektrisch                     | default       |
-| heatpump_switching_valve_a14              | Wärmepumpe Umschaltventil (A14)                 | default       |
-| heat_meter_power_thermal                  | Wärmemengenzähler Leistung                      | default       |
-| heizstab_modulation_o1                    | Heizstab Modulation (O1)                        | default       |
-| solar_pump_primary_o2                     | Solarpumpe primär (O2)                          | default       |
-| solar_pump_secondary_o3                   | Solarpumpe sekundär (O3)                        | default       |
-| heatpump_charging_pump_o4                 | Wärmepumpe Ladepumpe (O4)                       | default       |
-| warm_water_pump_o5                        | Warmwasserpumpe (O5)                            | default       |
-| analog_out_o6                             | Analog Out (O6)                                 | default       |
+# SolvisLeo 180 polling groups
+
+This file is generated from `custom_components/solvis_control/const.py`. Do not edit it by hand; run `python -m tools.generate_docs --write` after changing `REGISTERS`. Implementation identifiers are raw code keys, not display names.
+
+| Polling group | Address | Implementation identifier | Platform |
+| --- | ---: | --- | --- |
+| slow | 2 | hkr_number | sensor |
+| default | 2049 | circulation_operating_mode | sensor |
+| default | 3840 | heizstab_modulation_o1_status | sensor |
+| default | 3845 | solar_pump_primary_o2_status | sensor |
+| default | 3850 | solar_pump_secondary_o3_status | sensor |
+| default | 3855 | heatpump_charging_pump_o4_status | sensor |
+| default | 3860 | warm_water_pump_o5_status | sensor |
+| default | 3865 | analog_out_o6_status | sensor |
+| slow | 34048 | hkr1_schedule | block |
+| slow | 34090 | hkr2_schedule | block |
+| slow | 34132 | hkr3_schedule | block |
+| slow | 34174 | warm_water_schedule | block |
+| slow | 34216 | circulation_schedule | block |
+| slow | 34258 | eco_schedule | block |
+| slow | 32768 | controller_unix_time | sensor |
+| slow | 32770 | version_sc | update |
+| slow | 32771 | version_nbg | update |
+| default | 33024 | warm_water_buffer_temp_s1 | sensor |
+| default | 33025 | warm_water_temp_s2 | sensor |
+| default | 33026 | storage_reference_temp_s3 | sensor |
+| default | 33027 | heating_buffer_upper_temp_s4 | sensor |
+| default | 33028 | solar_flow_secondary_temp_s5 | sensor |
+| default | 33029 | solar_return_secondary_temp_s6 | sensor |
+| default | 33030 | solar_flow_primary_temp_s7 | sensor |
+| default | 33031 | solar_collector_temp_s8 | sensor |
+| default | 33032 | heating_buffer_lower_temp_s9 | sensor |
+| default | 33033 | outdoor_air_temp_s10 | sensor |
+| default | 33034 | circulation_temp_s11 | sensor |
+| default | 33035 | hkr1_flow_water_temp_s12 | sensor |
+| default | 33036 | hkr2_flow_water_temp_s13 | sensor |
+| default | 33037 | temp_s14 | sensor |
+| default | 33038 | cold_water_temp_s15 | sensor |
+| default | 33039 | temp_s16 | sensor |
+| default | 33040 | solar_volume_flow_s17 | sensor |
+| default | 33041 | warm_water_volume_flow_s18 | sensor |
+| default | 33280 | circulation_pump_a1 | binary_sensor |
+| default | 33281 | heatpump_charging_pump_a2 | binary_sensor |
+| default | 33282 | hkr1_pump_a3 | binary_sensor |
+| default | 33283 | hkr2_pump_a4 | binary_sensor |
+| default | 33284 | hkr3_pump_a5 | binary_sensor |
+| default | 33285 | hkr3_mixer_heating_circuit_open_a6 | binary_sensor |
+| default | 33286 | hkr3_mixer_heating_circuit_close_a7 | binary_sensor |
+| default | 33287 | hkr1_mixer_heating_circuit_open_a8 | binary_sensor |
+| default | 33288 | hkr1_mixer_heating_circuit_close_a9 | binary_sensor |
+| default | 33289 | hkr2_mixer_heating_circuit_open_a10 | binary_sensor |
+| default | 33290 | hkr2_mixer_heating_circuit_close_a11 | binary_sensor |
+| default | 33291 | heizstab_status_a12 | binary_sensor |
+| default | 33292 | heizstab_level_2_3_a13 | binary_sensor |
+| default | 33293 | heatpump_switching_valve_a14 | binary_sensor |
+| default | 33294 | heizstab_modulation_o1 | sensor |
+| default | 33295 | solar_pump_primary_o2 | sensor |
+| default | 33296 | solar_pump_secondary_o3 | sensor |
+| default | 33297 | heatpump_charging_pump_o4 | sensor |
+| default | 33298 | warm_water_pump_o5 | sensor |
+| slow | 33536 | solar_energy | sensor |
+| slow | 33537 | heatpump_energy_thermal | sensor |
+| slow | 33538 | heizstab_energy_thermal | sensor |
+| default | 33539 | pv2heat_energy | sensor |
+| slow | 33540 | warm_water_energy | sensor |
+| slow | 33541 | heating_circuits_energy | sensor |
+| high | 33546 | heizstab_power_thermal | sensor |
+| high | 33547 | heizstab_power_electric | sensor |
+| default | 33548 | pv2heat_power_electric | sensor |
+| high | 33549 | warm_water_power | sensor |
+| default | 33550 | heat_meter_power_thermal | sensor |
+| slow | 33552 | solar_pump_primary_runtime | sensor |
+| slow | 33553 | solar_pump_secondary_runtime | sensor |
+| slow | 33792 | messages_number | sensor |
+| slow | 838 | heatpump_hybrid_warm_water_bivalence_temp | sensor |
+| slow | 839 | heatpump_hybrid_heating_bivalence_temp | sensor |
+| default | 2305 | warm_water_target_temp | number |
+| default | 2322 | warm_water_reheat | switch |
+| slow | 2817 | hkr1_warm_water_priority | switch |
+| slow | 2818 | hkr1_operating_mode | select |
+| slow | 2819 | hkr1_flow_type | sensor |
+| slow | 2820 | hkr1_fix_day_temp | number |
+| slow | 2821 | hkr1_fix_reduction_temp | number |
+| slow | 2822 | hkr1_heating_curve_day_temp_1 | number |
+| slow | 2823 | hkr1_heating_curve_day_temp_2 | number |
+| slow | 2824 | hkr1_heating_curve_day_temp_3 | number |
+| slow | 2825 | hkr1_heating_curve_reduction_temp | number |
+| slow | 2826 | hkr1_heating_curve_slope | number |
+| default | 3073 | hkr2_warm_water_priority | switch |
+| slow | 3074 | hkr2_operating_mode | select |
+| slow | 3075 | hkr2_flow_type | sensor |
+| slow | 3076 | hkr2_fix_day_temp | number |
+| slow | 3077 | hkr2_fix_reduction_temp | number |
+| slow | 3078 | hkr2_heating_curve_day_temp_1 | number |
+| slow | 3079 | hkr2_heating_curve_day_temp_2 | number |
+| slow | 3080 | hkr2_heating_curve_day_temp_3 | number |
+| slow | 3081 | hkr2_heating_curve_reduction_temp | number |
+| slow | 3082 | hkr2_heating_curve_slope | number |
+| slow | 3329 | hkr3_warm_water_priority | switch |
+| slow | 3330 | hkr3_operating_mode | select |
+| slow | 3331 | hkr3_flow_type | sensor |
+| slow | 3332 | hkr3_fix_day_temp | number |
+| slow | 3333 | hkr3_fix_reduction_temp | number |
+| slow | 3334 | hkr3_heating_curve_day_temp_1 | number |
+| slow | 3335 | hkr3_heat_curve_day_temp_2 | number |
+| slow | 3336 | hkr3_heating_curve_day_temp_3 | number |
+| default | 3337 | hkr3_heating_curve_reduction_temp | number |
+| slow | 3338 | hkr3_heating_curve_slope | number |
+| default | 33543 | solar_power | sensor |
+| default | 33544 | heatpump_power_output_thermal | sensor |
+| default | 33545 | heatpump_power_input_electric | sensor |
+| default | 34304 | hkr1_room_temp | sensor |
+| default | 34304 | hkr1_room_temp_write | number |
+| default | 34305 | hkr2_room_temp | sensor |
+| default | 34305 | hkr2_room_temp_write | number |
+| default | 34306 | hkr3_room_temp | sensor |
+| default | 34306 | hkr3_room_temp_write | number |
+| default | 33042 | analog_in_1 | sensor |
+| default | 33043 | analog_in_2 | sensor |
+| default | 33044 | analog_in_3 | sensor |
+| slow | 33542 | cooling_energy | sensor |
+| default | 33551 | cooling_power | sensor |
+| slow | 33554 | heatpump_runtime | sensor |
+| slow | 33555 | heizstab_runtime | sensor |
+| slow | 33556 | pv2heat_runtime | sensor |
+| slow | 33793 | message_1_code | sensor |
+| slow | 33798 | message_2_code | sensor |
+| slow | 33803 | message_3_code | sensor |
+| slow | 33808 | message_4_code | sensor |
+| slow | 33813 | message_5_code | sensor |
+| slow | 33818 | message_6_code | sensor |
+| slow | 33823 | message_7_code | sensor |
+| slow | 33828 | message_8_code | sensor |
+| slow | 33833 | message_9_code | sensor |
+| slow | 33838 | message_10_code | sensor |
+| default | 34307 | hkr1_demand_temp | sensor |
+| default | 34308 | hkr2_demand_temp | sensor |
+| default | 34309 | hkr3_demand_temp | sensor |
+| default | 34310 | hkr1_control_state | sensor |
+| default | 34311 | hkr2_control_state | sensor |
+| default | 34312 | hkr3_control_state | sensor |
+| default | 34313 | hkr1_mixer_control_state | sensor |
+| default | 34314 | hkr2_mixer_control_state | sensor |
+| default | 34315 | hkr3_mixer_control_state | sensor |
+| default | 34316 | heating_circuit_flow_temp | sensor |
+| default | 34317 | heating_circuit_return_temp | sensor |
+| default | 34318 | heating_circuit_spread | sensor |
+| default | 34319 | heating_circuit_volume_flow | sensor |
+| default | 34320 | heating_circuit_power | sensor |
+| default | 34560 | smart_energy_power_to_use | sensor |
+| default | 34561 | smart_energy_power_from_grid | sensor |
+| default | 34562 | smart_energy_consumer_1_status | sensor |
