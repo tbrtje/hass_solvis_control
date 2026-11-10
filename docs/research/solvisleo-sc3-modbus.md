@@ -58,6 +58,16 @@ Die Verknüpfung dieser Anschlussnamen mit generischen SC3-Adressen ist nur eine
 
 **Herstellerwiderspruch:** LEO-MAL S. 37 nennt den Speicherreferenzsensor S6; LEO-ALS S. 8 und der Kabelbaum auf S. 9 nennen S3. Das bleibt ungeklärt und ist kein belastbarer Nachweis einer Leo-Registerverschiebung.
 
+**Bezeichnung in der Integration, korrigiert am 10.11.2026:** Register 33029 wird
+neutral als „Temperatursensor S6“ mit Thermometer-Symbol angezeigt. Die aus der
+generischen Integration übernommene Bezeichnung „Solarrücklauf“ ist für diese
+SolvisLeo 180 nicht belegt. Wegen des Herstellerwiderspruchs wird auch keine
+Speicherreferenzfunktion für dieses Register angenommen. Der historische interne
+Schlüssel `solar_return_secondary_temp_s6` bleibt erhalten, damit Unique-ID,
+bestehende Entity-ID und Historie stabil bleiben. Neu angelegte Entitäten erhalten
+ihre Entity-ID aus dem korrigierten Anzeigenamen; benutzerdefinierte Namen bleiben
+in Home Assistant vorrangig.
+
 ### Pth/Pel, Heizpatrone und Energieanzeige
 
 [LEO-I, S. 37–38](https://solvis-files.s3.eu-central-1.amazonaws.com/downloads-fk/solvisleo/36005_BAL-LEO-I.pdf#page=37) beschreibt thermische WP-Abgabe und elektrische Aufnahme in kW sowie Heizpatronen-Soll-/Istleistung. S. 37 enthält daneben einen offensichtlichen Einheitenwiderspruch („°C“ bei elektrischer Aufnahmeleistung); daraus darf keine Registerskalierung abgeleitet werden.

@@ -249,7 +249,7 @@
 				"name":"(S7) ritorno solare primario"
 			},
 			"solar_return_secondary_temp_s6":{
-				"name":"(S6) ritorno solare secondario"
+				"name":"Sensore di temperatura S6"
 			},
 			"solar_flow_secondary_temp_s5":{
 				"name":"(S5) mandata solare secondaria"

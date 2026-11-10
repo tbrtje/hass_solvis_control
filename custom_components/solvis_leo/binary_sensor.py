@@ -88,10 +88,7 @@ class SolvisScheduleBinarySensor(SolvisEntity, BinarySensorEntity):
         self._attr_device_class = BinarySensorDeviceClass.RUNNING
         self._attr_is_on = None
         self.source_key = source_key
-        self.coordinator = coordinator
         self._unsub_boundary = None
-
-        self.coordinator.async_add_listener(self._async_refresh)
 
     @callback
     def _async_refresh(self, _now=None) -> None:
@@ -118,17 +115,13 @@ class SolvisScheduleBinarySensor(SolvisEntity, BinarySensorEntity):
             self._unsub_boundary()
             self._unsub_boundary = None
 
-    async def async_added_to_hass(self) -> None:
-        await super().async_added_to_hass()
-        self._async_refresh()
-
     async def async_will_remove_from_hass(self) -> None:
         self._cancel_boundary_timer()
         await super().async_will_remove_from_hass()
 
     @callback
     def _handle_coordinator_update(self) -> None:
-        return
+        self._async_refresh()
 
 
 class SolvisBinarySensor(SolvisEntity, BinarySensorEntity):

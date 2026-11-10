@@ -179,7 +179,7 @@
         "default": "mdi:solar-panel"
       },
       "solar_return_secondary_temp_s6": {
-        "default": "mdi:solar-panel"
+        "default": "mdi:thermometer"
       },
       "solar_flow_secondary_temp_s5": {
         "default": "mdi:solar-panel"

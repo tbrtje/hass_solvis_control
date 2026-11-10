@@ -161,7 +161,7 @@ EXPECTED_ENTITY_IDS = {
     "sensor.solvisleo_180_solar_pump_primary_runtime",
     "sensor.solvisleo_180_solar_pump_secondary_mode",
     "sensor.solvisleo_180_solar_pump_secondary_running_time",
-    "sensor.solvisleo_180_solar_return_secondary_temperature_s6",
+    "sensor.solvisleo_180_temperature_sensor_s6",
     "sensor.solvisleo_180_solar_thermal_heat_output",
     "sensor.solvisleo_180_solar_thermal_power",
     "sensor.solvisleo_180_solar_volume_flow_s17",
@@ -444,3 +444,189 @@ async def test_calculated_warm_water_power_tracks_source_failure_and_recovery(ha
     await hass.async_block_till_done()
 
     assert hass.states.get(entity_id).state == initial_state
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("entity_id", "register_type", "address"),
+    [
+        ("sensor.solvisleo_180_circulation_temperature_s11", "input", 33034),
+        ("select.solvisleo_180_hkr_1_operating_mode", "holding", 2818),
+        ("number.solvisleo_180_warm_water_target_temp", "holding", 2305),
+        ("switch.solvisleo_180_warm_water_reheat_start", "holding", 2322),
+        ("binary_sensor.solvisleo_180_circulation_pump_a1", "input", 33280),
+        ("update.solvisleo_180_firmware_sc", "input", 32770),
+    ],
+)
+async def test_disabled_entity_stops_its_modbus_reads(hass, entity_id, register_type, address) -> None:
+    """A real, renamed registry entry must control polling by its stable identity."""
+    client, entry, coordinator = await setup_recorded_anlage(hass)
+    registry = er.async_get(hass)
+    entity = registry.async_update_entity(
+        entity_id,
+        new_entity_id=f"{entity_id.split('.')[0]}.mein_solvis_wert",
+        disabled_by=er.RegistryEntryDisabler.USER,
+    )
+    await hass.async_block_till_done()
+    reads_before = client.request_count(register_type, address)
+    healthy_reads_before = client.request_count("input", 33549)
+
+    await coordinator.async_refresh()
+    await hass.async_block_till_done()
+
+    assert registry.entities[entity.entity_id].disabled
+    assert client.request_count(register_type, address) == reads_before
+    assert client.request_count("input", 33549) == healthy_reads_before + 1
+
+    with patch("custom_components.solvis_leo.create_modbus_client", return_value=client):
+        assert await hass.config_entries.async_reload(entry.entry_id)
+        await hass.async_block_till_done()
+    coordinator = hass.data[DOMAIN][entry.entry_id][DATA_COORDINATOR]
+    assert client.request_count(register_type, address) == reads_before
+
+    registry.async_update_entity(entity.entity_id, disabled_by=None)
+    await coordinator.async_refresh()
+
+    assert client.request_count(register_type, address) == reads_before + 1
+
+
+@pytest.mark.asyncio
+async def test_default_disabled_entities_are_not_polled_during_first_setup(hass) -> None:
+    """The first refresh has no registry yet and must respect entity defaults."""
+    client, _, coordinator = await setup_recorded_anlage(hass)
+
+    for _ in range(2):
+        assert client.request_count("input", 34313) == 0  # Mischer diagnostic
+        assert client.request_count("input", 32768) == 0  # Controller clock
+        assert client.request_count("holding", 34048) == 0  # Both Wochenplan entities disabled
+        assert client.request_count("input", 33025) > 0  # Enabled source/derived sensor
+        await coordinator.async_refresh()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("derived_unique_id", "sources", "expected"),
+    [
+        (
+            "33025_warm_water_power_calculated",
+            [(33025, "warm_water_temp_s2", 497), (33038, "cold_water_temp_s15", 135), (33041, "warm_water_volume_flow_s18", 66)],
+            "16.67",
+        ),
+        (
+            "33024_stored_energy_12",
+            [(33024, "warm_water_buffer_temp_s1", 500), (33027, "heating_buffer_upper_temp_s4", 400), (33032, "heating_buffer_lower_temp_s9", 300)],
+            "6.0",
+        ),
+    ],
+)
+async def test_enabled_derived_sensor_keeps_disabled_source_registers_polling(hass, derived_unique_id, sources, expected) -> None:
+    """Only disabling the final consumer releases the underlying source reads."""
+    client, entry, coordinator = await setup_recorded_anlage(hass)
+    registry = er.async_get(hass)
+    derived_id = registry.async_get_entity_id("sensor", DOMAIN, derived_unique_id)
+    derived = registry.async_update_entity(derived_id, new_entity_id="sensor.meine_berechnung")
+    for address, name, value in sources:
+        source_id = registry.async_get_entity_id("sensor", DOMAIN, f"{address}_{name}")
+        registry.async_update_entity(source_id, disabled_by=er.RegistryEntryDisabler.USER)
+        client.set_registers("input", address, [value])
+    await hass.async_block_till_done()
+    previous_reads = {address: client.request_count("input", address) for address, _, _ in sources}
+
+    await coordinator.async_refresh()
+    await hass.async_block_till_done()
+
+    assert hass.states.get(derived.entity_id).state == expected
+    for address, name, _ in sources:
+        assert client.request_count("input", address) == previous_reads[address] + 1
+        assert coordinator.data[name] is not None
+
+    registry.async_update_entity(derived.entity_id, disabled_by=er.RegistryEntryDisabler.USER)
+    await coordinator.async_refresh()
+    await hass.async_block_till_done()
+    for address, name, _ in sources:
+        assert client.request_count("input", address) == previous_reads[address] + 1
+        assert name not in coordinator.data
+
+    registry.async_update_entity(derived.entity_id, disabled_by=None)
+    with patch("custom_components.solvis_leo.create_modbus_client", return_value=client):
+        assert await hass.config_entries.async_reload(entry.entry_id)
+        await hass.async_block_till_done()
+
+    assert hass.states.get(derived.entity_id).state == expected
+    for address, _, _ in sources:
+        assert client.request_count("input", address) == previous_reads[address] + 2
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("enabled_domain", ["sensor", "binary_sensor"])
+async def test_weekly_schedule_is_polled_while_either_entity_is_enabled(hass, enabled_domain) -> None:
+    """The next-switch sensor and active binary sensor share one block read."""
+    client, entry, coordinator = await setup_recorded_anlage(hass, poll_rate_slow=300)
+    registry = er.async_get(hass)
+    sensor_id = "sensor.solvisleo_180_hkr1_schedule"
+    binary_id = "binary_sensor.solvisleo_180_hkr1_schedule_active"
+    enabled_id, sibling_id = (sensor_id, binary_id) if enabled_domain == "sensor" else (binary_id, sensor_id)
+    assert client.request_count("holding", 34048) == 0
+    client.set_registers("holding", 34048, [24, 32, 0, 0, 0, 0] * 7)
+    enabled = registry.async_update_entity(enabled_id, new_entity_id=f"{enabled_domain}.mein_wochenplan", disabled_by=None)
+
+    with patch("custom_components.solvis_leo.create_modbus_client", return_value=client):
+        assert await hass.config_entries.async_reload(entry.entry_id)
+        await hass.async_block_till_done()
+    coordinator = hass.data[DOMAIN][entry.entry_id][DATA_COORDINATOR]
+
+    assert client.request_count("holding", 34048) == 1
+    assert hass.states.get(enabled.entity_id).state not in ("unknown", "unavailable")
+
+    registry.async_update_entity(sibling_id, disabled_by=None)
+    registry.async_update_entity(enabled.entity_id, disabled_by=er.RegistryEntryDisabler.USER)
+    # The shared read remains needed, retaining its slow cadence.
+    await coordinator.async_refresh()
+    assert client.request_count("holding", 34048) == 1
+    assert "hkr1_schedule" in coordinator.data
+
+    registry.async_update_entity(sibling_id, disabled_by=er.RegistryEntryDisabler.USER)
+    await coordinator.async_refresh()
+    assert client.request_count("holding", 34048) == 1
+    assert "hkr1_schedule" not in coordinator.data
+
+    registry.async_update_entity(sibling_id, disabled_by=None)
+    await coordinator.async_refresh()
+    assert client.request_count("holding", 34048) == 2
+
+
+@pytest.mark.asyncio
+async def test_reenabled_slow_sensor_reads_fresh_data_on_next_update(hass) -> None:
+    """Reactivation must not wait five minutes or republish the old cached value."""
+    client, _, coordinator = await setup_recorded_anlage(hass, poll_rate_slow=300)
+    registry = er.async_get(hass)
+    entity_id = "sensor.solvisleo_180_heizstab_thermal_energy"
+    assert client.request_count("input", 33538) == 1
+    registry.async_update_entity(entity_id, disabled_by=er.RegistryEntryDisabler.USER)
+    await coordinator.async_refresh()
+    assert "heizstab_energy_thermal" not in coordinator.data
+    assert client.request_count("input", 33538) == 1
+    client.set_registers("input", 33538, [12])
+
+    registry.async_update_entity(entity_id, disabled_by=None)
+    await coordinator.async_refresh()
+    assert client.request_count("input", 33538) == 2
+    assert coordinator.data["heizstab_energy_thermal"] == 120
+
+
+@pytest.mark.asyncio
+async def test_disabling_every_consumer_stops_all_register_reads(hass) -> None:
+    client, entry, coordinator = await setup_recorded_anlage(hass)
+    registry = er.async_get(hass)
+    for entity in list(registry.entities.values()):
+        if entity.config_entry_id == entry.entry_id:
+            registry.async_update_entity(entity.entity_id, disabled_by=er.RegistryEntryDisabler.USER)
+    with (
+        patch.object(client, "read_input_registers", wraps=client.read_input_registers) as input_reads,
+        patch.object(client, "read_holding_registers", wraps=client.read_holding_registers) as holding_reads,
+    ):
+        await coordinator.async_refresh()
+
+    assert coordinator.data == {}
+    input_reads.assert_not_awaited()
+    holding_reads.assert_not_awaited()

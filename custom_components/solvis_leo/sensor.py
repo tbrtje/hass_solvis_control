@@ -184,9 +184,6 @@ class SolvisScheduleSensor(SolvisEntity, SensorEntity):
         self._attr_native_value = None
         self._attr_extra_state_attributes = {}
         self.source_key = name
-        self.coordinator = coordinator
-
-        self.coordinator.async_add_listener(self._async_update_from_coordinator)
 
     def _async_update_from_coordinator(self) -> None:
         words = (self.coordinator.data or {}).get(self.source_key)
@@ -203,7 +200,7 @@ class SolvisScheduleSensor(SolvisEntity, SensorEntity):
 
     @callback
     def _handle_coordinator_update(self) -> None:
-        return
+        self._async_update_from_coordinator()
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:

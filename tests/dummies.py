@@ -68,6 +68,12 @@ class DummyEntityRegistry:
     async def async_load(self):
         return self
 
+    def async_get_entity_id(self, domain, platform, unique_id):
+        return next((entry.entity_id for entry in self.entities.values() if entry.entity_id.startswith(f"{domain}.") and entry.unique_id == unique_id), None)
+
+    def async_get(self, entity_id):
+        return self.entities.get(entity_id)
+
     def async_remove(self, entity_id):
         self.entities.pop(entity_id, None)
 
@@ -157,6 +163,8 @@ class DummyRegister:
         byte_swap=False,
         count=1,
         datatype="INT16",
+        input_type=0,
+        enabled_by_default=True,
     ):
         self.name = name
         self.address = address
@@ -165,6 +173,8 @@ class DummyRegister:
         self.register = reg
         self.count = count
         self.datatype = datatype
+        self.input_type = input_type
+        self.enabled_by_default = enabled_by_default
         self.multiplier = multiplier
         self.absolute_value = absolute_value
         self.byte_swap = byte_swap

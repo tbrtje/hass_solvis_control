@@ -357,13 +357,20 @@ async def test_skip_disabled_entity(dummy_coordinator, monkeypatch):
         byte_swap=0,
     )
     monkeypatch.setattr("custom_components.solvis_leo.coordinator.REGISTERS", [dummy_register])
-    dummy_registry = DummyEntityRegistry({"entity.one": DummyEntity("unique_1", "entity.one", disabled=True)})
-    entity_id = f"{DOMAIN}.{dummy_register.name}"
-    dummy_registry.entities = {entity_id: MagicMock(disabled=True)}
+    entity_id = "sensor.mein_sensor"
+    dummy_registry = DummyEntityRegistry({entity_id: DummyEntity("500_disabled_sensor", entity_id, disabled=True)})
     monkeypatch.setattr(er, "async_get", lambda hass: dummy_registry)
+    reads = []
+
+    async def read(address, count):
+        reads.append(address)
+        return DummyModbusResponse([123])
+
+    dummy_coordinator.modbus.read_input_registers = read
     data = await dummy_coordinator._async_update_data()
 
-    assert entity_id not in data
+    assert dummy_register.name not in data
+    assert reads == []
 
 
 @pytest.mark.asyncio

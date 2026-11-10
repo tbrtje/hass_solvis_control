@@ -249,7 +249,7 @@
 				"name":"Solarvorlauf primär Temperatur (S7)"
 			},
 			"solar_return_secondary_temp_s6":{
-				"name":"Solarrücklauf sekundär Temperatur (S6)"
+				"name":"Temperatursensor S6"
 			},
 			"solar_flow_secondary_temp_s5":{
 				"name":"Solarvorlauf sekundär Temperatur (S5)"

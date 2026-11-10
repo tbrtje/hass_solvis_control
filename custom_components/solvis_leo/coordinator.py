@@ -11,20 +11,24 @@ from pymodbus.client import AsyncModbusTcpClient
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.helpers import entity_registry as er
 from pymodbus.exceptions import ConnectionException, ModbusException, ModbusIOException
-from .utils.helpers import ensure_connected
+from .utils.helpers import ensure_connected, generate_unique_id
 from .const import (
     CONF_HOST,
     CONF_PORT,
     DOMAIN,
+    DERIVATIVE_SENSORS,
     POLL_RATE_SLOW,
     POLL_RATE_DEFAULT,
     POLL_RATE_HIGH,
     REGISTERS,
+    REGISTER_ADDRESSES_BY_NAME,
+    SCHEDULES,
 )
 
 _LOGGER = logging.getLogger(__name__)
 
 REGISTER_FAILURE_THRESHOLD = 3
+ENTITY_DOMAIN_BY_INPUT_TYPE = {0: "sensor", 1: "select", 2: "number", 3: "switch", 4: "binary_sensor", 5: "update"}
 
 
 class SolvisModbusCoordinator(DataUpdateCoordinator):
@@ -54,10 +58,19 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
         """Fetches and processes data from the Solvis device."""
 
         _LOGGER.debug("Polling data...")
+        required_names = self._required_register_names()
         # A coordinator update is a complete current snapshot, even though each
         # poll cycle reads only the registers whose cadence is due.
-        parsed_data = dict(self.data or {})
+        parsed_data = {key: value for key, value in (self.data or {}).items() if key in required_names}
+        # Inactive sources must not retain cached data, cadence or error streaks.
+        # Enabling a consumer again makes its first read due on the next update.
+        self._poll_remaining = {key: remaining for key, remaining in self._poll_remaining.items() if key in required_names}
+        required_addresses = {register.address for register in REGISTERS if register.name in required_names}
+        self._register_failures = {address: failures for address, failures in self._register_failures.items() if address in required_addresses}
         failed_addresses: set[int] = set()
+
+        if not required_names:
+            return parsed_data
 
         # check connection
         if not await ensure_connected(self.modbus):
@@ -66,6 +79,10 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
 
         for register in REGISTERS:
             _LOGGER.debug(f"[{register.name} | {register.address}] Checking...")
+
+            if register.name not in required_names:
+                _LOGGER.debug("[%s | %s] Skipping register without enabled consumers", register.name, register.address)
+                continue
 
             # Each coordinator owns its cadence; register definitions are immutable
             # metadata shared by every setup and reload.
@@ -84,15 +101,6 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
                     _LOGGER.debug(f"[{register.name} | {register.address}] Skipping entity due to standard poll rate. Remaining time: {self._poll_remaining[register.name]}s")
                     continue
                 self._poll_remaining[register.name] = self.poll_rate_default
-
-            entity_id = f"{DOMAIN}.{register.name}"
-            entity_registry = er.async_get(self.hass)
-            entity_entry = entity_registry.entities.get(entity_id)
-
-            # skip disabled entities
-            if entity_entry and entity_entry.disabled:
-                _LOGGER.debug(f"[{register.name} | {register.address}] Skipping disabled entity")
-                continue
 
             # check connection / reconnect
             if not await ensure_connected(self.modbus):
@@ -175,6 +183,36 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
         _LOGGER.debug(f"Returned data: {parsed_data}")
 
         return parsed_data
+
+    def _required_register_names(self) -> set[str]:
+        """Resolve enabled consumers by stable registry identity on every update."""
+        registry = er.async_get(self.hass)
+
+        def enabled(domain: str, name: str, address: int, default: bool) -> bool:
+            entity_id = registry.async_get_entity_id(domain, DOMAIN, generate_unique_id(address, name))
+            entity = registry.async_get(entity_id) if entity_id is not None else None
+            if entity is None or entity.config_entry_id != self.config_entry.entry_id:
+                # The first refresh precedes platform setup and registration.
+                return default
+            return not entity.disabled
+
+        required = {
+            register.name
+            for register in REGISTERS
+            if register.input_type in ENTITY_DOMAIN_BY_INPUT_TYPE and enabled(ENTITY_DOMAIN_BY_INPUT_TYPE[register.input_type], register.name, register.address, register.enabled_by_default)
+        }
+
+        for name, config in DERIVATIVE_SENSORS.items():
+            source_keys = config["source_keys"]
+            if enabled("sensor", name, REGISTER_ADDRESSES_BY_NAME[source_keys[0]], True):
+                required.update(source_keys)
+
+        for name in SCHEDULES:
+            address = REGISTER_ADDRESSES_BY_NAME[name]
+            if enabled("sensor", name, address, False) or enabled("binary_sensor", f"{name}_active", address, False):
+                required.add(name)
+
+        return required
 
     def is_register_available(self, address: int) -> bool:
         """Return whether an address is below the consecutive-failure threshold."""

@@ -17,6 +17,8 @@ options.
   Wärmepumpe views in the Solvis Portal style, using existing entities.
 - [Register table](supported-entities.md) — generated from `REGISTERS`.
 - [Polling groups](polling-groups.md) — generated from `REGISTERS`.
+- [Polling behaviour](docs/polling.md) — disabled entities and shared register
+  dependencies for calculated sensors and Wochenpläne.
 - [Developer tools](tools/README.md) — the read-only SC3 register inventory tool.
 - [Modbus scan action](docs/modbus-scan.md) — discover registers directly from
   Home Assistant with `solvis_leo.scan_modbus_range`.

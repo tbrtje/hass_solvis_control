@@ -249,7 +249,7 @@
 				"name":"Zonne-aanvoer primaire temperatuur (S7)"
 			},
 			"solar_return_secondary_temp_s6":{
-				"name":"Zonne-terugloop secundaire temperatuur (S6)"
+				"name":"Temperatuursensor S6"
 			},
 			"solar_flow_secondary_temp_s5":{
 				"name":"Zonne-aanvoer secundaire temperatuur (S5)"

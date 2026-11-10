@@ -74,6 +74,8 @@ der Wärmepumpe und ist kein kumulierter Energiezähler.
   der berechnete Sensor nicht verfügbar. Ein erfolgreicher Lesezugriff hebt den
   Fehlerzustand auf. Ein Verbindungsausfall macht den Sensor sofort nicht verfügbar.
 - Ein Ausfall von Register 33549 beeinflusst die Berechnung nicht.
+- Solange der berechnete Sensor aktiviert ist, werden S2, S15 und S18 auch bei
+  deaktivierten Quellen-Entitäten gelesen; siehe [Abfrageverhalten](polling.md).
 - Das Attribut `raw_values` enthält die verwendeten Quellenwerte bereits in °C
   und l/min, keine unskalierten Modbus-Wörter. Die Anzeige nutzt zwei Nachkommastellen;
   daraus folgt keine entsprechende Messgenauigkeit.

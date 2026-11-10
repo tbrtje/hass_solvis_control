@@ -344,7 +344,8 @@ REGISTERS = [
         device_class="temperature",
         state_class=SensorStateClass.MEASUREMENT,
     ),
-    ModbusFieldConfig(
+    ModbusFieldConfig(  # S6: neutral display name until its SolvisLeo 180 function is confirmed.
+        # Retain the legacy key because it forms part of the existing unique ID.
         name="solar_return_secondary_temp_s6",
         address=33029,
         unit="°C",
