@@ -1,0 +1,121 @@
+{
+  "views": [
+    {
+      "title": "Heizung",
+      "path": "heizung",
+      "icon": "mdi:radiator",
+      "type": "panel",
+      "cards": [
+        {
+          "type": "custom:solvis-schema-card",
+          "view": "heating",
+          "navigation": false,
+          "entities": {
+            "s1": "sensor.solvisleo_180_warmwasserpuffer_temperatur_s1",
+            "s2": "sensor.solvisleo_180_warmwassertemperatur_s2",
+            "s4": "sensor.solvisleo_180_heizungspuffer_oben_temperatur_s4",
+            "s9": "sensor.solvisleo_180_heizungspuffer_unten_temperatur_s9",
+            "s10": "sensor.solvisleo_180_aussentemperatur_s10",
+            "s11": "sensor.solvisleo_180_zirkulation_temperatur_s11",
+            "s12": "sensor.solvisleo_180_hkr1_vorlauftemperatur_s12",
+            "s15": "sensor.solvisleo_180_kaltwassertemperatur_s15",
+            "heating_flow": "sensor.solvisleo_180_heizkreis_vorlauftemperatur",
+            "heating_return": "sensor.solvisleo_180_heizkreis_rucklauftemperatur",
+            "heating_volume_flow": "sensor.solvisleo_180_heizkreis_volumenstrom",
+            "heating_power": "sensor.solvisleo_180_heizkreis_leistung",
+            "heating_pump": "binary_sensor.solvisleo_180_hkr1_pumpe_a3",
+            "mixer_open": "binary_sensor.solvisleo_180_hkr1_mischer_heizkreis_auf_a8",
+            "mixer_close": "binary_sensor.solvisleo_180_hkr1_mischer_heizkreis_zu_a9",
+            "water_pump_modulation": "sensor.solvisleo_180_warmwasserpumpe_o5",
+            "water_flow": "sensor.solvisleo_180_warmwasser_volumenstrom_s18",
+            "water_power": "sensor.solvisleo_180_warmwasser_leistung",
+            "circulation_pump": "binary_sensor.solvisleo_180_zirkulationspumpe_a1",
+            "charging_pump": "binary_sensor.solvisleo_180_warmepumpe_ladepumpe_a2",
+            "charging_modulation": "sensor.solvisleo_180_warmepumpe_ladepumpe_o4",
+            "heatpump_power_thermal": "sensor.solvisleo_180_warmepumpe_leistung_thermisch",
+            "heatpump_power_electric": "sensor.solvisleo_180_warmepumpe_leistungsaufnahme_elektrisch",
+            "heizstab_status": "binary_sensor.solvisleo_180_heizstab_status_a12"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Warmwasser",
+      "path": "warmwasser",
+      "icon": "mdi:water-thermometer",
+      "type": "panel",
+      "cards": [
+        {
+          "type": "custom:solvis-schema-card",
+          "view": "water",
+          "navigation": false,
+          "entities": {
+            "s1": "sensor.solvisleo_180_warmwasserpuffer_temperatur_s1",
+            "s2": "sensor.solvisleo_180_warmwassertemperatur_s2",
+            "s4": "sensor.solvisleo_180_heizungspuffer_oben_temperatur_s4",
+            "s9": "sensor.solvisleo_180_heizungspuffer_unten_temperatur_s9",
+            "s10": "sensor.solvisleo_180_aussentemperatur_s10",
+            "s11": "sensor.solvisleo_180_zirkulation_temperatur_s11",
+            "s12": "sensor.solvisleo_180_hkr1_vorlauftemperatur_s12",
+            "s15": "sensor.solvisleo_180_kaltwassertemperatur_s15",
+            "heating_flow": "sensor.solvisleo_180_heizkreis_vorlauftemperatur",
+            "heating_return": "sensor.solvisleo_180_heizkreis_rucklauftemperatur",
+            "heating_volume_flow": "sensor.solvisleo_180_heizkreis_volumenstrom",
+            "heating_power": "sensor.solvisleo_180_heizkreis_leistung",
+            "heating_pump": "binary_sensor.solvisleo_180_hkr1_pumpe_a3",
+            "mixer_open": "binary_sensor.solvisleo_180_hkr1_mischer_heizkreis_auf_a8",
+            "mixer_close": "binary_sensor.solvisleo_180_hkr1_mischer_heizkreis_zu_a9",
+            "water_pump_modulation": "sensor.solvisleo_180_warmwasserpumpe_o5",
+            "water_flow": "sensor.solvisleo_180_warmwasser_volumenstrom_s18",
+            "water_power": "sensor.solvisleo_180_warmwasser_leistung",
+            "circulation_pump": "binary_sensor.solvisleo_180_zirkulationspumpe_a1",
+            "charging_pump": "binary_sensor.solvisleo_180_warmepumpe_ladepumpe_a2",
+            "charging_modulation": "sensor.solvisleo_180_warmepumpe_ladepumpe_o4",
+            "heatpump_power_thermal": "sensor.solvisleo_180_warmepumpe_leistung_thermisch",
+            "heatpump_power_electric": "sensor.solvisleo_180_warmepumpe_leistungsaufnahme_elektrisch",
+            "heizstab_status": "binary_sensor.solvisleo_180_heizstab_status_a12"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Wärmepumpe",
+      "path": "waermepumpe",
+      "icon": "mdi:heat-pump",
+      "type": "panel",
+      "cards": [
+        {
+          "type": "custom:solvis-schema-card",
+          "view": "heatpump",
+          "navigation": false,
+          "entities": {
+            "s1": "sensor.solvisleo_180_warmwasserpuffer_temperatur_s1",
+            "s2": "sensor.solvisleo_180_warmwassertemperatur_s2",
+            "s4": "sensor.solvisleo_180_heizungspuffer_oben_temperatur_s4",
+            "s9": "sensor.solvisleo_180_heizungspuffer_unten_temperatur_s9",
+            "s10": "sensor.solvisleo_180_aussentemperatur_s10",
+            "s11": "sensor.solvisleo_180_zirkulation_temperatur_s11",
+            "s12": "sensor.solvisleo_180_hkr1_vorlauftemperatur_s12",
+            "s15": "sensor.solvisleo_180_kaltwassertemperatur_s15",
+            "heating_flow": "sensor.solvisleo_180_heizkreis_vorlauftemperatur",
+            "heating_return": "sensor.solvisleo_180_heizkreis_rucklauftemperatur",
+            "heating_volume_flow": "sensor.solvisleo_180_heizkreis_volumenstrom",
+            "heating_power": "sensor.solvisleo_180_heizkreis_leistung",
+            "heating_pump": "binary_sensor.solvisleo_180_hkr1_pumpe_a3",
+            "mixer_open": "binary_sensor.solvisleo_180_hkr1_mischer_heizkreis_auf_a8",
+            "mixer_close": "binary_sensor.solvisleo_180_hkr1_mischer_heizkreis_zu_a9",
+            "water_pump_modulation": "sensor.solvisleo_180_warmwasserpumpe_o5",
+            "water_flow": "sensor.solvisleo_180_warmwasser_volumenstrom_s18",
+            "water_power": "sensor.solvisleo_180_warmwasser_leistung",
+            "circulation_pump": "binary_sensor.solvisleo_180_zirkulationspumpe_a1",
+            "charging_pump": "binary_sensor.solvisleo_180_warmepumpe_ladepumpe_a2",
+            "charging_modulation": "sensor.solvisleo_180_warmepumpe_ladepumpe_o4",
+            "heatpump_power_thermal": "sensor.solvisleo_180_warmepumpe_leistung_thermisch",
+            "heatpump_power_electric": "sensor.solvisleo_180_warmepumpe_leistungsaufnahme_elektrisch",
+            "heizstab_status": "binary_sensor.solvisleo_180_heizstab_status_a12"
+          }
+        }
+      ]
+    }
+  ]
+}

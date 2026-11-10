@@ -13,6 +13,8 @@ options.
 
 ## Reference
 
+- [Anlagenschema dashboard](frontend/README.md) — local Heizung, Warmwasser and
+  Wärmepumpe views in the Solvis Portal style, using existing entities.
 - [Register table](supported-entities.md) — generated from `REGISTERS`.
 - [Polling groups](polling-groups.md) — generated from `REGISTERS`.
 - [Developer tools](tools/README.md) — the read-only SC3 register inventory tool.
