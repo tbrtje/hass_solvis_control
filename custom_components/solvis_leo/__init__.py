@@ -10,10 +10,12 @@ import os, json
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import config_validation as cv
 from pymodbus.client import AsyncModbusTcpClient
 from homeassistant.config_entries import ConfigEntryNotReady
 from .utils.helpers import active_entity_unique_ids, create_modbus_client, remove_old_entities
 from .coordinator import SolvisModbusCoordinator
+from .services import async_setup_services
 
 from .const import (
     CONF_HOST,
@@ -39,11 +41,18 @@ PLATFORMS: [Platform] = [
 ]
 
 _LOGGER = logging.getLogger(__name__)
+CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 
 # read version from manifest.json
 manifest = json.load(open(os.path.join(os.path.dirname(__file__), "manifest.json")))
 VERSION = manifest.get("version", "unbekannt")
+
+
+async def async_setup(hass: HomeAssistant, config: dict) -> bool:
+    """Register actions independently of the connection to the Anlage."""
+    async_setup_services(hass)
+    return True
 
 
 def _normalized_config_data(*sources: dict) -> dict:

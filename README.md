@@ -18,6 +18,8 @@ options.
 - [Register table](supported-entities.md) — generated from `REGISTERS`.
 - [Polling groups](polling-groups.md) — generated from `REGISTERS`.
 - [Developer tools](tools/README.md) — the read-only SC3 register inventory tool.
+- [Modbus scan action](docs/modbus-scan.md) — discover registers directly from
+  Home Assistant with `solvis_leo.scan_modbus_range`.
 
 After changing `REGISTERS`, refresh the generated reference:
 

@@ -609,5 +609,41 @@
 			"title": "Firmware update for Solvis heating",
 			"description": "A new firmware version is available for your heating system. Please install it as soon as possible."
 		}
+	},
+	"services": {
+		"scan_modbus_range": {
+			"name": "Scan Modbus range",
+			"description": "Read SC3 registers and return raw UInt16, signed, scaled, hexadecimal and binary values.",
+			"fields": {
+				"config_entry_id": {
+					"name": "Config entry",
+					"description": "Optional when exactly one SolvisLeo 180 entry is loaded."
+				},
+				"start_address": {
+					"name": "Start address",
+					"description": "First zero-based Modbus address to read, inclusive."
+				},
+				"end_address": {
+					"name": "End address",
+					"description": "Last address to read, inclusive."
+				},
+				"register_type": {
+					"name": "Register type",
+					"description": "Read input registers, holding registers, or both."
+				},
+				"slave_id": {
+					"name": "Modbus device ID",
+					"description": "Modbus unit identifier; normally 1 for the SC3."
+				},
+				"batch_size": {
+					"name": "Batch size",
+					"description": "Registers per request. Rejected batches are read individually."
+				},
+				"delay": {
+					"name": "Delay",
+					"description": "Pause in seconds after each request, including rejected batches."
+				}
+			}
+		}
 	}
 }
