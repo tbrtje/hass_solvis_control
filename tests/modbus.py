@@ -79,6 +79,10 @@ class AddressableModbusClient:
         self._malformed_responses.discard(key)
         self._timeouts.discard(key)
 
+    def set_registers(self, register_type: str, address: int, values: list[int]) -> None:
+        """Replace a recorded response to simulate changing measurements."""
+        self._responses[(register_type, address)] = {"status": "ok", "values": values}
+
     def lose_connection(self, register_type: str, address: int) -> None:
         """Drop the connection while reading one function-code/address pair."""
         self._connection_losses.add((register_type, address))

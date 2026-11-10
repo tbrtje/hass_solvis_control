@@ -133,6 +133,7 @@ EXPECTED_ENTITY_IDS = {
     "sensor.solvisleo_180_hot_water_pump_mode",
     "sensor.solvisleo_180_hot_water_pump_o5",
     "sensor.solvisleo_180_hot_water_power",
+    "sensor.solvisleo_180_warm_water_power_calculated",
     "sensor.solvisleo_180_hot_water_schedule",
     "sensor.solvisleo_180_hot_water_temperature_s2",
     "sensor.solvisleo_180_hot_water_volume_flow_s18",
@@ -237,8 +238,10 @@ async def test_setup_exposes_the_recorded_anlage(hass) -> None:
     assert registry.entities["sensor.solvisleo_180_hkr1_schedule"].unique_id == "34048_hkr1_schedule"
     assert registry.entities["binary_sensor.solvisleo_180_hkr1_schedule_active"].unique_id == "34048_hkr1_schedule_active"
     assert registry.entities["sensor.solvisleo_180_stored_energy_of_stratified_storage_reference_12_degc"].unique_id == "33024_stored_energy_12"
+    assert registry.entities["sensor.solvisleo_180_warm_water_power_calculated"].unique_id == "33025_warm_water_power_calculated"
     assert hass.states.get("sensor.solvisleo_180_hot_water_buffer_temperature_s1").state == "49.5"
     assert hass.states.get("sensor.solvisleo_180_stored_energy_of_stratified_storage_reference_12_degc").state == "5.0"
+    assert hass.states.get("sensor.solvisleo_180_warm_water_power_calculated").state == "0.0"
     assert hass.states.get("number.solvisleo_180_warm_water_target_temp").state == "47"
     assert hass.states.get("select.solvisleo_180_hkr_1_operating_mode").state == "5"
     assert hass.states.get("switch.solvisleo_180_warm_water_reheat_start").state == "off"
@@ -387,4 +390,57 @@ async def test_connection_loss_fails_the_whole_update(hass) -> None:
 
     assert not coordinator.last_update_success
     assert hass.states.get("sensor.solvisleo_180_hot_water_power").state == "unavailable"
+    assert hass.states.get("sensor.solvisleo_180_warm_water_power_calculated").state == "unavailable"
     assert hass.states.get("sensor.solvisleo_180_heizstab_thermal_power").state == "unavailable"
+
+
+@pytest.mark.asyncio
+async def test_calculated_warm_water_power_uses_fast_sources_and_preserves_raw_register(hass) -> None:
+    """A draw-off updates at the fast cadence even while 33549 keeps returning zero."""
+    client, _, coordinator = await setup_recorded_anlage(hass, poll_rate_default=30, poll_rate_slow=300)
+    source_values = {33025: 497, 33038: 135, 33041: 66}
+    initial_reads = {address: client.request_count("input", address) for address in source_values}
+    for address, value in source_values.items():
+        client.set_registers("input", address, [value])
+
+    await coordinator.async_refresh()
+    await hass.async_block_till_done()
+
+    calculated = hass.states.get("sensor.solvisleo_180_warm_water_power_calculated")
+    assert calculated.state == "16.67"
+    assert calculated.attributes["unit_of_measurement"] == "kW"
+    assert calculated.attributes["device_class"] == "power"
+    assert calculated.attributes["state_class"] == "measurement"
+    assert hass.states.get("sensor.solvisleo_180_hot_water_power").state == "0"
+    for address, reads in initial_reads.items():
+        assert client.request_count("input", address) == reads + 1
+
+    client.fail("input", 33549)
+    for _ in range(3):
+        await coordinator.async_refresh()
+    await hass.async_block_till_done()
+
+    assert hass.states.get("sensor.solvisleo_180_hot_water_power").state == "unavailable"
+    assert hass.states.get(calculated.entity_id).state == "16.67"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("address", [33025, 33038, 33041])
+async def test_calculated_warm_water_power_tracks_source_failure_and_recovery(hass, address) -> None:
+    """Preserve the snapshot for two failed reads, then publish unavailability."""
+    client, _, coordinator = await setup_recorded_anlage(hass)
+    entity_id = "sensor.solvisleo_180_warm_water_power_calculated"
+    initial_state = hass.states.get(entity_id).state
+    client.fail("input", address)
+
+    for attempt in range(1, 4):
+        await coordinator.async_refresh()
+        await hass.async_block_till_done()
+        assert hass.states.get(entity_id).state == ("unavailable" if attempt == 3 else initial_state)
+        assert coordinator.last_update_success
+
+    client.restore("input", address)
+    await coordinator.async_refresh()
+    await hass.async_block_till_done()
+
+    assert hass.states.get(entity_id).state == initial_state

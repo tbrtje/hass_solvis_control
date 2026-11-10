@@ -5,12 +5,11 @@ Version: v2.1.0
 """
 
 import pytest
-from unittest.mock import AsyncMock, patch, MagicMock
-from custom_components.solvis_leo.sensor import SolvisSensor, async_setup_entry, _LOGGER, SolvisDerivativeSensor
-from custom_components.solvis_leo.const import CONF_HOST, CONF_NAME, DATA_COORDINATOR, DOMAIN
+from unittest.mock import patch, MagicMock
+from custom_components.solvis_leo.sensor import async_setup_entry, SolvisDerivativeSensor
+from custom_components.solvis_leo.const import CONF_HOST, DATA_COORDINATOR, DERIVATIVE_SENSORS, DOMAIN
 from custom_components.solvis_leo.coordinator import SolvisModbusCoordinator
 from homeassistant.helpers.device_registry import DeviceInfo
-from homeassistant.helpers import issue_registry as ir
 
 
 def test_sensor_initialization(mock_solvis_sensor):
@@ -41,8 +40,8 @@ async def test_async_setup_entry_no_host_sensor(hass, mock_config_entry):
     """Test setup entry when no host is provided for sensor."""
     mock_config_entry.data.pop(CONF_HOST, None)
     with patch("custom_components.solvis_leo.utils.helpers._LOGGER.error") as mock_logger:
-        hass.data = {DOMAIN: {mock_config_entry.entry_id: {DATA_COORDINATOR: AsyncMock()}}}
-        await async_setup_entry(hass, mock_config_entry, AsyncMock())
+        hass.data = {DOMAIN: {mock_config_entry.entry_id: {DATA_COORDINATOR: MagicMock()}}}
+        await async_setup_entry(hass, mock_config_entry, MagicMock())
         mock_logger.assert_called_with("Device has no address")
 
 
@@ -221,7 +220,7 @@ async def test_async_update_from_coordinator_missing(monkeypatch):
     assert sensor._attr_extra_state_attributes == {}
 
 
-def test_handle_coordinator_update_noop(monkeypatch, mock_coordinator):
+def test_handle_coordinator_update_publishes_current_snapshot(mock_coordinator):
     coord = mock_coordinator
     coord.data = {"any": 1.0}
 
@@ -245,5 +244,120 @@ def test_handle_coordinator_update_noop(monkeypatch, mock_coordinator):
 
     sensor._handle_coordinator_update()
 
-    assert sensor._attr_native_value == 42.0
-    assert sensor._attr_extra_state_attributes == {"foo": "bar"}
+    assert sensor.native_value == 1.0
+    assert sensor.extra_state_attributes == {"raw_values": {"any": 1.0}}
+
+
+@pytest.fixture
+def warm_water_power_sensor():
+    """Build the configured derived sensor with a valid draw-off snapshot."""
+    coordinator = MagicMock()
+    coordinator.last_update_success = True
+    coordinator.is_register_available.return_value = True
+    coordinator.data = {
+        "warm_water_temp_s2": 49.7,
+        "cold_water_temp_s15": 13.5,
+        "warm_water_volume_flow_s18": 6.6,
+        "warm_water_power": 0,
+    }
+    return SolvisDerivativeSensor(
+        coordinator=coordinator,
+        device_info=DeviceInfo(identifiers={(DOMAIN, "dummy")}),
+        host="h",
+        name="warm_water_power_calculated",
+        modbus_address=33025,
+        **DERIVATIVE_SENSORS["warm_water_power_calculated"],
+    )
+
+
+def test_warm_water_power_uses_observed_draw_off_values(warm_water_power_sensor):
+    """A raw zero must not replace the independent thermal estimate."""
+    sensor = warm_water_power_sensor
+    sensor._handle_coordinator_update()
+
+    assert sensor.native_value == 16.67
+    assert sensor.available
+    assert sensor.native_unit_of_measurement == "kW"
+    assert sensor.device_class == "power"
+    assert sensor.state_class == "measurement"
+    assert sensor.suggested_display_precision == 2
+    assert sensor.coordinator.data["warm_water_power"] == 0
+    assert sensor.extra_state_attributes["raw_values"] == {
+        "warm_water_temp_s2": 49.7,
+        "cold_water_temp_s15": 13.5,
+        "warm_water_volume_flow_s18": 6.6,
+    }
+
+
+@pytest.mark.parametrize(
+    ("warm", "cold", "flow", "expected"),
+    [(50, 10, 0, 0), (10, 20, 6, 0), (10, 10, 6, 0), (45.5, 12.3, 0.1, 0.23)],
+)
+def test_warm_water_power_idle_and_small_flows(warm_water_power_sensor, warm, cold, flow, expected):
+    sensor = warm_water_power_sensor
+    sensor.coordinator.data.update(dict(zip(sensor.source_keys, (warm, cold, flow))))
+    sensor._handle_coordinator_update()
+
+    assert sensor.native_value == expected
+    assert sensor.available
+
+
+@pytest.mark.parametrize("key", DERIVATIVE_SENSORS["warm_water_power_calculated"]["source_keys"])
+@pytest.mark.parametrize("value", [None, True, "49.7", float("nan"), float("inf"), float("-inf"), -300])
+def test_warm_water_power_invalid_source_is_unavailable_and_recovers(warm_water_power_sensor, key, value):
+    sensor = warm_water_power_sensor
+    original = sensor.coordinator.data[key]
+    sensor._handle_coordinator_update()
+    sensor.hass = MagicMock()
+    sensor.async_write_ha_state = MagicMock()
+    sensor.coordinator.data[key] = value
+
+    sensor._handle_coordinator_update()
+
+    assert sensor.native_value is None
+    assert not sensor.available
+    assert sensor.extra_state_attributes == {}
+    sensor.async_write_ha_state.assert_called_once_with()
+
+    sensor.coordinator.data[key] = original
+    sensor._handle_coordinator_update()
+    assert sensor.available
+    assert sensor.native_value == 16.67
+
+
+@pytest.mark.parametrize("key", DERIVATIVE_SENSORS["warm_water_power_calculated"]["source_keys"])
+def test_warm_water_power_missing_source(warm_water_power_sensor, key):
+    sensor = warm_water_power_sensor
+    del sensor.coordinator.data[key]
+    sensor._handle_coordinator_update()
+
+    assert sensor.native_value is None
+    assert not sensor.available
+
+
+@pytest.mark.parametrize("key", ["warm_water_temp_s2", "cold_water_temp_s15"])
+@pytest.mark.parametrize("value", [-0.1, 100.1, 250])
+def test_warm_water_power_rejects_implausible_water_temperatures(warm_water_power_sensor, key, value):
+    sensor = warm_water_power_sensor
+    sensor.coordinator.data[key] = value
+    sensor._handle_coordinator_update()
+
+    assert not sensor.available
+    assert sensor.native_value is None
+
+
+@pytest.mark.parametrize("address", [33025, 33038, 33041])
+def test_warm_water_power_requires_every_source_register(warm_water_power_sensor, address):
+    sensor = warm_water_power_sensor
+    sensor._handle_coordinator_update()
+    sensor.coordinator.is_register_available.side_effect = lambda candidate: candidate != address
+
+    assert not sensor.available
+
+
+def test_warm_water_power_requires_coordinator_success(warm_water_power_sensor):
+    sensor = warm_water_power_sensor
+    sensor._handle_coordinator_update()
+    sensor.coordinator.last_update_success = False
+
+    assert not sensor.available

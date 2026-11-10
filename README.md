@@ -20,6 +20,8 @@ options.
 - [Developer tools](tools/README.md) — the read-only SC3 register inventory tool.
 - [Modbus scan action](docs/modbus-scan.md) — discover registers directly from
   Home Assistant with `solvis_leo.scan_modbus_range`.
+- [Calculated warm water thermal power](docs/warm-water-power.md) — a separate
+  S2/S15/S18 estimate and the observed zero readings from register 33549.
 
 After changing `REGISTERS`, refresh the generated reference:
 

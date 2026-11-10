@@ -221,8 +221,10 @@ def test_remove_old_entities(monkeypatch):
 def test_active_entity_unique_ids_cover_the_complete_anlage():
     active_ids = helpers.active_entity_unique_ids()
 
-    assert len(active_ids) == 153
+    assert len(active_ids) == 154
     assert "33024_stored_energy_12" in active_ids
+    assert "33025_warm_water_power_calculated" in active_ids
+    assert "33549_warm_water_power" in active_ids
     assert "34090_hkr2_schedule" in active_ids
     assert "34090_hkr2_schedule_active" in active_ids
     assert "33045_digin_error" not in active_ids

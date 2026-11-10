@@ -212,6 +212,9 @@
 			"warm_water_power":{
 				"name":"Warmwasser Leistung"
 			},
+			"warm_water_power_calculated":{
+				"name":"Warmwasser Leistung berechnet"
+			},
 			"solar_pump_primary_runtime":{
 				"name":"Solarpumpe primär Laufzeit"
 			},

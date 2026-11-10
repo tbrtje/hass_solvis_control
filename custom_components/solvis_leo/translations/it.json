@@ -212,6 +212,9 @@
 			"warm_water_power":{
 				"name":"Uscita acqua calda"
 			},
+			"warm_water_power_calculated":{
+				"name":"Potenza acqua calda calcolata"
+			},
 			"solar_pump_primary_runtime":{
 				"name":"tempo pompa solare primaria"
 			},

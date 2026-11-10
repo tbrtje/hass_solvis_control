@@ -78,6 +78,10 @@ no graphical configuration editor; use the card's YAML editor.
 | `heatpump_flow_temp`, `heatpump_return_temp`, `heatpump_volume_flow` | Optional Wärmepumpe measurements; not interchangeable with Heizkreis WMZ |
 | `pressure`, `smart_grid` | Optional Anlagendruck and human-readable Smart Grid state |
 
+For `water_power`, the integration also provides **Warmwasser Leistung berechnet**
+from S2, S15 and S18. After installing the updated integration, select its actual
+entity ID in the card mapping. See [calculation and register 33549 findings](../docs/warm-water-power.md).
+
 ## Data availability and limits
 
 Missing, `unknown`, `unavailable`, empty and non-finite numeric readings display as

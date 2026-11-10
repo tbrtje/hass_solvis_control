@@ -2,7 +2,9 @@
 Solvis Sensor Entity.
 """
 
+from collections.abc import Sequence
 import logging
+import math
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, SensorStateClass
 from homeassistant.util import dt as dt_util
@@ -35,7 +37,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class SolvisDerivativeSensor(SolvisEntity, SensorEntity):
-    """Computes an derived entity from Solvis Sensor Entities"""
+    """Compute a sensor from the coordinator's scaled source values."""
 
     def __init__(
         self,
@@ -43,11 +45,11 @@ class SolvisDerivativeSensor(SolvisEntity, SensorEntity):
         device_info: DeviceInfo,
         host: str,
         name: str,
-        source_keys: list[str],
+        source_keys: Sequence[str],
         *,
         unit: str,
         device_class: str | None,
-        state_class: SensorStateClass,
+        state_class: SensorStateClass | None,
         entity_category: str | None = None,
         suggested_display_precision: int = 2,
         compute_mode: str | None,
@@ -75,25 +77,45 @@ class SolvisDerivativeSensor(SolvisEntity, SensorEntity):
 
         self._attr_native_value = None
         self._attr_extra_state_attributes = {}
-        self.coordinator = coordinator
 
-        # register listener
-        self.coordinator.async_add_listener(self._async_update_from_coordinator)
+    @property
+    def available(self) -> bool:
+        """Require a valid result and every source register to be available."""
+        return (
+            super().available
+            and self.native_value is not None
+            and all(self.coordinator.is_register_available(REGISTER_ADDRESSES_BY_NAME[key]) for key in self.source_keys if key in REGISTER_ADDRESSES_BY_NAME)
+        )
 
     def _compute_combined(self) -> float | None:
-        data = self.coordinator.data
-        _LOGGER.debug("DerivateSensor–Daten: %s", {k: data.get(k) for k in self.source_keys})
-        try:
-            values = [data[key] for key in self.source_keys]
-        except KeyError:
+        data = self.coordinator.data or {}
+        values = [data.get(key) for key in self.source_keys]
+        if any(isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) for value in values):
             return None
 
         match self.compute_mode:
             case "stored_energy_12":
-                return self._compute_stored_energy_12(values)
+                result = self._compute_stored_energy_12(values)
+            case "warm_water_power":
+                result = self._compute_warm_water_power(values)
             case _:
-                # fallback
-                return sum(values)
+                result = sum(values)
+
+        return result if result is not None and math.isfinite(result) else None
+
+    @staticmethod
+    def _compute_warm_water_power(values: list[float]) -> float | None:
+        """Estimate thermal draw-off power from S2, S15 (°C) and S18 (l/min)."""
+        if len(values) != 3:
+            return None
+        warm_temperature, cold_temperature, volume_flow = values
+        # Restrict temperatures to the liquid domestic-water range. This also
+        # excludes out-of-range Fühler values such as -300 or 250 °C.
+        if not 0 <= warm_temperature <= 100 or not 0 <= cold_temperature <= 100 or volume_flow < 0:
+            return None
+
+        # Water: density ≈ 1 kg/l, specific heat capacity ≈ 4.186 kJ/(kg K).
+        return volume_flow * 4.186 * max(warm_temperature - cold_temperature, 0) / 60
 
     def _compute_stored_energy_12(self, values: list[float]) -> float:
         # Each Speicherzone is delimited by two Fühler, so two zones need three
@@ -117,17 +139,18 @@ class SolvisDerivativeSensor(SolvisEntity, SensorEntity):
         if combined is None:
             self._attr_native_value = None
             self._attr_extra_state_attributes = {}
-            return
         else:
             self._attr_native_value = round(combined, self.suggested_display_precision)
             raw_attrs = {key: self.coordinator.data.get(key) for key in self.source_keys}
             self._attr_extra_state_attributes = {"raw_values": raw_attrs}
 
-        self.async_write_ha_state()
+        if self.hass is not None:
+            self.async_write_ha_state()
 
     @callback
     def _handle_coordinator_update(self) -> None:
-        return
+        """Use CoordinatorEntity's managed subscription for updates and unload."""
+        self._async_update_from_coordinator()
 
 
 class SolvisScheduleSensor(SolvisEntity, SensorEntity):

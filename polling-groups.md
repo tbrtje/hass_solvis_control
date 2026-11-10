@@ -22,7 +22,7 @@ This file is generated from `custom_components/solvis_leo/const.py`. Do not edit
 | slow | 32770 | version_sc | update |
 | slow | 32771 | version_nbg | update |
 | default | 33024 | warm_water_buffer_temp_s1 | sensor |
-| default | 33025 | warm_water_temp_s2 | sensor |
+| high | 33025 | warm_water_temp_s2 | sensor |
 | default | 33026 | storage_reference_temp_s3 | sensor |
 | default | 33027 | heating_buffer_upper_temp_s4 | sensor |
 | default | 33028 | solar_flow_secondary_temp_s5 | sensor |
@@ -35,10 +35,10 @@ This file is generated from `custom_components/solvis_leo/const.py`. Do not edit
 | default | 33035 | hkr1_flow_water_temp_s12 | sensor |
 | default | 33036 | hkr2_flow_water_temp_s13 | sensor |
 | default | 33037 | temp_s14 | sensor |
-| default | 33038 | cold_water_temp_s15 | sensor |
+| high | 33038 | cold_water_temp_s15 | sensor |
 | default | 33039 | temp_s16 | sensor |
 | default | 33040 | solar_volume_flow_s17 | sensor |
-| default | 33041 | warm_water_volume_flow_s18 | sensor |
+| high | 33041 | warm_water_volume_flow_s18 | sensor |
 | default | 33280 | circulation_pump_a1 | binary_sensor |
 | default | 33281 | heatpump_charging_pump_a2 | binary_sensor |
 | default | 33282 | hkr1_pump_a3 | binary_sensor |

@@ -320,6 +320,7 @@ REGISTERS = [
         unit="°C",
         device_class="temperature",
         state_class=SensorStateClass.MEASUREMENT,
+        poll_rate=2,
     ),
     ModbusFieldConfig(  # Speicherreferenztemperatur
         name="storage_reference_temp_s3",
@@ -414,6 +415,7 @@ REGISTERS = [
         unit="°C",
         device_class="temperature",
         state_class=SensorStateClass.MEASUREMENT,
+        poll_rate=2,
     ),
     ModbusFieldConfig(  # S16: Vorlauf HK3, Festbrennstoffkessel, Kollektor 2
         name="temp_s16",
@@ -438,6 +440,7 @@ REGISTERS = [
         unit="l/min",
         device_class=None,
         state_class=SensorStateClass.MEASUREMENT,
+        poll_rate=2,
     ),
     ModbusFieldConfig(  # A01 Pumpe Zirkulation
         name="circulation_pump_a1",
@@ -1662,6 +1665,18 @@ STORAGE_ZONE_SENSOR_KEYS = (
 )
 
 DERIVATIVE_SENSORS: dict[str, dict] = {
+    "warm_water_power_calculated": {
+        "source_keys": (
+            "warm_water_temp_s2",
+            "cold_water_temp_s15",
+            "warm_water_volume_flow_s18",
+        ),
+        "unit": "kW",
+        "device_class": "power",
+        "state_class": SensorStateClass.MEASUREMENT,
+        "suggested_display_precision": 2,
+        "compute_mode": "warm_water_power",
+    },
     "stored_energy_12": {
         "source_keys": STORAGE_ZONE_SENSOR_KEYS,
         "unit": "kWh",

@@ -212,6 +212,9 @@
 			"warm_water_power":{
 				"name":"Hot water power"
 			},
+			"warm_water_power_calculated":{
+				"name":"Warm water power calculated"
+			},
 			"solar_pump_primary_runtime":{
 				"name":"Solar pump primary Runtime"
 			},

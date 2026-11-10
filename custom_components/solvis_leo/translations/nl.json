@@ -212,6 +212,9 @@
 			"warm_water_power":{
 				"name":"Warmwater vermogen"
 			},
+			"warm_water_power_calculated":{
+				"name":"Warmwatervermogen berekend"
+			},
 			"solar_pump_primary_runtime":{
 				"name":"Zonnepomp primaire looptijd"
 			},

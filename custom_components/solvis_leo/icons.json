@@ -142,6 +142,9 @@
       "warm_water_power": {
         "default": "mdi:home-lightning-bolt"
       },
+      "warm_water_power_calculated": {
+        "default": "mdi:home-lightning-bolt"
+      },
       "solar_pump_primary_runtime": {
         "default": "mdi:timelapse"
       },
