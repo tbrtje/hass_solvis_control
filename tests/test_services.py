@@ -19,9 +19,11 @@ from tests.test_integration import setup_recorded_anlage
 
 async def call_scan(hass, **data):
     return await hass.services.async_call(
-        DOMAIN, services.SERVICE_SCAN_MODBUS_RANGE,
+        DOMAIN,
+        services.SERVICE_SCAN_MODBUS_RANGE,
         {"start_address": 33024, "end_address": 33041, **data},
-        blocking=True, return_response=True,
+        blocking=True,
+        return_response=True,
     )
 
 
@@ -35,8 +37,14 @@ async def test_service_returns_data_and_survives_entry_unload(hass, monkeypatch)
     assert response["config_entry_id"] == entry.entry_id
     assert response["results"] == [{"register": 33024}]
     scan.assert_awaited_once_with(
-        host="172.16.0.73", port=502, start_address=33024, end_address=33041,
-        register_type="both", slave_id=1, batch_size=20, delay=0.05,
+        host="172.16.0.73",
+        port=502,
+        start_address=33024,
+        end_address=33041,
+        register_type="both",
+        slave_id=1,
+        batch_size=20,
+        delay=0.05,
     )
     assert await hass.config_entries.async_unload(entry.entry_id)
     assert hass.services.has_service(DOMAIN, services.SERVICE_SCAN_MODBUS_RANGE)
@@ -67,12 +75,23 @@ async def test_service_registration_is_idempotent(hass):
     assert hass.services.async_services()[DOMAIN][services.SERVICE_SCAN_MODBUS_RANGE] is handler
 
 
-@pytest.mark.parametrize("data", [
-    {"start_address": -1}, {"end_address": 65536}, {"start_address": 33042},
-    {"batch_size": 0}, {"batch_size": 126}, {"slave_id": -1}, {"slave_id": 256},
-    {"delay": -0.1}, {"delay": 6}, {"delay": float("nan")}, {"delay": float("inf")},
-    {"register_type": "coil"},
-])
+@pytest.mark.parametrize(
+    "data",
+    [
+        {"start_address": -1},
+        {"end_address": 65536},
+        {"start_address": 33042},
+        {"batch_size": 0},
+        {"batch_size": 126},
+        {"slave_id": -1},
+        {"slave_id": 256},
+        {"delay": -0.1},
+        {"delay": 6},
+        {"delay": float("nan")},
+        {"delay": float("inf")},
+        {"register_type": "coil"},
+    ],
+)
 async def test_invalid_scan_is_rejected_before_connecting(hass, monkeypatch, data):
     await async_setup(hass, {})
     scan = AsyncMock()

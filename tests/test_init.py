@@ -9,7 +9,7 @@ import asyncio
 
 import homeassistant.helpers.event as event
 
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, MagicMock
 from custom_components.solvis_leo.coordinator import SolvisModbusCoordinator
 from custom_components.solvis_leo.const import DATA_COORDINATOR
 from homeassistant.config_entries import ConfigEntry, ConfigEntryState, ConfigEntryNotReady
@@ -119,6 +119,7 @@ async def test_setup_entry_missing_port(hass, extended_config_entry, monkeypatch
 async def test_setup_entry_connect_returns_false_raises_not_ready(hass, extended_config_entry, monkeypatch):
     """Test Modbus connect returns False triggers ConfigEntryNotReady."""
     fake_client = AsyncMock()
+    fake_client.close = MagicMock()
     fake_client.connect.return_value = False
     monkeypatch.setattr(
         "custom_components.solvis_leo.create_modbus_client",
@@ -126,12 +127,30 @@ async def test_setup_entry_connect_returns_false_raises_not_ready(hass, extended
     )
     with pytest.raises(ConfigEntryNotReady):
         await async_setup_entry(hass, extended_config_entry)
+    fake_client.close.assert_called_once_with()
+    assert extended_config_entry.entry_id not in hass.data[DOMAIN]
+
+
+@pytest.mark.asyncio
+async def test_failed_platform_setup_closes_connected_client(hass, extended_config_entry, monkeypatch):
+    client = MagicMock()
+    client.connect = AsyncMock(return_value=True)
+    monkeypatch.setattr("custom_components.solvis_leo.create_modbus_client", lambda **kwargs: client)
+    monkeypatch.setattr(SolvisModbusCoordinator, "async_config_entry_first_refresh", AsyncMock())
+    monkeypatch.setattr(hass.config_entries, "async_forward_entry_setups", AsyncMock(side_effect=RuntimeError("Platform setup failed")))
+
+    with pytest.raises(RuntimeError, match="Platform setup failed"):
+        await async_setup_entry(hass, extended_config_entry)
+
+    client.close.assert_called_once_with()
+    assert extended_config_entry.entry_id not in hass.data[DOMAIN]
 
 
 @pytest.mark.asyncio
 async def test_setup_entry_connect_exception_raises_not_ready(hass, extended_config_entry, monkeypatch):
     """Test Modbus connect exception triggers ConfigEntryNotReady."""
     fake_client = AsyncMock()
+    fake_client.close = MagicMock()
     fake_client.connect.side_effect = Exception("Connection error")
     monkeypatch.setattr(
         "custom_components.solvis_leo.create_modbus_client",
@@ -139,6 +158,22 @@ async def test_setup_entry_connect_exception_raises_not_ready(hass, extended_con
     )
     with pytest.raises(ConfigEntryNotReady):
         await async_setup_entry(hass, extended_config_entry)
+    fake_client.close.assert_called_once_with()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("failure", [ConfigEntryNotReady("First read failed"), asyncio.CancelledError()])
+async def test_failed_first_refresh_closes_connected_client(hass, extended_config_entry, monkeypatch, failure):
+    client = MagicMock()
+    client.connect = AsyncMock(return_value=True)
+    monkeypatch.setattr("custom_components.solvis_leo.create_modbus_client", lambda **kwargs: client)
+    monkeypatch.setattr(SolvisModbusCoordinator, "async_config_entry_first_refresh", AsyncMock(side_effect=failure))
+
+    with pytest.raises(type(failure)):
+        await async_setup_entry(hass, extended_config_entry)
+
+    client.close.assert_called_once_with()
+    assert extended_config_entry.entry_id not in hass.data[DOMAIN]
 
 
 # # # Tests for async_unload_entry # # #
@@ -171,7 +206,7 @@ async def test_async_unload_entry_failure(hass, extended_config_entry, monkeypat
     hass.data.setdefault(DOMAIN, {})[extended_config_entry.entry_id] = {}
 
     client = AsyncMock()
-    client.close = lambda: None
+    client.close = MagicMock()
     extended_config_entry.runtime_data = {"modbus": client}
 
     async def dummy_unload_fail(*args, **kwargs):
@@ -182,11 +217,12 @@ async def test_async_unload_entry_failure(hass, extended_config_entry, monkeypat
 
     assert result is False
     assert extended_config_entry.entry_id in hass.data[DOMAIN]
+    client.close.assert_not_called()
 
 
 @pytest.mark.asyncio
 async def test_unload_entry_close_exception_removes_entry(hass, extended_config_entry, monkeypatch):
-    """Test exception in close() triggers removal of entry from hass.data."""
+    """A close error must not leave data behind after successful platform unload."""
     hass.data.setdefault(DOMAIN, {})[extended_config_entry.entry_id] = {}
     client = AsyncMock()
 
@@ -197,13 +233,13 @@ async def test_unload_entry_close_exception_removes_entry(hass, extended_config_
     extended_config_entry.runtime_data = {"modbus": client}
 
     async def dummy_unload_platforms(entry, platforms):
-        return False
+        return True
 
     monkeypatch.setattr(hass.config_entries, "async_unload_platforms", dummy_unload_platforms)
 
     result = await async_unload_entry(hass, extended_config_entry)
 
-    assert result is False
+    assert result is True
     assert extended_config_entry.entry_id not in hass.data[DOMAIN]
 
 
@@ -270,7 +306,6 @@ async def test_options_update_listener(hass, extended_config_entry, monkeypatch)
     fake_coordinator.async_refresh = AsyncMock()
     hass.data.setdefault(DOMAIN, {})[extended_config_entry.entry_id] = {
         DATA_COORDINATOR: fake_coordinator,
-        "unsub_options_update_listener": lambda: None,
     }
 
     extended_config_entry.state = ConfigEntryState.LOADED

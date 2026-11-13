@@ -4,7 +4,6 @@ Helper file for various config modules
 
 import logging
 import re
-import socket
 
 from decimal import Decimal
 from homeassistant.core import HomeAssistant
@@ -12,26 +11,22 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from scapy.all import ARP, Ether, srp
-from pymodbus.exceptions import ConnectionException, ModbusException
+from pymodbus.exceptions import ConnectionException
 from pymodbus.client import AsyncModbusTcpClient
 
 from custom_components.solvis_leo.const import (
     CONF_NAME,
-    PORT,
     CONF_HOST,
-    CONF_PORT,
     DOMAIN,
     MANUFACTURER,
     DATA_COORDINATOR,
     DERIVATIVE_SENSORS,
-    POLL_RATE_SLOW,
-    POLL_RATE_DEFAULT,
-    POLL_RATE_HIGH,
     REGISTER_ADDRESSES_BY_NAME,
     REGISTERS,
     SCHEDULES,
 )
+
+from ..registers import EntityType
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -78,70 +73,6 @@ def generate_device_info(entry: ConfigEntry, host: str, name: str) -> DeviceInfo
     return DeviceInfo(**info)
 
 
-async def fetch_modbus_value(
-    register,
-    register_type,
-    host: str,
-    port: int,
-    datatype="INT16",
-    order="big",
-) -> int | list[int] | None:
-    """
-    Fetch one or multiple values from the Modbus device.
-    If 'register' is an int, returns a single value.
-    If 'register' is a list of ints, returns a list of values.
-    """
-
-    single = False
-    if isinstance(register, int):
-        single = True
-        registers = [register]
-    else:
-        registers = register
-
-    results = []
-
-    async with create_modbus_client(
-        host=host,
-        port=port,
-    ) as client:
-
-        for reg in registers:
-            if register_type == 1:
-                data = await client.read_input_registers(address=reg, count=1)
-            else:
-                data = await client.read_holding_registers(address=reg, count=1)
-
-            if not data or not hasattr(data, "registers") or data.isError():
-                raise ModbusException(f"[fetch_modbus_value] Invalid response from Modbus for register {reg} at {host}:{port}")
-
-            value = client.convert_from_registers(
-                data.registers,
-                data_type=client.DATATYPE.INT16,
-                word_order=order,
-            )
-            results.append(value)
-
-        return results[0] if single else results
-
-
-def get_mac(ip):
-    arp_request = ARP(pdst=ip)
-    ether = Ether(dst="ff:ff:ff:ff:ff:ff")  # Broadcast-Adresse
-    packet = ether / arp_request
-
-    responses = srp(packet, timeout=3, verbose=0)
-    if not responses or len(responses) == 0:
-        return None
-
-    result = responses[0]
-
-    if not result or len(result) == 0 or len(result[0]) < 2 or result[0][1] is None:
-        return None
-
-    return result[0][1].hwsrc
-
-
 async def remove_old_entities(hass: HomeAssistant, config_entry_id: str, active_entity_ids: set) -> None:
     """Remove entities from the registry that are not in active_entity_ids."""
 
@@ -162,7 +93,7 @@ async def remove_old_entities(hass: HomeAssistant, config_entry_id: str, active_
 
 def active_entity_unique_ids() -> set[str]:
     """Return the complete entity set owned by this fixed Anlage model."""
-    active_ids = {generate_unique_id(register.address, register.name) for register in REGISTERS if 0 <= register.input_type <= 5}
+    active_ids = {generate_unique_id(register.address, register.name) for register in REGISTERS if register.input_type != EntityType.BLOCK}
 
     for name, config in DERIVATIVE_SENSORS.items():
         source_address = REGISTER_ADDRESSES_BY_NAME[config["source_keys"][0]]
@@ -182,37 +113,6 @@ def generate_unique_id(modbus_address: int, name: str) -> str:
     if cleaned_name:
         return f"{modbus_address}_{cleaned_name}"
     return str(modbus_address)  # if name consists of special chars only
-
-
-async def write_modbus_value(modbus, address: int, value: int) -> bool:
-    """Write a value to a Modbus register."""
-
-    _LOGGER.debug(f"[write_modbus_value] Using Modbus client: {modbus}")
-
-    if not await ensure_connected(modbus):
-        _LOGGER.error("[write_modbus_value] Cannot connect to Modbus")
-        return False
-
-    _LOGGER.debug("[write_modbus_value] Connected to Modbus device")
-
-    try:
-        response = await modbus.write_register(address, value, device_id=1)
-        if response.isError():
-            _LOGGER.error(f"[write_modbus_value] Modbus error response for register {address}: {response}")
-            return False
-
-        _LOGGER.debug(f"[write_modbus_value] Successfully wrote value {value} to register {address}")
-        return True
-
-    except ConnectionException as e:
-        _LOGGER.error(f"[write_modbus_value] Modbus connection error: {e}")
-        return False
-    except ModbusException as e:
-        _LOGGER.error(f"[write_modbus_value] Modbus error: {e}")
-        return False
-    except Exception as e:
-        _LOGGER.error(f"[write_modbus_value] Unexpected error: {e}")
-        return False
 
 
 def process_coordinator_data(coordinator_data: dict, response_key: str):
@@ -263,7 +163,7 @@ async def async_setup_solvis_entities(
     entry,
     async_add_entities: AddEntitiesCallback,
     entity_cls,
-    input_type: int,
+    input_type: EntityType,
 ):
     coordinator = hass.data[DOMAIN][entry.entry_id][DATA_COORDINATOR]
     host = entry.data.get(CONF_HOST)
@@ -287,21 +187,19 @@ async def async_setup_solvis_entities(
             "name": register.name,
             "enabled_by_default": register.enabled_by_default,
             "modbus_address": register.address,
-            "data_processing": register.data_processing,
-            "poll_rate": register.poll_rate,
         }
 
-        if entity_cls.__name__ == "SolvisSelect":
+        if register.input_type == EntityType.SELECT:
             kwargs["options"] = register.options
 
-        if entity_cls.__name__ == "SolvisSensor":
+        if register.input_type == EntityType.SENSOR:
             kwargs["unit_of_measurement"] = register.unit
             kwargs["device_class"] = register.device_class
             kwargs["state_class"] = register.state_class
             kwargs["entity_category"] = register.entity_category
             kwargs["suggested_precision"] = register.suggested_precision
 
-        if entity_cls.__name__ == "SolvisNumber":
+        if register.input_type == EntityType.NUMBER:
             kwargs["unit_of_measurement"] = register.unit
             kwargs["device_class"] = register.device_class
             kwargs["state_class"] = register.state_class
@@ -309,7 +207,7 @@ async def async_setup_solvis_entities(
             kwargs["step_size"] = register.step_size
             kwargs["multiplier"] = register.multiplier
 
-        if entity_cls.__name__ == "SolvisBinarySensor":
+        if register.input_type == EntityType.BINARY_SENSOR:
             kwargs["device_class"] = register.device_class
             kwargs["state_class"] = register.state_class
             kwargs["entity_category"] = register.entity_category

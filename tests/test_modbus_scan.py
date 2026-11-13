@@ -62,8 +62,13 @@ async def test_range_scan_preserves_unsigned_and_signed_formats(monkeypatch):
     assert [row["raw_uint16"] for row in result["results"]] == [0, 32767, 32768, 65535]
     assert [row["int16"] for row in result["results"]] == [0, 32767, -32768, -1]
     assert result["results"][-1] == {
-        "register": 13, "type": "input", "raw_uint16": 65535, "int16": -1,
-        "factor10": -0.1, "hex": "0xFFFF", "binary": "1111111111111111",
+        "register": 13,
+        "type": "input",
+        "raw_uint16": 65535,
+        "int16": -1,
+        "factor10": -0.1,
+        "hex": "0xFFFF",
+        "binary": "1111111111111111",
     }
     assert result["errors"] == []
     assert result["aborted"] is False
@@ -77,12 +82,12 @@ async def test_scan_covers_both_types_and_inclusive_tail_without_overread(monkey
     result = await modbus_scan.scan_modbus_range("sc3", 502, 10, 14, slave_id=7, batch_size=3, delay=0)
 
     assert client.calls == [
-        ("input", 10, 3, 7), ("input", 13, 2, 7),
-        ("holding", 10, 3, 7), ("holding", 13, 2, 7),
+        ("input", 10, 3, 7),
+        ("input", 13, 2, 7),
+        ("holding", 10, 3, 7),
+        ("holding", 13, 2, 7),
     ]
-    assert [(r["type"], r["register"]) for r in result["results"]] == [
-        (kind, address) for kind in ("input", "holding") for address in range(10, 15)
-    ]
+    assert [(r["type"], r["register"]) for r in result["results"]] == [(kind, address) for kind in ("input", "holding") for address in range(10, 15)]
 
 
 async def test_sc3_batch_rejection_falls_back_and_records_only_unreadable_addresses(monkeypatch):
@@ -99,22 +104,39 @@ async def test_sc3_batch_rejection_falls_back_and_records_only_unreadable_addres
     result = await modbus_scan.scan_modbus_range("sc3", 502, 100, 102, "holding", batch_size=3, delay=0.05)
 
     assert client.calls == [
-        ("holding", 100, 3, 1), ("holding", 100, 1, 1),
-        ("holding", 101, 1, 1), ("holding", 102, 1, 1),
+        ("holding", 100, 3, 1),
+        ("holding", 100, 1, 1),
+        ("holding", 101, 1, 1),
+        ("holding", 102, 1, 1),
     ]
     assert [row["register"] for row in result["results"]] == [100, 102]
-    assert result["errors"] == [{
-        "register": 101, "type": "holding", "count": 1,
-        "error": "Modbus exception response", "exception_code": 2,
-    }]
+    assert result["errors"] == [
+        {
+            "register": 101,
+            "type": "holding",
+            "count": 1,
+            "error": "Modbus exception response",
+            "exception_code": 2,
+        }
+    ]
     assert sleep.await_count == 4
     assert all(call.args == (0.05,) for call in sleep.await_args_list)
 
 
-@pytest.mark.parametrize("response", [
-    None, Response([]), Response([1]), Response([1, 2, 3]), Response(None),
-    Response([-1, 2]), Response([65536, 2]), Response([True, 2]), Response([1.5, 2]),
-])
+@pytest.mark.parametrize(
+    "response",
+    [
+        None,
+        Response([]),
+        Response([1]),
+        Response([1, 2, 3]),
+        Response(None),
+        Response([-1, 2]),
+        Response([65536, 2]),
+        Response([True, 2]),
+        Response([1.5, 2]),
+    ],
+)
 async def test_malformed_batches_are_never_reported_as_measurements(monkeypatch, response):
     client = ScanClient(lambda kind, address, count: response if count > 1 else Response([address]))
     install_client(monkeypatch, client)
@@ -172,19 +194,3 @@ async def test_cancellation_closes_the_scan_connection(monkeypatch):
         await modbus_scan.scan_modbus_range("sc3", 502, 10, 20)
 
     assert client.closed
-
-
-async def test_pymodbus_38_slave_keyword_is_supported(monkeypatch):
-    class LegacyClient(ScanClient):
-        async def read_input_registers(self, address, *, count, slave=1):
-            return await self._read("input", address, count, slave)
-
-        async def read_holding_registers(self, address, *, count, slave=1):
-            return await self._read("holding", address, count, slave)
-
-    client = LegacyClient()
-    install_client(monkeypatch, client)
-
-    await modbus_scan.scan_modbus_range("sc3", 502, 65535, 65535, slave_id=7, delay=0)
-
-    assert client.calls == [("input", 65535, 1, 7), ("holding", 65535, 1, 7)]

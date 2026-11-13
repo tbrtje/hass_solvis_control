@@ -4,25 +4,13 @@ Tests for Solvis Modbus Coordinator
 Version: v2.1.0
 """
 
-import struct
 import pytest
-from unittest.mock import MagicMock
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.update_coordinator import UpdateFailed
 from custom_components.solvis_leo.coordinator import SolvisModbusCoordinator
-from pymodbus.exceptions import ConnectionException, ModbusException, ModbusIOException
-from pymodbus.pdu import ExceptionResponse
-from tests.dummies import DummyConfigEntry, DummyEntity, DummyEntityRegistry, DummyRegister
-from tests.dummies import DummyModbusClient, DummyModbusResponse, DummyResponseObj
-from custom_components.solvis_leo.const import (
-    DOMAIN,
-    CONF_NAME,
-    CONF_HOST,
-    CONF_PORT,
-    POLL_RATE_DEFAULT,
-    POLL_RATE_HIGH,
-    POLL_RATE_SLOW,
-)
+from pymodbus.exceptions import ModbusException
+from tests.dummies import DummyEntity, DummyEntityRegistry, DummyRegister
+from tests.dummies import DummyModbusResponse
 
 
 @pytest.fixture

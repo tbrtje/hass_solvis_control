@@ -39,6 +39,7 @@ class AddressableModbusClient:
         self._timeouts: set[tuple[str, int]] = set()
         self._request_counts: dict[tuple[str, int], int] = {}
         self.connected = False
+        self.writes: list[tuple[int, int, int]] = []
         self.DATATYPE = type("DATATYPE", (), {"INT16": "int16"})
 
     @classmethod
@@ -54,6 +55,11 @@ class AddressableModbusClient:
 
     async def read_holding_registers(self, address: int, count: int):
         return self._read("holding", address, count)
+
+    async def write_register(self, address: int, value: int, *, device_id: int = 1):
+        self.writes.append((address, value, device_id))
+        self.set_registers("holding", address, [value])
+        return FakeModbusResponse([value])
 
     async def connect(self) -> bool:
         self.connected = True

@@ -7,28 +7,19 @@ Version: v2.1.0
 import pytest
 import logging
 
-from tests.dummies import DummyConfigEntry, DummyEntity, DummyEntityRegistry, DummyRegister
-from tests.dummies import DummyModbusClient, DummyModbusResponse, DummyResponseObj
-from homeassistant.util import dt as dt_util
-from unittest.mock import AsyncMock, patch, MagicMock, PropertyMock
-from pymodbus.client import AsyncModbusTcpClient
-from pymodbus.exceptions import ConnectionException, ModbusException
+from tests.dummies import DummyConfigEntry, DummyEntity, DummyEntityRegistry
+from tests.dummies import DummyModbusClient
+from unittest.mock import AsyncMock, MagicMock
 from custom_components.solvis_leo.coordinator import SolvisModbusCoordinator
-from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.config_entries import ConfigEntry
-from datetime import timedelta
 from custom_components.solvis_leo.select import SolvisSelect
 from custom_components.solvis_leo.sensor import SolvisSensor
 from custom_components.solvis_leo.const import (
     CONF_NAME,
-    PORT,
     CONF_HOST,
     CONF_PORT,
-    DOMAIN,
-    MANUFACTURER,
-    DATA_COORDINATOR,
     POLL_RATE_SLOW,
     POLL_RATE_DEFAULT,
     POLL_RATE_HIGH,
@@ -53,140 +44,6 @@ def configure_logging():
     for module in debug_modules:
         _LOGGER = logging.getLogger(module)
         _LOGGER.setLevel(logging.DEBUG)
-
-
-@pytest.fixture
-def mock_get_mac(mocker, request):
-
-    param = getattr(request, "param", {})
-    patch_target = param.get("_patch", "config_flow")
-    mac_value = param.get("mac", "00:11:22:33:44:55")
-
-    patch_paths = {
-        "config_flow": "custom_components.solvis_leo.config_flow.get_mac",
-        "helpers": "custom_components.solvis_leo.utils.helpers.get_mac",
-    }
-
-    return mocker.patch(patch_paths[patch_target], return_value=mac_value)
-
-
-@pytest.fixture
-def mock_modbus(mocker, request):
-
-    _LOGGER = logging.getLogger("tests.conftest")
-
-    def mock_modbus_factory(host="127.0.0.1", port=502):
-        _LOGGER.debug(f"[mock_modbus_factory] Creating Mock-Modbus-Client for {host}:{port} with parameters: {locals()}")
-        mock_modbus_client = AsyncMock(spec=AsyncModbusTcpClient)
-        mock_modbus_client.__aenter__.return_value = mock_modbus_client
-        mock_modbus_client.__aexit__.return_value = None
-        mock_modbus_client.host = host
-        mock_modbus_client.port = port
-        mock_modbus_client.DATATYPE = type("DATATYPE", (), {"INT16": "int16"})
-
-        _LOGGER.debug(f"[mock_modbus_factory] Mock-Modbus-Instance created: {mock_modbus_client}")
-
-        async def mock_connect():
-            _LOGGER.debug("[mock_modbus_factory] mock.connect() called successfully")
-            return True
-
-        mock_modbus_client.convert_from_registers.side_effect = lambda registers, data_type, word_order: registers[0]
-
-        def set_mock_behavior(fail_connect=False, fail_read=False, custom_registers=None):
-            _LOGGER.debug(f"[mock_modbus_factory] Setting mock behavior: fail_connect={fail_connect}, fail_read={fail_read}, custom_registers={custom_registers if custom_registers else 'None/Empty'}")
-
-            if fail_connect:
-
-                async def failing_connect():
-                    raise ConnectionException("Connection failed")
-
-                mock_modbus_client.connect.side_effect = failing_connect
-                type(mock_modbus_client).connected = PropertyMock(return_value=False)
-
-            else:
-                mock_modbus_client.connect.side_effect = mock_connect
-
-            if fail_read:
-
-                async def failing_read_registers(*args, **kwargs):
-                    raise ModbusException("Read failed")
-
-                mock_modbus_client.read_input_registers.side_effect = failing_read_registers
-                mock_modbus_client.read_holding_registers.side_effect = failing_read_registers
-
-            else:
-                custom_registers = custom_registers or {}
-
-                async def custom_read_registers(address, count):
-                    response_mock = MagicMock()
-
-                    response_mock.isError.return_value = False
-
-                    if address in custom_registers:
-                        response_mock.registers = custom_registers[address]
-                    else:
-                        response_mock.registers = [10001]
-                    return response_mock
-
-                mock_modbus_client.read_input_registers.side_effect = custom_read_registers
-                mock_modbus_client.read_holding_registers.side_effect = custom_read_registers
-
-        mock_modbus_client.set_mock_behavior = set_mock_behavior
-
-        @property
-        def connected(self):
-            side_effect = self.connect.side_effect
-            return side_effect is None or not isinstance(side_effect, ConnectionException)
-
-        type(mock_modbus_client).connected = connected
-
-        return mock_modbus_client
-
-    param = getattr(request, "param", {})
-
-    _LOGGER.debug(f"[mock_modbus] Parameters: {param}")
-
-    register_values = {int(k): v for k, v in param.items() if str(k).isdigit()}
-
-    mock_modbus_instance = mock_modbus_factory("127.0.0.1", 502)
-
-    mock_modbus_instance.set_mock_behavior(
-        fail_connect=param.get("fail_connect", False),
-        fail_read=param.get("fail_read", False),
-        custom_registers=register_values,
-    )
-
-    patch_targets = [
-        "pymodbus.client.AsyncModbusTcpClient",
-        "custom_components.solvis_leo.utils.helpers.AsyncModbusTcpClient",
-        "custom_components.solvis_leo.config_flow.ModbusClient.AsyncModbusTcpClient",
-    ]
-
-    for target in patch_targets:
-        mocker.patch(target, return_value=mock_modbus_instance)
-
-    def mock_init(self, hass, entry):
-        super(SolvisModbusCoordinator, self).__init__(
-            hass,
-            _LOGGER,
-            name=DOMAIN,
-            update_interval=timedelta(seconds=entry.data.get(POLL_RATE_HIGH)),
-        )
-        self.config_entry = entry
-        self._poll_remaining = {}
-        self._register_failures = {}
-        self.hass = hass
-        self.modbus = mock_modbus_instance
-        self.host = entry.data.get(CONF_HOST, "127.0.0.1")
-        self.port = entry.data.get(CONF_PORT, 502)
-        self.poll_rate_default = entry.data.get(POLL_RATE_DEFAULT, 10)
-        self.poll_rate_slow = entry.data.get(POLL_RATE_SLOW, 30)
-        self.poll_rate_high = entry.data.get(POLL_RATE_HIGH, 5)
-        _LOGGER.debug(f"[SolvisModbusCoordinator] Verwende Modbus-Instanz: {self.modbus} (ID: {id(self.modbus)}) für {self.host}:{self.port}")
-
-    mocker.patch("custom_components.solvis_leo.coordinator.SolvisModbusCoordinator.__init__", mock_init)
-
-    return mock_modbus_instance
 
 
 @pytest.fixture
@@ -296,8 +153,6 @@ def dummy_solvisselect_entity(hass, mock_coordinator, mock_device_info, mock_pla
         enabled_by_default=True,
         options=("Option 1", "Option 2"),
         modbus_address=1,
-        data_processing=0,
-        poll_rate=False,
         platform=None,
         entity_id=None,
     ):
@@ -309,8 +164,6 @@ def dummy_solvisselect_entity(hass, mock_coordinator, mock_device_info, mock_pla
             enabled_by_default=enabled_by_default,
             options=options,
             modbus_address=modbus_address,
-            data_processing=data_processing,
-            poll_rate=poll_rate,
         )
         entity.hass = hass
         entity.platform = platform if platform is not None else mock_platform
@@ -333,8 +186,6 @@ def mock_solvis_sensor(mock_coordinator, mock_device_info):
         state_class="measurement",
         entity_category="",
         enabled_by_default=True,
-        data_processing=0,
-        poll_rate=False,
         modbus_address=1,
         suggested_precision=2,
     )

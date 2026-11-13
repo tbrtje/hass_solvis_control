@@ -24,15 +24,17 @@ def _validate_range(data: dict) -> dict:
 
 
 SCAN_MODBUS_RANGE_SCHEMA = vol.All(
-    vol.Schema({
-        vol.Optional("config_entry_id"): str,
-        vol.Required("start_address"): vol.All(vol.Coerce(int), vol.Range(min=0, max=65535)),
-        vol.Required("end_address"): vol.All(vol.Coerce(int), vol.Range(min=0, max=65535)),
-        vol.Optional("register_type", default="both"): vol.In(("input", "holding", "both")),
-        vol.Optional("slave_id", default=1): vol.All(vol.Coerce(int), vol.Range(min=0, max=255)),
-        vol.Optional("delay", default=0.05): vol.All(vol.Coerce(float), vol.Range(min=0, max=5)),
-        vol.Optional("batch_size", default=20): vol.All(vol.Coerce(int), vol.Range(min=1, max=125)),
-    }),
+    vol.Schema(
+        {
+            vol.Optional("config_entry_id"): str,
+            vol.Required("start_address"): vol.All(vol.Coerce(int), vol.Range(min=0, max=65535)),
+            vol.Required("end_address"): vol.All(vol.Coerce(int), vol.Range(min=0, max=65535)),
+            vol.Optional("register_type", default="both"): vol.In(("input", "holding", "both")),
+            vol.Optional("slave_id", default=1): vol.All(vol.Coerce(int), vol.Range(min=0, max=255)),
+            vol.Optional("delay", default=0.05): vol.All(vol.Coerce(float), vol.Range(min=0, max=5)),
+            vol.Optional("batch_size", default=20): vol.All(vol.Coerce(int), vol.Range(min=1, max=125)),
+        }
+    ),
     _validate_range,
 )
 
@@ -73,6 +75,9 @@ def async_setup_services(hass: HomeAssistant) -> None:
         return {**result, "config_entry_id": entry.entry_id}
 
     hass.services.async_register(
-        DOMAIN, SERVICE_SCAN_MODBUS_RANGE, handle_scan,
-        schema=SCAN_MODBUS_RANGE_SCHEMA, supports_response=SupportsResponse.OPTIONAL,
+        DOMAIN,
+        SERVICE_SCAN_MODBUS_RANGE,
+        handle_scan,
+        schema=SCAN_MODBUS_RANGE_SCHEMA,
+        supports_response=SupportsResponse.OPTIONAL,
     )

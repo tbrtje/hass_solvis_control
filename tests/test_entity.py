@@ -33,8 +33,6 @@ def dummy_entity(hass, dummy_coordinator, mock_device_info, mock_platform):
         name="Test Entity",
         modbus_address=1,
         enabled_by_default=True,
-        data_processing=0,
-        poll_rate=False,
     )
     entity.hass = hass
     entity.schedule_update_ha_state = MagicMock()
@@ -50,8 +48,6 @@ def minimal_entity(hass, dummy_coordinator, mock_device_info, mock_platform):
         name="Test Entity",
         modbus_address=1,
         enabled_by_default=True,
-        data_processing=0,
-        poll_rate=False,
     )
     entity.hass = hass
     entity.platform = mock_platform
@@ -68,8 +64,6 @@ def test_entity_initialization(dummy_entity):
     expected_unique_id = generate_unique_id(1, "Test Entity")
     assert dummy_entity._attr_unique_id == expected_unique_id
     assert dummy_entity.translation_key == "Test Entity"
-    assert dummy_entity.data_processing == 0
-    assert dummy_entity.poll_rate is False
 
 
 def test_handle_coordinator_update_available(dummy_entity, dummy_coordinator):

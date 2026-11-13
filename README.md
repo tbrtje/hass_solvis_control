@@ -19,6 +19,8 @@ options.
 - [Polling groups](polling-groups.md) — generated from `REGISTERS`.
 - [Polling behaviour](docs/polling.md) — disabled entities and shared register
   dependencies for calculated sensors and Wochenpläne.
+- [Maintenance and diagnostics](docs/maintenance.md) — connection cleanup, cached
+  diagnostics, confirmed writes and typed register definitions.
 - [Developer tools](tools/README.md) — the read-only SC3 register inventory tool.
 - [Modbus scan action](docs/modbus-scan.md) — discover registers directly from
   Home Assistant with `solvis_leo.scan_modbus_range`.

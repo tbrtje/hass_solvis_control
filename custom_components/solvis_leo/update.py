@@ -11,8 +11,9 @@ from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN, LATEST_SW_VERSION
+from .const import LATEST_SW_VERSION
 from .coordinator import SolvisModbusCoordinator
+from .registers import EntityType
 from .utils.helpers import async_setup_solvis_entities, parse_solvis_version
 from .entity import SolvisEntity
 
@@ -26,7 +27,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         entry,
         async_add_entities,
         entity_cls=SolvisUpdateEntity,
-        input_type=5,  # update
+        input_type=EntityType.UPDATE,
     )
 
 
@@ -41,8 +42,6 @@ class SolvisUpdateEntity(SolvisEntity, UpdateEntity):
         name: str,
         enabled_by_default: bool = True,
         modbus_address: int = None,
-        data_processing: int = 0,
-        poll_rate: bool = False,
     ) -> None:
         """Initialize the Solvis update entity."""
         super().__init__(
@@ -52,8 +51,6 @@ class SolvisUpdateEntity(SolvisEntity, UpdateEntity):
             name,
             modbus_address,
             enabled_by_default,
-            data_processing,
-            poll_rate,
         )
 
         self._attr_device_class = UpdateDeviceClass.FIRMWARE

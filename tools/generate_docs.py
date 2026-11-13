@@ -7,22 +7,9 @@ from pathlib import Path
 
 from custom_components.solvis_leo.const import REGISTERS
 
-
 REPOSITORY_ROOT = Path(__file__).parents[1]
 REGISTER_TABLE_PATH = REPOSITORY_ROOT / "supported-entities.md"
 POLLING_GROUP_TABLE_PATH = REPOSITORY_ROOT / "polling-groups.md"
-
-PLATFORMS = {
-    0: "sensor",
-    1: "select",
-    2: "number",
-    3: "switch",
-    4: "binary_sensor",
-    5: "update",
-    6: "block",
-}
-POLLING_GROUPS = {0: "default", 1: "slow", 2: "high"}
-REGISTER_TYPES = {1: "input", 2: "holding"}
 
 
 def _cell(value: object | None) -> str:
@@ -50,8 +37,8 @@ def render_register_table() -> str:
                 (
                     _cell(register.address),
                     _cell(register.name),
-                    _cell(REGISTER_TYPES[register.register]),
-                    _cell(PLATFORMS[register.input_type]),
+                    _cell(register.register.name.lower()),
+                    _cell(register.input_type.name.lower()),
                     _cell(register.datatype),
                     _cell(register.count),
                     "yes" if register.byte_swap else "no",
@@ -82,10 +69,10 @@ def render_polling_group_table() -> str:
             "| "
             + " | ".join(
                 (
-                    POLLING_GROUPS[register.poll_rate],
+                    register.poll_rate.name.lower(),
                     _cell(register.address),
                     _cell(register.name),
-                    PLATFORMS[register.input_type],
+                    register.input_type.name.lower(),
                 )
             )
             + " |"

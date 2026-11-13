@@ -8,44 +8,17 @@ import asyncio
 import json
 import pathlib
 import pytest
-from decimal import Decimal
-from homeassistant.helpers.entity import DeviceInfo
-from homeassistant.config_entries import ConfigEntry
 from custom_components.solvis_leo.utils import helpers
-from pymodbus.exceptions import ConnectionException, ModbusException
-from tests.dummies import DummyConfigEntry, DummyEntity, DummyEntityRegistry, DummyRegister, dummy_srp, dummy_srp_empty
-from tests.dummies import DummyModbusClient, DummyModbusResponse, DummyResponseObj
+from tests.dummies import DummyConfigEntry, DummyEntity, DummyEntityRegistry, DummyRegister
 from custom_components.solvis_leo.sensor import SolvisSensor
 from homeassistant.const import EntityCategory
 from custom_components.solvis_leo.const import (
-    CONF_NAME,
-    PORT,
-    CONF_HOST,
-    CONF_PORT,
     DOMAIN,
     MANUFACTURER,
     DATA_COORDINATOR,
     REGISTERS,
     SCHEDULES,
-    POLL_RATE_SLOW,
-    POLL_RATE_DEFAULT,
-    POLL_RATE_HIGH,
 )
-
-
-class DummyModbusCM:
-    def __init__(self, client):
-        self.client = client
-
-    async def __aenter__(self):
-        return self.client
-
-    async def __aexit__(self, exc_type, exc, tb):
-        try:
-            self._client.close()
-        except:
-            pass
-
 
 # # # Tests for generate_device_info # # #
 
@@ -67,139 +40,6 @@ def test_generate_device_info():
     assert info["model"] == "SolvisLeo 180 (SC3)"
     assert info["sw_version"] == "1.0.1"
     assert info["hw_version"] == "1.0"
-
-
-# # # Tests for fetch_modbus_value # # #
-
-
-@pytest.mark.asyncio
-async def test_fetch_modbus_value_success(monkeypatch):
-    dummy_client = DummyModbusClient([123])
-    monkeypatch.setattr(
-        helpers,
-        "create_modbus_client",
-        lambda host, port: DummyModbusCM(dummy_client),
-    )
-    result = await helpers.fetch_modbus_value(register=10, register_type=1, host="127.0.0.1", port=502)
-
-    assert result == 123
-
-
-@pytest.mark.asyncio
-async def test_fetch_modbus_value_invalid_response(monkeypatch):
-    host, port = "127.0.0.1", 502
-    dummy_client = DummyModbusClient([])
-    monkeypatch.setattr(
-        helpers,
-        "create_modbus_client",
-        lambda host, port: (_ for _ in ()).throw(ModbusException("Invalid response from Modbus for register 10")),
-    )
-    with pytest.raises(ModbusException):
-        await helpers.fetch_modbus_value(register=10, register_type=1, host="127.0.0.1", port=502)
-
-
-@pytest.mark.asyncio  #
-async def test_fetch_modbus_value_connection_exception(monkeypatch):
-    host, port = "127.0.0.1", 502
-    dummy_client = DummyModbusClient(registers=[123], raise_on_connect=True)
-    monkeypatch.setattr(
-        helpers,
-        "create_modbus_client",
-        lambda host, port: (_ for _ in ()).throw(ConnectionException(f"Failed to connect to Modbus device at {host}:{port}")),
-    )
-    with pytest.raises(ConnectionException):
-        await helpers.fetch_modbus_value(register=10, register_type=1, host="127.0.0.1", port=502)
-
-
-@pytest.mark.asyncio
-async def test_fetch_modbus_value_connect_fail(monkeypatch):
-    host, port = "127.0.0.1", 502
-    dummy_client = DummyModbusClient(connect_success=False)
-    monkeypatch.setattr(
-        helpers,
-        "create_modbus_client",
-        lambda host, port: (_ for _ in ()).throw(ConnectionException(f"Failed to connect to Modbus device at {host}:{port}")),
-    )
-    with pytest.raises(ConnectionException) as excinfo:
-        await helpers.fetch_modbus_value(register=10, register_type=1, host=host, port=port)
-
-    assert f"Failed to connect to Modbus device at {host}:{port}" in str(excinfo.value)
-
-
-@pytest.mark.asyncio
-async def test_fetch_modbus_value_holding_registers(monkeypatch):
-    dummy = DummyModbusClient([456])
-    monkeypatch.setattr(
-        helpers,
-        "create_modbus_client",
-        lambda host, port: DummyModbusCM(dummy),
-    )
-    result = await helpers.fetch_modbus_value(register=20, register_type=0, host="127.0.0.1", port=502)
-    assert result == 456
-
-
-@pytest.mark.asyncio
-async def test_fetch_modbus_value_error_response_is_error(monkeypatch):
-    # simuliert data.isError() == True
-    dummy_client = DummyModbusClient([1])
-
-    async def fake_read_input(address, count):
-        return DummyModbusResponse([1], error=True)
-
-    dummy_client.read_input_registers = fake_read_input
-    monkeypatch.setattr(
-        helpers,
-        "create_modbus_client",
-        lambda host, port: DummyModbusCM(dummy_client),
-    )
-    with pytest.raises(ModbusException) as excinfo:
-        await helpers.fetch_modbus_value(register=5, register_type=1, host="127.0.0.1", port=502)
-    assert "Invalid response from Modbus for register 5" in str(excinfo.value)
-
-
-# # # Tests for get_mac # # #
-
-
-def test_get_mac_success(monkeypatch):
-    monkeypatch.setattr(helpers, "srp", lambda packet, timeout, verbose: [((None, DummyResponseObj("AA:BB:CC:DD:EE:FF")),)])
-    mac = helpers.get_mac("192.168.1.1")
-
-    assert mac == "AA:BB:CC:DD:EE:FF"
-
-
-def test_get_mac_no_response(monkeypatch):
-    monkeypatch.setattr(helpers, "srp", lambda packet, timeout, verbose: [])
-    mac = helpers.get_mac("192.168.1.1")
-
-    assert mac is None
-
-
-def test_get_mac_empty_responses(monkeypatch):
-    monkeypatch.setattr(helpers, "srp", lambda packet, timeout, verbose: [])
-    mac = helpers.get_mac("192.168.1.1")
-
-    assert mac is None
-
-
-def test_get_mac_empty_result(monkeypatch):
-    monkeypatch.setattr(helpers, "srp", lambda packet, timeout, verbose: [[]])
-    mac = helpers.get_mac("192.168.1.1")
-
-    assert mac is None
-
-
-def test_get_mac_insufficient_length(monkeypatch):
-    monkeypatch.setattr(helpers, "srp", lambda packet, timeout, verbose: [[("dummy",)]])
-    mac = helpers.get_mac("192.168.1.1")
-
-    assert mac is None
-
-
-def test_get_mac_second_none(monkeypatch):
-    monkeypatch.setattr(helpers, "srp", lambda packet, timeout, verbose: [[("dummy", None)]])
-    mac = helpers.get_mac("192.168.1.1")
-
-    assert mac is None
 
 
 # # # Tests for remove_old_entities # # #
@@ -243,54 +83,6 @@ def test_generate_unique_id_special_chars():
     uid = helpers.generate_unique_id(modbus_address=100, name="@@@")
 
     assert uid == "100"
-
-
-# # # Tests for write_modbus_value # # #
-
-
-@pytest.mark.asyncio
-async def test_write_modbus_value_success():
-    dummy_modbus = DummyModbusClient(write_response=DummyModbusResponse([123], error=False))
-    result = await helpers.write_modbus_value(dummy_modbus, address=10, value=123)
-
-    assert result is True
-
-
-@pytest.mark.asyncio
-async def test_write_modbus_value_error_response():
-    dummy_modbus = DummyModbusClient(write_response=DummyModbusResponse([123], error=True))
-    result = await helpers.write_modbus_value(dummy_modbus, address=10, value=123)
-
-    assert result is False
-
-
-@pytest.mark.asyncio
-async def test_write_modbus_value_connection_exception():
-    dummy_modbus = DummyModbusClient(
-        write_response=DummyModbusResponse([123], error=False),
-        raise_on_connect=True,
-    )
-    result = await helpers.write_modbus_value(dummy_modbus, address=10, value=123)
-
-    assert result is False
-
-
-@pytest.mark.asyncio
-async def test_write_modbus_value_modbus_exception(monkeypatch):
-    host, port = "127.0.0.1", 502
-    dummy = DummyModbusClient(raise_on_write=True, host=host, port=port)
-    result = await helpers.write_modbus_value(dummy, address=10, value=123)
-
-    assert result is False
-
-
-@pytest.mark.asyncio
-async def test_write_modbus_value_generic_exception(monkeypatch):
-    host, port = "127.0.0.1", 502
-    dummy = DummyModbusClient(raise_generic_on_write=True)
-    result = await helpers.write_modbus_value(dummy, address=10, value=123)
-
-    assert result is False
 
 
 # # # Tests for process_coordinator_data # # #
@@ -413,7 +205,6 @@ async def test_async_setup_solvis_entities_sensor(monkeypatch):
     dummy_register.options = None
     dummy_register.input_type = 0
     dummy_register.enabled_by_default = True
-    dummy_register.data_processing = 0
 
     monkeypatch.setattr(helpers, "REGISTERS", [dummy_register])
 

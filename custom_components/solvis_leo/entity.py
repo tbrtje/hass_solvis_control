@@ -26,8 +26,6 @@ class SolvisEntity(CoordinatorEntity):
         name: str,
         modbus_address: int = None,
         enabled_by_default: bool = True,
-        data_processing: int = 0,
-        poll_rate: bool = False,
     ) -> None:
         """Initialize the Solvis entity."""
         super().__init__(coordinator)
@@ -39,8 +37,6 @@ class SolvisEntity(CoordinatorEntity):
         self._attr_has_entity_name = True
         self._attr_unique_id = generate_unique_id(modbus_address, name)
         self._attr_translation_key = name
-        self.data_processing = data_processing
-        self.poll_rate = poll_rate
         self._attr_available = False
 
     async def async_added_to_hass(self) -> None:

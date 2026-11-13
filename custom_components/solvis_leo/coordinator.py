@@ -2,15 +2,15 @@
 Solvis Modbus Data Coordinator
 """
 
+import asyncio
 import logging
 import struct
 from datetime import timedelta
 
-import pymodbus
-from pymodbus.client import AsyncModbusTcpClient
+from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.helpers import entity_registry as er
-from pymodbus.exceptions import ConnectionException, ModbusException, ModbusIOException
+from pymodbus.exceptions import ConnectionException, ModbusException
 from .utils.helpers import ensure_connected, generate_unique_id
 from .const import (
     CONF_HOST,
@@ -25,10 +25,11 @@ from .const import (
     SCHEDULES,
 )
 
+from .registers import DataType, EntityType, ModbusFieldConfig, PollingGroup, RegisterType
+
 _LOGGER = logging.getLogger(__name__)
 
 REGISTER_FAILURE_THRESHOLD = 3
-ENTITY_DOMAIN_BY_INPUT_TYPE = {0: "sensor", 1: "select", 2: "number", 3: "switch", 4: "binary_sensor", 5: "update"}
 
 
 class SolvisModbusCoordinator(DataUpdateCoordinator):
@@ -43,6 +44,7 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
             update_interval=timedelta(seconds=entry.data.get(POLL_RATE_HIGH)),
         )
         self.config_entry = entry  # !
+        self._io_lock = asyncio.Lock()
         self._poll_remaining: dict[str, int] = {}
         self._register_failures: dict[int, int] = {}
         self.host = entry.data.get(CONF_HOST)
@@ -55,7 +57,12 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
         self.modbus = entry.runtime_data["modbus"]
 
     async def _async_update_data(self):
-        """Fetches and processes data from the Solvis device."""
+        """Serialize complete snapshots with write/read-back transactions."""
+        async with self._io_lock:
+            return await self._async_poll_data()
+
+    async def _async_poll_data(self):
+        """Fetch and process the required registers."""
 
         _LOGGER.debug("Polling data...")
         required_names = self._required_register_names()
@@ -88,14 +95,14 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
             # metadata shared by every setup and reload.
             poll_remaining = self._poll_remaining.get(register.name, 0)
 
-            if register.poll_rate == 1:  # SLOW_POLL_GROUP
+            if register.poll_rate == PollingGroup.SLOW:  # SLOW_POLL_GROUP
                 if poll_remaining > self.poll_rate_high:
                     self._poll_remaining[register.name] = poll_remaining - self.poll_rate_high
                     _LOGGER.debug(f"[{register.name} | {register.address}] Skipping entity due to slow poll rate. Remaining time: {self._poll_remaining[register.name]}s")
                     continue
                 self._poll_remaining[register.name] = self.poll_rate_slow
 
-            elif register.poll_rate == 0:  # DEFAULT_POLL_GROUP
+            elif register.poll_rate == PollingGroup.DEFAULT:  # DEFAULT_POLL_GROUP
                 if poll_remaining > self.poll_rate_high:
                     self._poll_remaining[register.name] = poll_remaining - self.poll_rate_high
                     _LOGGER.debug(f"[{register.name} | {register.address}] Skipping entity due to standard poll rate. Remaining time: {self._poll_remaining[register.name]}s")
@@ -107,82 +114,87 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
                 _LOGGER.error(f"[{register.name} | {register.address}] Cannot read: connection lost")
                 raise UpdateFailed(f"[{register.name} | {register.address}] Connection lost")
 
-            # READ
             try:
-                # read input registers
-                if register.register == 1:
-                    _LOGGER.debug(f"[{register.name} | {register.address}] Reading {register.count} input register(s)...")
-                    result = await self.modbus.read_input_registers(address=register.address, count=register.count)
-
-                # read holding registers
-                else:
-                    _LOGGER.debug(f"[{register.name} | {register.address}] Reading {register.count} holding register(s)...")
-                    result = await self.modbus.read_holding_registers(address=register.address, count=register.count)
-
-            except (ConnectionException, ModbusIOException, ModbusException, TimeoutError) as err:
+                words = await self._async_read_words(register)
+                parsed_data[register.name] = self._decode_words(register, words)
+            except (ModbusException, OSError, TimeoutError) as err:
                 if isinstance(err, ConnectionException) or not self.modbus.connected:
-                    _LOGGER.error(f"[{register.name} | {register.address}] Connection lost during read: {err}")
                     raise UpdateFailed(f"[{register.name} | {register.address}] Connection lost during read") from err
                 self._record_register_failure(register, parsed_data, failed_addresses, f"Exception during read: {err}")
                 continue
-
-            # check for error response
-            if not result or hasattr(result, "isError") and result.isError():
-                self._record_register_failure(register, parsed_data, failed_addresses, f"Modbus error while reading register: {result}")
+            except (ValueError, struct.error) as err:
+                self._record_register_failure(register, parsed_data, failed_addresses, str(err))
                 continue
-
-            # check for invalid results
-            if not hasattr(result, "registers") or not result.registers:
-                self._record_register_failure(register, parsed_data, failed_addresses, f"Invalid Modbus response: {result}")
-                continue
-
-            if len(result.registers) < register.count:
-                self._record_register_failure(
-                    register,
-                    parsed_data,
-                    failed_addresses,
-                    f"Short block read: expected {register.count} registers, got {len(result.registers)}",
-                )
-                continue
-
-            # conversion
-            try:
-                if register.count > 1:
-                    # pymodbus hands back raw unsigned words
-                    words = [word & 0xFFFF for word in result.registers[: register.count]]
-
-                    if register.datatype == "UINT32":
-                        # low word first, as documented in the SC3 GLT CSV
-                        raw_value = words[0] | (words[1] << 16)
-                        _LOGGER.debug(f"[{register.name} | {register.address}] UINT32 from words {words}: {raw_value}")
-                        parsed_data[register.name] = round(raw_value * register.multiplier, 2)
-                    else:
-                        _LOGGER.debug(f"[{register.name} | {register.address}] Block of {len(words)} words: {words}")
-                        parsed_data[register.name] = tuple(words)
-
-                    self._record_register_success(register.address, failed_addresses)
-                    continue
-
-                data_from_register = self.modbus.convert_from_registers(registers=result.registers, data_type=self.modbus.DATATYPE.INT16, word_order="big")
-
-                if register.byte_swap == 1:  # little endian
-                    _LOGGER.debug(f"[{register.name} | {register.address}] Converting to Little Endian: {data_from_register}")
-                    data_from_register = struct.unpack("<h", struct.pack(">h", data_from_register))[0]
-
-                _LOGGER.debug(f"[{register.name} | {register.address}] Raw value: {data_from_register}")
-
-                value = round(data_from_register * register.multiplier, 2)
-                parsed_data[register.name] = abs(value) if register.absolute_value else value
-
-            except (struct.error, ValueError) as err:
-                self._record_register_failure(register, parsed_data, failed_addresses, f"Data conversion error: {err}")
-                continue
-
             self._record_register_success(register.address, failed_addresses)
 
         _LOGGER.debug(f"Returned data: {parsed_data}")
 
         return parsed_data
+
+    async def _async_read_words(self, register: ModbusFieldConfig) -> list[int]:
+        """Read one declared register/block and reject incomplete responses."""
+        read = self.modbus.read_input_registers if register.register == RegisterType.INPUT else self.modbus.read_holding_registers
+        response = await read(address=register.address, count=register.count)
+        if response is None or hasattr(response, "isError") and response.isError():
+            raise ValueError(f"Modbus error while reading register: {response}")
+        words = getattr(response, "registers", None)
+        if not words:
+            raise ValueError(f"Invalid Modbus response: {response}")
+        if len(words) < register.count:
+            raise ValueError(f"Short block read: expected {register.count} registers, got {len(words)}")
+        return words[: register.count]
+
+    def _decode_words(self, register: ModbusFieldConfig, words: list[int]) -> int | float | tuple[int, ...]:
+        """Use the same scaling and encoding for polling and command read-back."""
+        if register.count > 1:
+            words = tuple(word & 0xFFFF for word in words)
+            if register.datatype == DataType.UINT32:
+                return round((words[0] | words[1] << 16) * register.multiplier, 2)
+            return words
+        raw = self.modbus.convert_from_registers(words, data_type=self.modbus.DATATYPE.INT16, word_order="big")
+        if register.byte_swap:
+            raw = struct.unpack("<h", struct.pack(">h", raw))[0]
+        value = round(raw * register.multiplier, 2)
+        return abs(value) if register.absolute_value else value
+
+    async def async_write_register(self, name: str, raw_value: int) -> None:
+        """Send one command and publish only values read back from the SC3."""
+        register = next((item for item in REGISTERS if item.name == name), None)
+        if register is None or register.input_type not in (EntityType.SELECT, EntityType.NUMBER, EntityType.SWITCH) or register.count != 1:
+            raise ServiceValidationError(f"Register {name} is not writable")
+        if type(raw_value) is not int or not -32768 <= raw_value <= 65535:
+            raise ServiceValidationError("The register value must fit into 16 bits")
+        word = raw_value & 0xFFFF
+        if register.byte_swap:
+            word = int.from_bytes(word.to_bytes(2, "little"), "big")
+        async with self._io_lock:
+            try:
+                if not await ensure_connected(self.modbus):
+                    raise HomeAssistantError("Could not connect to the SC3")
+                response = await self.modbus.write_register(register.address, word, device_id=1)
+            except (ModbusException, OSError, TimeoutError) as err:
+                raise HomeAssistantError(f"Could not write {name}: {err}") from err
+            if response is None or response.isError():
+                raise HomeAssistantError(f"The SC3 rejected the write to {name}")
+
+            data = dict(self.data or {})
+            try:
+                words = await self._async_read_words(register)
+                required = self._required_register_names()
+                for alias in REGISTERS:
+                    if alias.address == register.address and alias.register == register.register and alias.name in required:
+                        data[alias.name] = self._decode_words(alias, words)
+            except (ModbusException, OSError, TimeoutError, ValueError, struct.error) as err:
+                self._record_register_failure(register, data, set(), f"Command read-back failed: {err}")
+                self._poll_remaining[name] = 0
+                self.data = data
+                self.async_update_listeners()
+                raise HomeAssistantError(f"Value was sent to {name}, but could not be read back: {err}") from err
+            self._record_register_success(register.address, set())
+            # A partial update must not clear a coordinator-wide connection error
+            # or postpone the next regular poll as async_set_updated_data would.
+            self.data = data
+            self.async_update_listeners()
 
     def _required_register_names(self) -> set[str]:
         """Resolve enabled consumers by stable registry identity on every update."""
@@ -197,9 +209,7 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
             return not entity.disabled
 
         required = {
-            register.name
-            for register in REGISTERS
-            if register.input_type in ENTITY_DOMAIN_BY_INPUT_TYPE and enabled(ENTITY_DOMAIN_BY_INPUT_TYPE[register.input_type], register.name, register.address, register.enabled_by_default)
+            register.name for register in REGISTERS if register.input_type.domain is not None and enabled(register.input_type.domain, register.name, register.address, register.enabled_by_default)
         }
 
         for name, config in DERIVATIVE_SENSORS.items():
@@ -217,6 +227,32 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
     def is_register_available(self, address: int) -> bool:
         """Return whether an address is below the consecutive-failure threshold."""
         return self._register_failures.get(address, 0) < REGISTER_FAILURE_THRESHOLD
+
+    def diagnostic_snapshot(self) -> dict:
+        """Describe cached values and failures without opening a connection."""
+        data = self.data or {}
+        required = self._required_register_names()
+        return {
+            "loaded": True,
+            "connected": self.modbus.connected,
+            "last_update_success": self.last_update_success,
+            "last_exception": str(self.last_exception) if self.last_exception is not None else None,
+            "registers": {
+                register.name: {
+                    "address": register.address,
+                    "register_type": register.register.name.lower(),
+                    "polling_group": register.poll_rate.name.lower(),
+                    "count": register.count,
+                    "unit": register.unit,
+                    "multiplier": register.multiplier,
+                    "required": register.name in required,
+                    "value": list(data[register.name]) if isinstance(data.get(register.name), tuple) else data.get(register.name),
+                    "available": self.last_update_success and data.get(register.name) is not None and self.is_register_available(register.address),
+                    "failure_count": self._register_failures.get(register.address, 0),
+                }
+                for register in REGISTERS
+            },
+        }
 
     def _record_register_failure(self, register, parsed_data: dict, failed_addresses: set[int], message: str) -> None:
         """Record one failed attempt without failing the whole poll cycle."""

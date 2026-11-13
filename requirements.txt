@@ -3,6 +3,5 @@ pytest-asyncio
 pytest-homeassistant-custom-component
 pytest-mock
 homeassistant
-pymodbus
+pymodbus==3.15.0
 voluptuous
-scapy

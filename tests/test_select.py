@@ -5,15 +5,11 @@ Version: v2.1.0
 """
 
 import pytest
-import logging
 from pytest import LogCaptureFixture
 from unittest.mock import AsyncMock, patch, MagicMock
-from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from custom_components.solvis_leo.select import SolvisSelect, async_setup_entry, _LOGGER
-from custom_components.solvis_leo.const import CONF_HOST, CONF_NAME, DATA_COORDINATOR, DOMAIN, POLL_RATE_DEFAULT, POLL_RATE_SLOW
-from pymodbus.exceptions import ConnectionException
-from homeassistant.helpers import entity_registry as er
+from homeassistant.exceptions import ServiceValidationError
+from custom_components.solvis_leo.select import async_setup_entry
+from custom_components.solvis_leo.const import CONF_HOST, DATA_COORDINATOR, DOMAIN
 
 # # # Tests for initialization # # #
 
@@ -27,7 +23,6 @@ def test_select_solvis_select_initialization(dummy_solvisselect_entity):
     assert select_entity.device_info is not None
     assert select_entity.unique_id == "1_Test_Entity"
     assert select_entity._attr_options == ("Option 1", "Option 2")
-    assert select_entity.data_processing == 0
     assert select_entity.modbus_address == 1
 
 
@@ -41,45 +36,11 @@ def test_select_translation_key(dummy_solvisselect_entity):
 
 
 @pytest.mark.asyncio
-async def test_async_select_option(dummy_solvisselect_entity):
-    select_entity = dummy_solvisselect_entity(name="Test Entity", modbus_address=1)
-    select_entity._response_key = "Test Entity"
-    response_mock = MagicMock()
-    response_mock.isError.return_value = False
-    select_entity.coordinator.modbus.write_register = AsyncMock(return_value=response_mock)
-    await select_entity.async_select_option("1")
-    select_entity.coordinator.modbus.write_register.assert_awaited_once_with(1, 1, device_id=1)
-
-
-@pytest.mark.asyncio
-async def test_async_select_option_connection_exception(dummy_solvisselect_entity):
-    """Test handling of a ConnectionException during modbus.write_register."""
-    select_entity = dummy_solvisselect_entity(name="Test Entity", modbus_address=1, entity_id="select.test")
-    select_entity.coordinator.modbus.write_register = AsyncMock(side_effect=ConnectionException)
-    await select_entity.async_select_option("1")
-    select_entity.coordinator.modbus.write_register.assert_awaited_once()
-
-
-@pytest.mark.asyncio
-async def test_async_select_option_modbus_failure(dummy_solvisselect_entity):
-    """Test async_select_option failure due to error in modbus.write_register."""
-    select_entity = dummy_solvisselect_entity(name="Test Entity", modbus_address=1, entity_id="select.test")
-    select_entity.coordinator.modbus.connect = AsyncMock(return_value=False)
-    error_response = MagicMock()
-    error_response.isError.return_value = True
-    select_entity.coordinator.modbus.write_register = AsyncMock(return_value=error_response)
-    with patch("custom_components.solvis_leo.select._LOGGER.error") as mock_logger:
-        await select_entity.async_select_option("1")
-        mock_logger.assert_called_with("[Test Entity] Failed to send option 1 to register 1")
-
-
-@pytest.mark.asyncio
 async def test_async_select_option_invalid_option(hass, mock_coordinator, mock_device_info, dummy_solvisselect_entity, caplog: LogCaptureFixture):
     """Test select_option with invalid (non-integer) input."""
     select_entity = dummy_solvisselect_entity(host="host", name="test", enabled_by_default=True, modbus_address=100, entity_id="select.test")
-    with caplog.at_level(logging.WARNING):
+    with pytest.raises(ServiceValidationError, match="Invalid option"):
         await select_entity.async_select_option("invalid")
-    assert "Invalid option selected" in caplog.text
 
 
 # # # Tests for handle_coordinator_update # # #

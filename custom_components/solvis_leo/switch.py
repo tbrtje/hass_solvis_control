@@ -11,7 +11,8 @@ from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .coordinator import SolvisModbusCoordinator
-from .utils.helpers import async_setup_solvis_entities, write_modbus_value
+from .registers import EntityType
+from .utils.helpers import async_setup_solvis_entities
 from .entity import SolvisEntity
 
 _LOGGER = logging.getLogger(__name__)
@@ -25,7 +26,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         entry,
         async_add_entities,
         entity_cls=SolvisSwitch,
-        input_type=3,  # switch
+        input_type=EntityType.SWITCH,
     )
 
 
@@ -40,8 +41,6 @@ class SolvisSwitch(SolvisEntity, SwitchEntity):
         name: str,
         enabled_by_default: bool = True,
         modbus_address: int = None,
-        data_processing: int = 0,
-        poll_rate: bool = False,
     ) -> None:
         """Initialize the Solvis switch entity."""
         super().__init__(
@@ -51,8 +50,6 @@ class SolvisSwitch(SolvisEntity, SwitchEntity):
             name,
             modbus_address,
             enabled_by_default,
-            data_processing,
-            poll_rate,
         )
 
         self._attr_current_option = None
@@ -68,19 +65,10 @@ class SolvisSwitch(SolvisEntity, SwitchEntity):
         """Reset state if data is not available."""
         self._attr_extra_state_attributes = {}
 
-    async def _async_set_state(self, value: int, state: bool, action: str) -> None:
-        """Helper to set switch state."""
-        success = await write_modbus_value(self.coordinator.modbus, self.modbus_address, value)
-        if success:
-            self._attr_is_on = state
-        else:
-            _LOGGER.error(f"[{self._response_key}] Failed to turn {action} (write value {value}) at register {self.modbus_address}")
-        self.async_write_ha_state()
-
     async def async_turn_on(self, **kwargs) -> None:
         """Turn the switch on."""
-        await self._async_set_state(1, True, "on")
+        await self.coordinator.async_write_register(self._response_key, 1)
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn the switch off."""
-        await self._async_set_state(0, False, "off")
+        await self.coordinator.async_write_register(self._response_key, 0)

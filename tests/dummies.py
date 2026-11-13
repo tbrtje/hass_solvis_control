@@ -4,14 +4,8 @@ Dummies for Testing
 Version: v2.1.0
 """
 
-import pytest
-import asyncio
-from unittest.mock import MagicMock
-from homeassistant.helpers import entity_registry as er
-from custom_components.solvis_leo.coordinator import SolvisModbusCoordinator
-from pymodbus.exceptions import ConnectionException, ModbusException, ConnectionException
+from pymodbus.exceptions import ConnectionException, ModbusException
 from custom_components.solvis_leo.const import (
-    DOMAIN,
     CONF_NAME,
     CONF_HOST,
     CONF_PORT,
@@ -19,6 +13,9 @@ from custom_components.solvis_leo.const import (
     POLL_RATE_HIGH,
     POLL_RATE_SLOW,
 )
+
+
+from custom_components.solvis_leo.registers import EntityType
 
 
 class DummyConfigEntry:
@@ -145,11 +142,6 @@ class DummyModbusClient:
             raise Exception("Close failed")
 
 
-class DummyResponseObj:
-    def __init__(self, hwsrc):
-        self.hwsrc = hwsrc
-
-
 class DummyRegister:
     def __init__(
         self,
@@ -173,16 +165,8 @@ class DummyRegister:
         self.register = reg
         self.count = count
         self.datatype = datatype
-        self.input_type = input_type
+        self.input_type = EntityType(input_type)
         self.enabled_by_default = enabled_by_default
         self.multiplier = multiplier
         self.absolute_value = absolute_value
         self.byte_swap = byte_swap
-
-
-def dummy_srp(packet, timeout, verbose):
-    return [((None, DummyResponseObj("AA:BB:CC:DD:EE:FF")),)]
-
-
-def dummy_srp_empty(packet, timeout, verbose):
-    return []

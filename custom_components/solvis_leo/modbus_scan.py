@@ -2,7 +2,6 @@
 
 from asyncio import sleep
 from collections import deque
-from inspect import signature
 from typing import Any
 
 from pymodbus.exceptions import ConnectionException, ModbusException
@@ -75,24 +74,22 @@ async def scan_modbus_range(
         if not await client.connect():
             raise ConnectionException("Could not connect to the SC3 controller")
 
-        # pymodbus 3.10 renamed slave to device_id; both versions are supported
-        # by this integration's pymodbus>=3.8 requirement.
-        unit_key = "device_id" if "device_id" in signature(client.read_input_registers).parameters else "slave"
         for current_type in register_types:
             read = client.read_input_registers if current_type == "input" else client.read_holding_registers
-            pending = deque(
-                (address, min(batch_size, end_address - address + 1))
-                for address in range(start_address, end_address + 1, batch_size)
-            )
+            pending = deque((address, min(batch_size, end_address - address + 1)) for address in range(start_address, end_address + 1, batch_size))
             while pending:
                 address, count = pending.popleft()
                 try:
-                    response = await read(address=address, count=count, **{unit_key: slave_id})
+                    response = await read(address=address, count=count, device_id=slave_id)
                 except (ModbusException, OSError, TimeoutError) as error:
-                    result["errors"].append({
-                        "register": address, "type": current_type,
-                        "count": count, "error": str(error),
-                    })
+                    result["errors"].append(
+                        {
+                            "register": address,
+                            "type": current_type,
+                            "count": count,
+                            "error": str(error),
+                        }
+                    )
                     result["aborted"] = True
                     return result
 
@@ -101,18 +98,20 @@ async def scan_modbus_range(
 
                 values, error = _register_values(response, count)
                 if values is not None:
-                    result["results"].extend(
-                        _format_value(address + offset, current_type, raw)
-                        for offset, raw in enumerate(values)
-                    )
+                    result["results"].extend(_format_value(address + offset, current_type, raw) for offset, raw in enumerate(values))
                 elif count > 1:
                     # SC3 rejects many reads that do not start at a GLT block's
                     # base address, even when some addresses in a batch exist.
                     pending.extendleft((single, 1) for single in reversed(range(address, address + count)))
                 else:
-                    result["errors"].append({
-                        "register": address, "type": current_type, "count": 1, **error,
-                    })
+                    result["errors"].append(
+                        {
+                            "register": address,
+                            "type": current_type,
+                            "count": 1,
+                            **error,
+                        }
+                    )
         return result
     finally:
         client.close()

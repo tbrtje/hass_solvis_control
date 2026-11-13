@@ -11,8 +11,6 @@ from homeassistant.util import dt as dt_util
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers import device_registry as dr
-from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
@@ -29,6 +27,7 @@ from .const import (
     STORAGE_ZONE_VOLUMES,
 )
 from .coordinator import SolvisModbusCoordinator
+from .registers import EntityType
 from .utils.helpers import async_setup_solvis_entities, generate_device_info
 from .utils.schedule import decode_schedule, next_switch, schedule_as_attributes
 from .entity import SolvisEntity
@@ -62,8 +61,6 @@ class SolvisDerivativeSensor(SolvisEntity, SensorEntity):
             name,
             modbus_address=modbus_address,
             enabled_by_default=True,
-            data_processing=0,
-            poll_rate=False,
         )
 
         self.source_keys = source_keys
@@ -176,8 +173,6 @@ class SolvisScheduleSensor(SolvisEntity, SensorEntity):
             name,
             modbus_address=modbus_address,
             enabled_by_default=False,
-            data_processing=0,
-            poll_rate=False,
         )
 
         self._attr_device_class = SensorDeviceClass.TIMESTAMP
@@ -210,7 +205,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         entry,
         async_add_entities,
         entity_cls=SolvisSensor,
-        input_type=0,  # sensor
+        input_type=EntityType.SENSOR,
     )
 
     # Setup SolvisDerivativeSensor
@@ -268,8 +263,6 @@ class SolvisSensor(SolvisEntity, SensorEntity):
         state_class: str | None = None,
         entity_category: str | None = None,
         enabled_by_default: bool = True,
-        data_processing: int = 0,
-        poll_rate: bool = False,
         modbus_address: int | None = None,
         suggested_precision: int | None = 1,
     ) -> None:
@@ -281,8 +274,6 @@ class SolvisSensor(SolvisEntity, SensorEntity):
             name,
             modbus_address,
             enabled_by_default,
-            data_processing,
-            poll_rate,
         )
 
         self._attr_native_value = None

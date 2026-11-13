@@ -6,10 +6,8 @@ Version: v2.1.0
 
 import pytest
 from unittest.mock import AsyncMock, patch, MagicMock
-from homeassistant.core import HomeAssistant
-from custom_components.solvis_leo.binary_sensor import SolvisBinarySensor, async_setup_entry, _LOGGER
-from custom_components.solvis_leo.const import CONF_HOST, CONF_NAME, DATA_COORDINATOR, DOMAIN, POLL_RATE_DEFAULT, POLL_RATE_SLOW
-from homeassistant.helpers.device_registry import DeviceInfo
+from custom_components.solvis_leo.binary_sensor import SolvisBinarySensor, async_setup_entry
+from custom_components.solvis_leo.const import CONF_HOST, DATA_COORDINATOR, DOMAIN
 
 
 @pytest.fixture
@@ -24,8 +22,6 @@ def mock_solvis_binary_sensor(mock_coordinator, mock_device_info):
         state_class="",
         entity_category=None,
         enabled_by_default=True,
-        data_processing=0,
-        poll_rate=False,
         modbus_address=1,
     )
     return sensor
@@ -48,7 +44,6 @@ async def test_handle_coordinator_update_valid_on(mock_solvis_binary_sensor):
 
     # Simulate a valid update value causing sensor to be on
     mock_solvis_binary_sensor.coordinator.data = {"Test Binary Sensor": 1}
-    mock_solvis_binary_sensor.data_processing = 0
     mock_solvis_binary_sensor._handle_coordinator_update()
     assert mock_solvis_binary_sensor._attr_is_on is True
     assert mock_solvis_binary_sensor._attr_extra_state_attributes["unprocessed_value"] == 1
@@ -59,7 +54,6 @@ async def test_handle_coordinator_update_valid_off(mock_solvis_binary_sensor):
     """Test update when binary sensor should be off."""
     mock_solvis_binary_sensor.hass = MagicMock()
     mock_solvis_binary_sensor.coordinator.data = {"Test Binary Sensor": 0}
-    mock_solvis_binary_sensor.data_processing = 0
     mock_solvis_binary_sensor._handle_coordinator_update()
 
     assert mock_solvis_binary_sensor._attr_is_on is False

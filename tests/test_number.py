@@ -6,9 +6,8 @@ Version: v2.1.0
 
 import pytest
 from unittest.mock import AsyncMock, patch, MagicMock
-from custom_components.solvis_leo.number import SolvisNumber, async_setup_entry, _LOGGER
-from custom_components.solvis_leo.const import CONF_HOST, DATA_COORDINATOR, DOMAIN, ModbusFieldConfig
-from homeassistant.helpers.device_registry import DeviceInfo
+from custom_components.solvis_leo.number import SolvisNumber, async_setup_entry
+from custom_components.solvis_leo.const import CONF_HOST, DATA_COORDINATOR, DOMAIN
 
 
 @pytest.fixture
@@ -27,8 +26,6 @@ def mock_solvis_number(mock_coordinator, mock_device_info):
         step_size=0.5,
         modbus_address=1,
         multiplier=2.0,
-        data_processing=0,
-        poll_rate=False,
     )
 
 
@@ -61,8 +58,6 @@ def test_number_initialization_default_step():
         step_size=None,
         modbus_address=2,
         multiplier=1.0,
-        data_processing=0,
-        poll_rate=False,
     )
     # native_step should default to 1.0 if step_size is not provided
     assert number_entity.native_step == 1.0
@@ -101,27 +96,6 @@ async def test_handle_coordinator_update_no_data(mock_solvis_number):
         mock_solvis_number._handle_coordinator_update()
         proc_patch.assert_called_with(None, "Test Number Sensor")
     assert mock_solvis_number._attr_available is False
-
-
-@pytest.mark.asyncio
-async def test_async_set_native_value_success(mock_solvis_number):
-    """Test async_set_native_value when write_modbus_value returns True."""
-    mock_solvis_number.hass = MagicMock()
-    # With multiplier=2.0, value 10.0 should yield modbus_value = 5
-    with patch("custom_components.solvis_leo.number.write_modbus_value", new=AsyncMock(return_value=True)) as write_patch:
-        await mock_solvis_number.async_set_native_value(10.0)
-        write_patch.assert_awaited_once_with(mock_solvis_number.coordinator.modbus, 1, 5)
-
-
-@pytest.mark.asyncio
-async def test_async_set_native_value_failure(mock_solvis_number):
-    """Test async_set_native_value when write_modbus_value returns False."""
-    mock_solvis_number.hass = MagicMock()
-    with patch("custom_components.solvis_leo.number.write_modbus_value", new=AsyncMock(return_value=False)) as write_patch:
-        with patch("custom_components.solvis_leo.number._LOGGER.error") as log_error:
-            await mock_solvis_number.async_set_native_value(10.0)
-            write_patch.assert_awaited_once_with(mock_solvis_number.coordinator.modbus, 1, 5)
-            log_error.assert_called_with("[Test Number Sensor] Failed to write value 5 to register 1")
 
 
 @pytest.mark.asyncio

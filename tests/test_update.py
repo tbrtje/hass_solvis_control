@@ -9,7 +9,7 @@ import pytest
 from unittest.mock import MagicMock, patch
 
 from custom_components.solvis_leo.update import SolvisUpdateEntity
-from custom_components.solvis_leo.const import LATEST_SW_VERSION, DOMAIN
+from custom_components.solvis_leo.const import LATEST_SW_VERSION
 
 
 @pytest.fixture

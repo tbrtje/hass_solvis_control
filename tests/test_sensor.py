@@ -28,7 +28,6 @@ def test_sensor_initialization(mock_solvis_sensor):
 async def test_handle_coordinator_update_default(mock_solvis_sensor):
     """Test _handle_coordinator_update passes through an ordinary sensor value."""
     mock_solvis_sensor.hass = MagicMock()
-    mock_solvis_sensor.data_processing = 99
     test_value = 123
     with patch("custom_components.solvis_leo.entity.process_coordinator_data", return_value=(True, test_value, {"raw_value": test_value})):
         mock_solvis_sensor._handle_coordinator_update()

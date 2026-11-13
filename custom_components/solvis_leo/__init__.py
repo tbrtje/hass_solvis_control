@@ -79,17 +79,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if conf_host is None or conf_port is None:
         return False
 
-    # Create data structure
     hass.data.setdefault(DOMAIN, {})
-    hass.data[DOMAIN].setdefault(entry.entry_id, {})
-    hass_data = dict(entry.data)
-
-    # Registers update listener to update config entry when options are updated.
-    unsub_options_update_listener = entry.async_on_unload(entry.add_update_listener(options_update_listener))
-
-    # Store a reference to the unsubscribe function to cleanup if an entry is unloaded.
-    hass_data["unsub_options_update_listener"] = unsub_options_update_listener
-    hass.data[DOMAIN][entry.entry_id] = hass_data
 
     # Create modbus client
     client = create_modbus_client(
@@ -99,26 +89,28 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     entry.runtime_data = {"modbus": client}
 
     try:
-        connected = await entry.runtime_data["modbus"].connect()
-        if not connected:
-            raise RuntimeError("Modbus connect failed: connect() returned False")
+        try:
+            if not await client.connect():
+                raise ConfigEntryNotReady("SolvisLeo 180 Control not reachable")
+        except Exception as err:
+            raise ConfigEntryNotReady("SolvisLeo 180 Control not reachable") from err
 
-    except Exception as err:
-        _LOGGER.error(f"Modbus connect failed: {err}")
-        raise ConfigEntryNotReady("SolvisLeo 180 Control not reachable. Try again later...") from err
+        coordinator = SolvisModbusCoordinator(hass, entry)
+        await coordinator.async_config_entry_first_refresh()
+        hass.data[DOMAIN][entry.entry_id] = {DATA_COORDINATOR: coordinator}
 
-    # Create coordinator for polling
-    coordinator: SolvisModbusCoordinator = SolvisModbusCoordinator(hass, entry)
-    await coordinator.async_config_entry_first_refresh()
-    hass.data[DOMAIN][entry.entry_id].setdefault(DATA_COORDINATOR, coordinator)
+        try:
+            await remove_old_entities(hass, entry.entry_id, active_entity_unique_ids())
+        except Exception:
+            _LOGGER.exception("Error removing old entities")
 
-    try:
-        await remove_old_entities(hass, entry.entry_id, active_entity_unique_ids())
-    except Exception as err:
-        _LOGGER.error("Error removing old entities: %s", err, exc_info=True)
-
-    # Setup platforms
-    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+        await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+        entry.async_on_unload(entry.add_update_listener(options_update_listener))
+    except BaseException:
+        # Cancellation and failed first refreshes also own a connected client.
+        _close_client(client)
+        hass.data[DOMAIN].pop(entry.entry_id, None)
+        raise
 
     _LOGGER.info(f"SolvisLeo 180 Control - Version {VERSION}")
 
@@ -127,17 +119,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
-    if unload_ok := await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
-        hass.data[DOMAIN].pop(entry.entry_id)
+    if not await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
+        return False
+    _close_client(entry.runtime_data["modbus"])
+    hass.data[DOMAIN].pop(entry.entry_id, None)
+    return True
 
+
+def _close_client(client: AsyncModbusTcpClient) -> None:
+    """Preserve the original setup failure and always finish unload cleanup."""
     try:
-        entry.runtime_data["modbus"].close()
-        _LOGGER.debug("Modbus connection closed on unload")
-    except Exception as e:
-        _LOGGER.error(f"Error closing Modbus on unload: {e}")
-        hass.data[DOMAIN].pop(entry.entry_id)
-
-    return unload_ok
+        client.close()
+    except Exception:
+        _LOGGER.exception("Error closing Modbus connection")
 
 
 async def options_update_listener(hass: HomeAssistant, config_entry: ConfigEntry):
