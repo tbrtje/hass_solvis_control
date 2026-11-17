@@ -27,9 +27,14 @@ CONFIG_ENTRY_DATA_KEYS = (
     POLL_RATE_SLOW,
 )
 
-LATEST_SW_VERSION = "3.20.16"
 DATA_COORDINATOR = "coordinator"
 MANUFACTURER = "Solvis"
+
+# S1–S16 are signed input registers in tenths of a degree Celsius. The SC3
+# specification lists -30 °C and 220 °C as faults. This SolvisLeo also returns
+# 250 °C on several unused inputs (see inventory/solvisleo_180_sc3.json).
+SC3_TEMPERATURE_ADDRESSES = range(33024, 33040)
+SC3_INVALID_TEMPERATURE_READINGS = frozenset({-300, 2200, 2500})
 
 
 # Naming Scheme
@@ -272,14 +277,14 @@ REGISTERS = [
         unit="°C",
         device_class="temperature",
         state_class=SensorStateClass.MEASUREMENT,
-        absolute_value=True,
     ),
-    ModbusFieldConfig(
+    ModbusFieldConfig(  # S5: unused on SolvisLeo 180; retain its unique ID.
         name="solar_flow_secondary_temp_s5",
         address=33028,
         unit="°C",
         device_class="temperature",
         state_class=SensorStateClass.MEASUREMENT,
+        enabled_by_default=False,
     ),
     ModbusFieldConfig(  # S6: neutral display name until its SolvisLeo 180 function is confirmed.
         # Retain the legacy key because it forms part of the existing unique ID.
@@ -289,19 +294,21 @@ REGISTERS = [
         device_class="temperature",
         state_class=SensorStateClass.MEASUREMENT,
     ),
-    ModbusFieldConfig(
+    ModbusFieldConfig(  # S7: unused on SolvisLeo 180; retain its unique ID.
         name="solar_flow_primary_temp_s7",
         address=33030,
         unit="°C",
         device_class="temperature",
         state_class=SensorStateClass.MEASUREMENT,
+        enabled_by_default=False,
     ),
-    ModbusFieldConfig(
+    ModbusFieldConfig(  # S8: unused on SolvisLeo 180; retain its unique ID.
         name="solar_collector_temp_s8",
         address=33031,
         unit="°C",
         device_class="temperature",
         state_class=SensorStateClass.MEASUREMENT,
+        enabled_by_default=False,
     ),
     ModbusFieldConfig(  # Heizungspuffertemperatur unten
         name="heating_buffer_lower_temp_s9",
@@ -309,7 +316,6 @@ REGISTERS = [
         unit="°C",
         device_class="temperature",
         state_class=SensorStateClass.MEASUREMENT,
-        absolute_value=True,
     ),
     ModbusFieldConfig(  # Außentemperatur
         name="outdoor_air_temp_s10",

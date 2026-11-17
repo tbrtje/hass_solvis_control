@@ -155,17 +155,13 @@ EXPECTED_ENTITY_IDS = {
     "sensor.solvisleo_180_pv2heat_heat_output",
     "sensor.solvisleo_180_pv2heat_runtime",
     "sensor.solvisleo_180_secondary_solar_pump_o3",
-    "sensor.solvisleo_180_solar_collector_temperature_s8",
-    "sensor.solvisleo_180_solar_flow_primary_temperature_s7",
     "sensor.solvisleo_180_solar_pump_primary_mode",
     "sensor.solvisleo_180_solar_pump_primary_runtime",
     "sensor.solvisleo_180_solar_pump_secondary_mode",
     "sensor.solvisleo_180_solar_pump_secondary_running_time",
-    "sensor.solvisleo_180_temperature_sensor_s6",
     "sensor.solvisleo_180_solar_thermal_heat_output",
     "sensor.solvisleo_180_solar_thermal_power",
     "sensor.solvisleo_180_solar_volume_flow_s17",
-    "sensor.solvisleo_180_solarvorlauf_sekundar_temperatur_s5",
     "sensor.solvisleo_180_smart_energy_consumer_1_status",
     "sensor.solvisleo_180_smart_energy_grid_power",
     "sensor.solvisleo_180_smart_energy_usable_power",
@@ -173,6 +169,10 @@ EXPECTED_ENTITY_IDS = {
     "sensor.solvisleo_180_stored_energy_of_stratified_storage_reference_12_degc",
     "sensor.solvisleo_180_temperature_sensor_s14",
     "sensor.solvisleo_180_temperature_sensor_s16",
+    "sensor.solvisleo_180_temperature_sensor_s5",
+    "sensor.solvisleo_180_temperature_sensor_s6",
+    "sensor.solvisleo_180_temperature_sensor_s7",
+    "sensor.solvisleo_180_temperature_sensor_s8",
     "switch.solvisleo_180_hkr1_warm_water_priority",
     "switch.solvisleo_180_hkr2_warm_water_priority",
     "switch.solvisleo_180_hkr3_warm_water_priority",
@@ -265,6 +265,10 @@ async def test_reload_keeps_every_recorded_entity(hass) -> None:
         unique_id="33045_digin_error",
         config_entry=entry,
     )
+    # Simulate the name and enabled state saved before S5 was relabelled.
+    s5_entity_id = "sensor.solvisleo_180_temperature_sensor_s5"
+    legacy_s5_entity_id = "sensor.solvisleo_180_solarvorlauf_sekundar_temperatur_s5"
+    registry.async_update_entity(s5_entity_id, new_entity_id=legacy_s5_entity_id, disabled_by=None)
 
     with patch("custom_components.solvis_leo.create_modbus_client", return_value=client):
         assert await hass.config_entries.async_reload(entry.entry_id)
@@ -272,8 +276,10 @@ async def test_reload_keeps_every_recorded_entity(hass) -> None:
 
     actual_entity_ids = {entity.entity_id for entity in registry.entities.values() if entity.config_entry_id == entry.entry_id}
 
-    assert actual_entity_ids == EXPECTED_ENTITY_IDS
+    assert actual_entity_ids == (EXPECTED_ENTITY_IDS - {s5_entity_id}) | {legacy_s5_entity_id}
     assert registry.entities[customized_entity_id].disabled_by is er.RegistryEntryDisabler.USER
+    assert not registry.entities[legacy_s5_entity_id].disabled
+    assert hass.states.get(legacy_s5_entity_id).attributes["friendly_name"] == "SolvisLeo 180 Temperature sensor S5"
     assert all(entity.unique_id != "33045_digin_error" for entity in registry.entities.values())
 
 
@@ -448,6 +454,42 @@ async def test_calculated_warm_water_power_tracks_source_failure_and_recovery(ha
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
+    ("address", "temperature_entity", "raw_fault"),
+    [
+        (33024, "hot_water_buffer_temperature_s1", 2200),
+        (33027, "heating_buffer_top_temperature_s4", (-300) & 0xFFFF),
+        (33032, "heating_buffer_bottom_temperature_s9", 2500),
+    ],
+)
+async def test_tank_fuhler_fault_invalidates_storage_energy_immediately(hass, address, temperature_entity, raw_fault) -> None:
+    client, _, coordinator = await setup_recorded_anlage(hass)
+    temperature_id = f"sensor.solvisleo_180_{temperature_entity}"
+    energy_id = "sensor.solvisleo_180_stored_energy_of_stratified_storage_reference_12_degc"
+    previous_temperature = hass.states.get(temperature_id).state
+    previous_energy = hass.states.get(energy_id).state
+    healthy_words = (await client.read_input_registers(address, 1)).registers
+    client.set_registers("input", address, [raw_fault])
+    client.set_registers("input", 33033, [(-55) & 0xFFFF])
+
+    await coordinator.async_refresh()
+    await hass.async_block_till_done()
+
+    assert hass.states.get(temperature_id).state == "unavailable"
+    assert hass.states.get(energy_id).state == "unavailable"
+    assert hass.states.get("sensor.solvisleo_180_outdoor_temperature_s10").state == "-5.5"
+    assert coordinator.last_update_success
+    assert coordinator.is_register_available(address)  # The read itself succeeded.
+
+    client.set_registers("input", address, healthy_words)
+    await coordinator.async_refresh()
+    await hass.async_block_till_done()
+
+    assert hass.states.get(temperature_id).state == previous_temperature
+    assert hass.states.get(energy_id).state == previous_energy
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
     ("entity_id", "register_type", "address"),
     [
         ("sensor.solvisleo_180_circulation_temperature_s11", "input", 33034),
@@ -494,8 +536,19 @@ async def test_disabled_entity_stops_its_modbus_reads(hass, entity_id, register_
 async def test_default_disabled_entities_are_not_polled_during_first_setup(hass) -> None:
     """The first refresh has no registry yet and must respect entity defaults."""
     client, _, coordinator = await setup_recorded_anlage(hass)
+    registry = er.async_get(hass)
+    for sensor, unique_id in (
+        (5, "33028_solar_flow_secondary_temp_s5"),
+        (7, "33030_solar_flow_primary_temp_s7"),
+        (8, "33031_solar_collector_temp_s8"),
+    ):
+        entity = registry.async_get(f"sensor.solvisleo_180_temperature_sensor_s{sensor}")
+        assert entity.unique_id == unique_id
+        assert entity.disabled_by is er.RegistryEntryDisabler.INTEGRATION
 
     for _ in range(2):
+        for address in (33028, 33030, 33031):
+            assert client.request_count("input", address) == 0
         assert client.request_count("input", 34313) == 0  # Mischer diagnostic
         assert client.request_count("input", 32768) == 0  # Controller clock
         assert client.request_count("holding", 34048) == 0  # Both Wochenplan entities disabled

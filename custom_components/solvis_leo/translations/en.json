@@ -228,7 +228,7 @@
 				"name":"Outdoor temperature (S10)"
 			},
 			"solar_collector_temp_s8":{
-				"name":"Solar collector temperature (S8)"
+				"name":"Temperature sensor S8"
 			},
 			"circulation_temp_s11":{
 				"name":"Circulation temperature (S11)"
@@ -246,13 +246,13 @@
 				"name":"Hot water temperature (S2)"
 			},
 			"solar_flow_primary_temp_s7":{
-				"name":"Solar flow primary temperature (S7)"
+				"name":"Temperature sensor S7"
 			},
 			"solar_return_secondary_temp_s6":{
 				"name":"Temperature sensor S6"
 			},
 			"solar_flow_secondary_temp_s5":{
-				"name":"Solarvorlauf sekundär Temperatur (S5)"
+				"name":"Temperature sensor S5"
 			},
 			"solar_power":{
 				"name":"Solar thermal power"

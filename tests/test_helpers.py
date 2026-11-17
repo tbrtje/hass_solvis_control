@@ -128,12 +128,12 @@ def test_process_coordinator_data_invalid_type():
     assert value is None
 
 
-def test_process_coordinator_data_error_value():
+def test_process_coordinator_data_keeps_negative_values():
     data = {"test": -300}
     available, value, attrs = helpers.process_coordinator_data(data, "test")
 
-    assert available is False
-    assert value is None
+    assert available is True
+    assert value == -300
 
 
 def test_process_coordinator_data_valid():

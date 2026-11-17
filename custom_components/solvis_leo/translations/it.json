@@ -228,7 +228,7 @@
 				"name":"(S10) Temp. esterna"
 			},
 			"solar_collector_temp_s8":{
-				"name":"(S8) collettore solare"
+				"name":"Sensore di temperatura S8"
 			},
 			"circulation_temp_s11":{
 				"name":"(S11) circolazione ACS"
@@ -246,13 +246,13 @@
 				"name":"(S2) ACS"
 			},
 			"solar_flow_primary_temp_s7":{
-				"name":"(S7) ritorno solare primario"
+				"name":"Sensore di temperatura S7"
 			},
 			"solar_return_secondary_temp_s6":{
 				"name":"Sensore di temperatura S6"
 			},
 			"solar_flow_secondary_temp_s5":{
-				"name":"(S5) mandata solare secondaria"
+				"name":"Sensore di temperatura S5"
 			},
 			"solar_power":{
 				"name":"energia solare "

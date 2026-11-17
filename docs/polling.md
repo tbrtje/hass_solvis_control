@@ -56,6 +56,12 @@ erhalten: Ab drei aufeinanderfolgenden Lesefehlern wird die betroffene Entität 
 verfügbar; ein erfolgreicher Zugriff hebt den Fehlerzustand auf. Auch ein derzeit
 nicht lesbares Register wird zu seinem nächsten fälligen Termin erneut versucht.
 
+Bei S1–S16 sind −30 °C und 220 °C laut SC3-Spezifikation Fehlerwerte. Mehrere
+unbenutzte Eingänge dieser Anlage liefern laut Inventur 250 °C, was die Integration
+ebenfalls verwirft. Ein solcher gelesener Wert setzt den Fühler und davon abhängige
+Berechnungen sofort auf „nicht verfügbar“. Ein gültiger Wert stellt sie beim
+nächsten erfolgreichen Lesen wieder her. [SC3-Modbus-Spezifikation, S. 8](https://solvis-files.s3.eu-central-1.amazonaws.com/downloads-fk/regelung/sc-3/SC-3_ModBus_Schnittstellenbeschreibung.pdf#page=8)
+
 Ein ausdrücklich gestarteter [Modbus-Scan](modbus-scan.md) oder das
 [Inventurwerkzeug](../tools/README.md) liest die angeforderten Register unabhängig
 vom Aktivierungszustand der Entitäten. Diese Werkzeuge dienen gerade dazu, Werte

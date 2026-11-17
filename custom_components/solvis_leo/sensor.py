@@ -106,8 +106,7 @@ class SolvisDerivativeSensor(SolvisEntity, SensorEntity):
         if len(values) != 3:
             return None
         warm_temperature, cold_temperature, volume_flow = values
-        # Restrict temperatures to the liquid domestic-water range. This also
-        # excludes out-of-range Fühler values such as -300 or 250 °C.
+        # Restrict temperatures to the liquid domestic-water range.
         if not 0 <= warm_temperature <= 100 or not 0 <= cold_temperature <= 100 or volume_flow < 0:
             return None
 
@@ -283,10 +282,18 @@ class SolvisSensor(SolvisEntity, SensorEntity):
         self._attr_native_unit_of_measurement = unit_of_measurement
         self.suggested_display_precision = suggested_precision
 
+    @property
+    def available(self) -> bool:
+        """An explicit invalid reading makes this measurement unavailable."""
+        data = self.coordinator.data or {}
+        invalid_reading = self._response_key in data and data[self._response_key] is None
+        return super().available and not invalid_reading
+
     def _update_value(self, value, extra_attrs):
         self._attr_native_value = value
         self._attr_extra_state_attributes = {"unprocessed_value": value}
         _LOGGER.debug(f"[{self._response_key}] Successfully updated native value: {self._attr_native_value} (Raw: {value})")
 
     def _reset_value(self):
+        self._attr_native_value = None
         self._attr_extra_state_attributes = {}

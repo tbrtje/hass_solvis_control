@@ -11,7 +11,6 @@ from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import LATEST_SW_VERSION
 from .coordinator import SolvisModbusCoordinator
 from .registers import EntityType
 from .utils.helpers import async_setup_solvis_entities, parse_solvis_version
@@ -32,7 +31,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 
 
 class SolvisUpdateEntity(SolvisEntity, UpdateEntity):
-    """Representation of a Solvis update entity."""
+    """Report the installed version; the SC3 has no update information over Modbus."""
 
     def __init__(
         self,
@@ -70,8 +69,7 @@ class SolvisUpdateEntity(SolvisEntity, UpdateEntity):
                 _LOGGER.debug(f"[{self._response_key}] Device does not report a version: register returns 0.")
             else:
                 _LOGGER.warning(f"[{self._response_key}] Couldn't process version string to Version. Expected 5 digits (X.YY.ZZ), got: {value!r}")
-            self._attr_installed_version = None
-            self._attr_latest_version = None
+            self._reset_value()
             return
 
         self._attr_installed_version = installed_version
@@ -81,10 +79,8 @@ class SolvisUpdateEntity(SolvisEntity, UpdateEntity):
 
         if device is not None:
             if self.modbus_address == 32770:  # VERSIONSC
-                self._attr_latest_version = LATEST_SW_VERSION
                 device_registry.async_update_device(device.id, sw_version=installed_version)
-            else:  # elif self.modbus_address == 32771:  # VERSIONNBG
-                self._attr_latest_version = installed_version  # No "latest" for HW
+            else:  # VERSIONNBG
                 device_registry.async_update_device(device.id, hw_version=installed_version)
 
         _LOGGER.debug(f"[{self._response_key}] Successfully updated version to {installed_version}")
@@ -92,4 +88,3 @@ class SolvisUpdateEntity(SolvisEntity, UpdateEntity):
     def _reset_value(self) -> None:
         """Reset state if data is not available."""
         self._attr_installed_version = None
-        self._attr_latest_version = None

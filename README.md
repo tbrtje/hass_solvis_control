@@ -8,8 +8,8 @@ other controllers and appliances are deliberately out of scope.
 
 Enable the SmartHome/GLT Modbus interface on the SC3, then add **SolvisLeo 180 Control**
 in Home Assistant. Setup asks for the controller address, port, and the high,
-default, and slow polling intervals. They can be changed later in the integration
-options.
+default, and slow polling intervals. Home Assistant allows one configuration
+entry. Change the address, port, or polling intervals in its integration options.
 
 ## Reference
 

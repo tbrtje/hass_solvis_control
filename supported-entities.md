@@ -25,10 +25,10 @@ This file is generated from `custom_components/solvis_leo/const.py`. Do not edit
 | 33025 | warm_water_temp_s2 | input | sensor | INT16 | 1 | no | 0.1 | °C | yes |
 | 33026 | storage_reference_temp_s3 | input | sensor | INT16 | 1 | no | 0.1 | °C | yes |
 | 33027 | heating_buffer_upper_temp_s4 | input | sensor | INT16 | 1 | no | 0.1 | °C | yes |
-| 33028 | solar_flow_secondary_temp_s5 | input | sensor | INT16 | 1 | no | 0.1 | °C | yes |
+| 33028 | solar_flow_secondary_temp_s5 | input | sensor | INT16 | 1 | no | 0.1 | °C | no |
 | 33029 | solar_return_secondary_temp_s6 | input | sensor | INT16 | 1 | no | 0.1 | °C | yes |
-| 33030 | solar_flow_primary_temp_s7 | input | sensor | INT16 | 1 | no | 0.1 | °C | yes |
-| 33031 | solar_collector_temp_s8 | input | sensor | INT16 | 1 | no | 0.1 | °C | yes |
+| 33030 | solar_flow_primary_temp_s7 | input | sensor | INT16 | 1 | no | 0.1 | °C | no |
+| 33031 | solar_collector_temp_s8 | input | sensor | INT16 | 1 | no | 0.1 | °C | no |
 | 33032 | heating_buffer_lower_temp_s9 | input | sensor | INT16 | 1 | no | 0.1 | °C | yes |
 | 33033 | outdoor_air_temp_s10 | input | sensor | INT16 | 1 | no | 0.1 | °C | yes |
 | 33034 | circulation_temp_s11 | input | sensor | INT16 | 1 | no | 0.1 | °C | yes |

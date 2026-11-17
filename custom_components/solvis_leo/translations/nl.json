@@ -228,7 +228,7 @@
 				"name":"Buitentemperatuur (S10)"
 			},
 			"solar_collector_temp_s8":{
-				"name":"Zonnencollector Temperatuur (S8)"
+				"name":"Temperatuursensor S8"
 			},
 			"circulation_temp_s11":{
 				"name":"Circulatie Temperatuur (S11)"
@@ -246,13 +246,13 @@
 				"name":"Warmwatertemperatuur (S2)"
 			},
 			"solar_flow_primary_temp_s7":{
-				"name":"Zonne-aanvoer primaire temperatuur (S7)"
+				"name":"Temperatuursensor S7"
 			},
 			"solar_return_secondary_temp_s6":{
 				"name":"Temperatuursensor S6"
 			},
 			"solar_flow_secondary_temp_s5":{
-				"name":"Zonne-aanvoer secundaire temperatuur (S5)"
+				"name":"Temperatuursensor S5"
 			},
 			"solar_power":{
 				"name":"Zonnethermie vermogen"

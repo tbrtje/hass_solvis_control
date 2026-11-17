@@ -79,3 +79,10 @@ Der Katalog bleibt in `const.py`. Namen, Adressen, Skalierungen und vorhandene
 Unique-IDs bleiben erhalten; das gilt auch für historische interne Namen wie S6.
 Unbenutzte Entitätsparameter für eine zweite Datenverarbeitung oder eigene
 Abfragesteuerung sind entfernt. Beides gehört zum Coordinator.
+
+## Firmwareanzeige
+
+Die beiden Firmware-Entitäten zeigen die installierte Version an, wenn das
+jeweilige Modbus-Register (32770 für SC3, 32771 für NBG) sie meldet. Ohne eine
+passende Release-Quelle bleibt der Update-Status in Home Assistant „unbekannt“.
+Bei einem Registerwert von `0` bleibt auch die installierte Version leer.

@@ -22,6 +22,8 @@ from .const import (
     POLL_RATE_HIGH,
     REGISTERS,
     REGISTER_ADDRESSES_BY_NAME,
+    SC3_INVALID_TEMPERATURE_READINGS,
+    SC3_TEMPERATURE_ADDRESSES,
     SCHEDULES,
 )
 
@@ -144,7 +146,7 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
             raise ValueError(f"Short block read: expected {register.count} registers, got {len(words)}")
         return words[: register.count]
 
-    def _decode_words(self, register: ModbusFieldConfig, words: list[int]) -> int | float | tuple[int, ...]:
+    def _decode_words(self, register: ModbusFieldConfig, words: list[int]) -> int | float | tuple[int, ...] | None:
         """Use the same scaling and encoding for polling and command read-back."""
         if register.count > 1:
             words = tuple(word & 0xFFFF for word in words)
@@ -154,6 +156,9 @@ class SolvisModbusCoordinator(DataUpdateCoordinator):
         raw = self.modbus.convert_from_registers(words, data_type=self.modbus.DATATYPE.INT16, word_order="big")
         if register.byte_swap:
             raw = struct.unpack("<h", struct.pack(">h", raw))[0]
+        if register.register == RegisterType.INPUT and register.address in SC3_TEMPERATURE_ADDRESSES and raw in SC3_INVALID_TEMPERATURE_READINGS:
+            _LOGGER.debug("[%s | %s] Invalid temperature reading: %s", register.name, register.address, raw)
+            return None
         value = round(raw * register.multiplier, 2)
         return abs(value) if register.absolute_value else value
 

@@ -76,10 +76,10 @@ def test_handle_coordinator_update_invalid_data(dummy_solvisselect_entity):
     assert select_entity._attr_available is False
 
 
-def test_handle_coordinator_update_error_code(dummy_solvisselect_entity):
-    """Test coordinator update when response is error code (-300)."""
+def test_handle_coordinator_update_unavailable_value(dummy_solvisselect_entity):
+    """Test that a register marked unavailable resets the select entity."""
     select_entity = dummy_solvisselect_entity(name="Test Entity", entity_id="select.test")
-    select_entity.coordinator.data = {"Test Entity": -300}
+    select_entity.coordinator.data = {"Test Entity": None}
     select_entity._handle_coordinator_update()
     assert select_entity._attr_available is False
 

@@ -77,6 +77,18 @@ async def test_setup_creates_an_entry_from_only_connection_and_polling_settings(
 
 
 @pytest.mark.asyncio
+async def test_setup_aborts_when_an_entry_already_exists(hass, skip_integration_setup) -> None:
+    """Even a legacy entry without a unique ID represents the only Anlage."""
+    await add_config_entry(hass)
+
+    result = await hass.config_entries.flow.async_init(DOMAIN, context={"source": "user"})
+
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "single_instance_allowed"
+    assert len(hass.config_entries.async_entries(DOMAIN)) == 1
+
+
+@pytest.mark.asyncio
 async def test_setup_rejects_incompatible_polling_intervals(hass) -> None:
     """The one setup form retains the polling-interval validation."""
     result = await hass.config_entries.flow.async_init(DOMAIN, context={"source": "user"})

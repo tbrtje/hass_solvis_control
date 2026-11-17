@@ -9,7 +9,6 @@ import pytest
 from unittest.mock import MagicMock, patch
 
 from custom_components.solvis_leo.update import SolvisUpdateEntity
-from custom_components.solvis_leo.const import LATEST_SW_VERSION
 
 
 @pytest.fixture
@@ -58,7 +57,7 @@ def test_hardware_update_initialization(mock_solvis_update_entity_hardware):
 async def test_firmware_update_version_processing(mock_solvis_update_entity_firmware):
     """Test the firmware update entity's version processing."""
     entity = mock_solvis_update_entity_firmware
-    test_value = 32016  # Represents "3.20.16"
+    test_value = 31901  # Represents "3.19.01"
 
     with (
         patch("custom_components.solvis_leo.entity.process_coordinator_data", return_value=(True, test_value, {})) as proc_patch,
@@ -74,9 +73,10 @@ async def test_firmware_update_version_processing(mock_solvis_update_entity_firm
         entity._handle_coordinator_update()
 
         proc_patch.assert_called_with(entity.coordinator.data, "version_sc")
-        assert entity.installed_version == "3.20.16"
-        assert entity.latest_version == LATEST_SW_VERSION
-        mock_device_registry.async_update_device.assert_called_once_with(mock_device.id, sw_version="3.20.16")
+        assert entity.installed_version == "3.19.01"
+        assert entity.latest_version is None
+        assert entity.state is None  # Home Assistant publishes 'unknown'.
+        mock_device_registry.async_update_device.assert_called_once_with(mock_device.id, sw_version="3.19.01")
 
 
 @pytest.mark.asyncio
@@ -100,7 +100,7 @@ async def test_hardware_update_version_processing(mock_solvis_update_entity_hard
 
         proc_patch.assert_called_with(entity.coordinator.data, "version_nbg")
         assert entity.installed_version == "1.02.03"
-        assert entity.latest_version == "1.02.03"  # Hardware version is its own latest
+        assert entity.latest_version is None
         mock_device_registry.async_update_device.assert_called_once_with(mock_device.id, hw_version="1.02.03")
 
 
@@ -201,13 +201,10 @@ async def test_update_value_device_none(mock_solvis_update_entity_firmware):
 
 
 def test_reset_value(mock_solvis_update_entity_firmware):
-    """Test that _reset_value resets installed and latest version."""
+    """Test that _reset_value clears the installed version."""
     entity = mock_solvis_update_entity_firmware
 
     entity._attr_installed_version = "9.99.99"
-    entity._attr_latest_version = "9.99.99"
-
     entity._reset_value()
 
     assert entity.installed_version is None
-    assert entity.latest_version is None

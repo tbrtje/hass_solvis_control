@@ -149,10 +149,6 @@ def process_coordinator_data(coordinator_data: dict, response_key: str):
         _LOGGER.warning(f"[{response_key}] Invalid response data type from coordinator: {response_data} has type {type(response_data)}")
         return False, None, {}
 
-    if response_data == -300:
-        _LOGGER.warning(f"[{response_key}] The coordinator failed to fetch data.")
-        return False, None, {}
-
     extra_state_attributes = {"raw_value": response_data}
 
     return True, response_data, extra_state_attributes

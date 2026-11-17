@@ -49,7 +49,7 @@ Diese Liste enthält keine Zuordnung von 33544/33545 zu Wärmepumpen-Pth/Pel und
 
 - A12/A13: keine Funktion in der Belegungstabelle; O1: unbenutzt.
 - A14: 3-Wege-Umschaltventil; A2/LP: Ladepumpe PLAS WP.
-- S3: Speicherreferenz; S6 und S14: unbenutzt; S9: Heizungspuffer unten.
+- S3: Speicherreferenz; S5–S8 und S14: unbenutzt; S9: Heizungspuffer unten.
 - Erweiterungsplatine DC1: Versorgung der Modbus-Alsonic-Sensoren; eigene Modbus-Unterverteilung auf S. 11.
 
 Die Verknüpfung dieser Anschlussnamen mit generischen SC3-Adressen ist nur eine **Ableitung aus zwei Dokumenten**, keine Leo-Registerfreigabe. Insbesondere belegen 33291/33292/33294 allein keinen Leo-Heizstabstatus bzw. keine Heizstabmodulation. „Keine Funktion“ in der Anschlusstabelle beweist auch nicht, dass ein Register keine Antwort liefert.
@@ -67,6 +67,12 @@ Schlüssel `solar_return_secondary_temp_s6` bleibt erhalten, damit Unique-ID,
 bestehende Entity-ID und Historie stabil bleiben. Neu angelegte Entitäten erhalten
 ihre Entity-ID aus dem korrigierten Anzeigenamen; benutzerdefinierte Namen bleiben
 in Home Assistant vorrangig.
+
+S5, S7 und S8 werden ebenfalls neutral als „Temperatursensor S5“,
+„Temperatursensor S7“ und „Temperatursensor S8“ angezeigt. Die Inventur auf dieser
+Anlage liefert auf diesen drei Eingängen jeweils den Rohwert 2500 (250 °C).
+Bei einer Neueinrichtung sind diese drei Entitäten standardmäßig deaktiviert.
+Vorhandene Registry-Einträge behalten ihre Entity-ID und ihren Aktivierungsstatus.
 
 ### Pth/Pel, Heizpatrone und Energieanzeige
 
