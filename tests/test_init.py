@@ -6,8 +6,10 @@ Version: v2.1.0
 
 import pytest
 import asyncio
+from importlib.resources import files
 
 import homeassistant.helpers.event as event
+from packaging.requirements import Requirement
 
 from unittest.mock import AsyncMock, MagicMock
 from custom_components.solvis_leo.coordinator import SolvisModbusCoordinator
@@ -17,6 +19,7 @@ from custom_components.solvis_leo import (
     async_setup_entry,
     async_unload_entry,
     async_migrate_entry,
+    manifest,
     options_update_listener,
 )
 from custom_components.solvis_leo.const import (
@@ -30,6 +33,17 @@ from custom_components.solvis_leo.const import (
     CONFIG_ENTRY_MINOR_VERSION,
     CONFIG_ENTRY_VERSION,
 )
+
+
+def test_pymodbus_requirement_allows_home_assistant_core_version():
+    """A local install can mask a conflict with the Core package constraint."""
+    constraints = files("homeassistant").joinpath("package_constraints.txt").read_text(encoding="utf-8")
+    pin = next((line for line in constraints.splitlines() if line.startswith("pymodbus==")), None)
+    if pin is None:
+        pytest.skip("Home Assistant Core has no exact PyModbus pin")
+
+    requirement = next(requirement for requirement in map(Requirement, manifest["requirements"]) if requirement.name == "pymodbus")
+    assert pin.removeprefix("pymodbus==") in requirement.specifier
 
 
 def dummy_update_entry(entry, **kwargs):

@@ -91,5 +91,5 @@ connection and does not modify polling, learned availability, registers or entit
 
 The action is adapted from the [upstream range-scan commit](https://github.com/tbrtje/hass_solvis_control/commit/509e35cd4863f813f74f8117cdbefefa7f4fd348),
 using this fork's `solvis_leo` domain and connection settings. The integration uses
-PyModbus 3.15.0 with `device_id`. The action's existing `slave_id` option is mapped
+the PyModbus `device_id` parameter. The action maps its existing `slave_id` option
 to that parameter, so existing action calls remain valid.

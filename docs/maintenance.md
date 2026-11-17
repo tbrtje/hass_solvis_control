@@ -2,11 +2,11 @@
 
 ## Laufzeit und Abhängigkeiten
 
-Integration und Testumgebung verwenden fest **PyModbus 3.15.0**. Der verwendete
-Parameter für die Modbus-Geräteadresse ist einheitlich `device_id`; zusätzliche
-Kompatibilitätspfade für PyModbus 3.8/3.9 entfallen. Die Python-Version wird durch
-Home Assistant vorgegeben. Die lokale Prüfung dieser Änderungen erfolgte mit
-Python 3.14.3.
+Die Integration verlangt **PyModbus ab 3.11.1 und unter 4**. Home Assistant
+wählt daraus die von Core vorgegebene Version. Das sind beispielsweise 3.11.1
+für Home Assistant 2025.9.4 und 3.13.1 für 2026.11.2. Der Parameter für die
+Modbus-Geräteadresse ist `device_id`. Die Testumgebung verwendet denselben
+Versionsbereich.
 
 Die frühere ARP-/MAC-Suche und die separate Hilfsfunktion zum Lesen einzelner
 Register hatten keine produktiven Aufrufer mehr. Sie sind mitsamt der nur dafür
